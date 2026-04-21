@@ -1,0 +1,299 @@
+<?php
+if (!defined('ABSPATH')) exit;
+
+/**
+ * Rechte auf Reise / Teilnehmer
+ */
+function alpenia_user_can_access_trip($trip_id) {
+    if (alpenia_is_admin_user() || alpenia_is_backoffice_user()) {
+        return true;
+    }
+
+    $assigned_guide = (int) get_post_meta($trip_id, 'assigned_guide', true);
+    $author_id = (int) get_post_field('post_author', $trip_id);
+
+    return get_current_user_id() === $assigned_guide || get_current_user_id() === $author_id;
+}
+
+function alpenia_user_can_access_participant($participant_id) {
+    $trip_id = (int) get_post_meta($participant_id, 'trip_id', true);
+    return $trip_id ? alpenia_user_can_access_trip($trip_id) : false;
+}
+
+/**
+ * Reisen laden je nach Rechte + Filter
+ */
+function alpenia_get_trip_query_args($search = '', $type = '', $status = '', $country = '', $city = '', $assigned_guide = '') {
+    $meta_query = [];
+
+    if (!empty($type)) {
+        $meta_query[] = [
+            'key'   => 'trip_type',
+            'value' => $type,
+        ];
+    }
+
+    if (!empty($status)) {
+        $meta_query[] = [
+            'key'   => 'trip_status',
+            'value' => $status,
+        ];
+    }
+
+    if (!empty($country)) {
+        $meta_query[] = [
+            'key'   => 'country',
+            'value' => $country,
+        ];
+    }
+
+    if (!empty($city)) {
+        $meta_query[] = [
+            'key'   => 'city',
+            'value' => $city,
+        ];
+    }
+
+    if (!empty($assigned_guide)) {
+        $meta_query[] = [
+            'key'   => 'assigned_guide',
+            'value' => (int) $assigned_guide,
+        ];
+    }
+
+    $args = [
+        'post_type'   => 'group_trip',
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'orderby'     => 'date',
+        'order'       => 'DESC',
+    ];
+
+    if (!empty($search)) {
+        $args['s'] = $search;
+    }
+
+    if (!empty($meta_query)) {
+        if (count($meta_query) > 1) {
+            $args['meta_query'] = array_merge(['relation' => 'AND'], $meta_query);
+        } else {
+            $args['meta_query'] = $meta_query;
+        }
+    }
+
+    return $args;
+}
+
+function alpenia_get_filtered_trips($search = '', $type = '', $status = '', $country = '', $city = '', $assigned_guide = '') {
+    $trips = get_posts(alpenia_get_trip_query_args($search, $type, $status, $country, $city, $assigned_guide));
+
+    if (!alpenia_is_admin_user() && !alpenia_is_backoffice_user()) {
+        $trips = array_filter($trips, function($trip) {
+            return alpenia_user_can_access_trip($trip->ID);
+        });
+    }
+
+    return $trips;
+}
+
+/**
+ * Teilnehmer einer Reise
+ */
+function alpenia_get_trip_participants($trip_id) {
+    if (!alpenia_user_can_access_trip($trip_id)) {
+        return [];
+    }
+
+    return get_posts([
+        'post_type'   => 'trip_participant',
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'meta_key'    => 'trip_id',
+        'meta_value'  => $trip_id,
+        'orderby'     => 'date',
+        'order'       => 'DESC',
+    ]);
+}
+
+/**
+ * Zahlungen / Status
+ */
+function alpenia_get_participant_payment_open($participant_id) {
+    $total = (float) get_post_meta($participant_id, 'payment_total', true);
+    $paid  = (float) get_post_meta($participant_id, 'payment_paid', true);
+    return max(0, $total - $paid);
+}
+
+function alpenia_get_payment_status($participant_id) {
+    $total = (float) get_post_meta($participant_id, 'payment_total', true);
+    $paid  = (float) get_post_meta($participant_id, 'payment_paid', true);
+
+    if ($total <= 0 && $paid <= 0) return 'offen';
+    if ($paid <= 0) return 'offen';
+    if ($paid < $total) return 'teilweise bezahlt';
+    return 'bezahlt';
+}
+
+function alpenia_get_trip_capacity_left($trip_id) {
+    $max_people = (int) get_post_meta($trip_id, 'max_people', true);
+    $participants = alpenia_get_trip_participants($trip_id);
+    $count = count($participants);
+
+    if ($max_people <= 0) return '—';
+    return max(0, $max_people - $count);
+}
+
+/**
+ * Dokumentstatus
+ */
+function alpenia_doc_status_label($attachment_id, $optional = false) {
+    if ($attachment_id) {
+        return '<span class="doc-ok">Vorhanden</span>';
+    }
+    return $optional
+        ? '<span class="doc-optional">Optional</span>'
+        : '<span class="doc-missing">Fehlt</span>';
+}
+
+/**
+ * Reise Status Badge
+ */
+function alpenia_trip_status_badge($status) {
+    $status = sanitize_text_field($status);
+
+    switch ($status) {
+        case 'draft':
+            return '<span class="status-badge status-gray">Entwurf</span>';
+        case 'open':
+            return '<span class="status-badge status-green">Offen</span>';
+        case 'full':
+            return '<span class="status-badge status-yellow">Voll</span>';
+        case 'closed':
+            return '<span class="status-badge status-red">Abgeschlossen</span>';
+        default:
+            return '<span class="status-badge status-gray">—</span>';
+    }
+}
+
+function alpenia_get_participant_doc_score($participant_id) {
+    $passport_file   = (int) get_post_meta($participant_id, 'passport_file_id', true);
+    $photo_file      = (int) get_post_meta($participant_id, 'photo_file_id', true);
+    $visa_photo_file = (int) get_post_meta($participant_id, 'visa_photo_file_id', true);
+
+    $passport_expiry = trim((string) get_post_meta($participant_id, 'passport_expiry_date', true));
+    $passport_no     = trim((string) get_post_meta($participant_id, 'passport_no', true));
+    $nationality     = trim((string) get_post_meta($participant_id, 'nationality', true));
+    $visa_number     = trim((string) get_post_meta($participant_id, 'visa_number', true));
+    $visa_expiry     = trim((string) get_post_meta($participant_id, 'visa_expiry_date', true));
+
+    $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
+    $check_photo     = (int) get_post_meta($participant_id, 'check_photo', true);
+    $check_visa      = (int) get_post_meta($participant_id, 'check_visa', true);
+
+    $required_items = [];
+    $filled_items   = 0;
+
+    // Immer Pflicht
+    $required_items[] = 'passport_file';
+    if ($passport_file) $filled_items++;
+
+    $required_items[] = 'photo_file';
+    if ($photo_file) $filled_items++;
+
+    $required_items[] = 'passport_expiry';
+    if ($passport_expiry !== '') $filled_items++;
+
+    $required_items[] = 'nationality';
+    if ($nationality !== '') $filled_items++;
+
+    $required_items[] = 'check_passport';
+    if ($check_passport === 1) $filled_items++;
+
+    $required_items[] = 'check_photo';
+    if ($check_photo === 1) $filled_items++;
+
+    // Nicht-EU zusätzlich Pflicht
+    if (!alpenia_is_eu_nationality($nationality)) {
+        $required_items[] = 'visa_number';
+        if ($visa_number !== '') $filled_items++;
+
+        $required_items[] = 'visa_expiry';
+        if ($visa_expiry !== '') $filled_items++;
+
+        $required_items[] = 'visa_photo_file';
+        if ($visa_photo_file) $filled_items++;
+
+        $required_items[] = 'check_visa';
+        if ($check_visa === 1) $filled_items++;
+    }
+
+    $required_count = count($required_items);
+
+    if ($required_count > 0 && $filled_items === $required_count) {
+        return 'complete';
+    }
+
+    if ($filled_items > 0) {
+        return 'partial';
+    }
+
+    return 'missing';
+}
+
+function alpenia_get_participant_doc_badge($participant_id) {
+    $score = alpenia_get_participant_doc_score($participant_id);
+
+    if ($score === 'complete') {
+        return '<span class="status-badge status-green">Unterlagen komplett</span>';
+    }
+
+    if ($score === 'partial') {
+        return '<span class="status-badge status-yellow">Unterlagen unvollständig</span>';
+    }
+
+    return '<span class="status-badge status-red">Unterlagen fehlen</span>';
+}
+
+function alpenia_get_missing_docs_details($participant_id) {
+    $missing = [];
+
+    $passport_file   = (int) get_post_meta($participant_id, 'passport_file_id', true);
+    $photo_file      = (int) get_post_meta($participant_id, 'photo_file_id', true);
+    $visa_photo_file = (int) get_post_meta($participant_id, 'visa_photo_file_id', true);
+
+    $passport_expiry = trim((string) get_post_meta($participant_id, 'passport_expiry_date', true));
+    $nationality     = trim((string) get_post_meta($participant_id, 'nationality', true));
+    $visa_number     = trim((string) get_post_meta($participant_id, 'visa_number', true));
+    $visa_expiry     = trim((string) get_post_meta($participant_id, 'visa_expiry_date', true));
+
+    $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
+    $check_photo     = (int) get_post_meta($participant_id, 'check_photo', true);
+    $check_visa      = (int) get_post_meta($participant_id, 'check_visa', true);
+
+    if (!$passport_file) $missing[] = 'Pass Datei';
+    if (!$photo_file) $missing[] = 'Foto Datei';
+    if ($passport_expiry === '') $missing[] = 'Pass Enddatum';
+    if ($nationality === '') $missing[] = 'Staatsbürgerschaft';
+    if ($check_passport !== 1) $missing[] = 'Pass nicht geprüft';
+    if ($check_photo !== 1) $missing[] = 'Foto nicht geprüft';
+
+    if (!alpenia_is_eu_nationality($nationality)) {
+        if ($visa_number === '') $missing[] = 'Visa Nummer';
+        if ($visa_expiry === '') $missing[] = 'Visa Ablaufdatum';
+        if (!$visa_photo_file) $missing[] = 'Visa Foto';
+        if ($check_visa !== 1) $missing[] = 'Visa nicht geprüft';
+    }
+
+    return $missing;
+}
+
+/**
+ * Mail Helfer
+ */
+function alpenia_send_notification($subject, $message) {
+    $admin_email = get_option('admin_email');
+    if ($admin_email) {
+        wp_mail($admin_email, $subject, $message);
+    }
+}
+
