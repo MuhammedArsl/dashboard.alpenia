@@ -70,8 +70,8 @@ function alpenia_dashboard_shortcode() {
             $max_people      = (int) ($_POST['max_people'] ?? 0);
             $price           = sanitize_text_field($_POST['price'] ?? '');
             $assigned_guide  = (int) ($_POST['assigned_guide'] ?? 0);
-            $meeting_date    = sanitize_text_field($_POST['meeting_date'] ?? '');
             $whatsapp_link   = esc_url_raw($_POST['whatsapp_link'] ?? '');
+            $zoom_link       = esc_url_raw($_POST['zoom_link'] ?? '');
             $internal_notes  = sanitize_textarea_field($_POST['internal_notes'] ?? '');
 
             if (empty($trip_title) || empty($trip_type) || empty($destination) || empty($country) || empty($city) || empty($start_date) || empty($end_date)) {
@@ -96,8 +96,8 @@ function alpenia_dashboard_shortcode() {
                     update_post_meta($trip_id, 'max_people', $max_people);
                     update_post_meta($trip_id, 'price', $price);
                     update_post_meta($trip_id, 'assigned_guide', $assigned_guide);
-                    update_post_meta($trip_id, 'meeting_date', $meeting_date);
                     update_post_meta($trip_id, 'whatsapp_link', $whatsapp_link);
+                    update_post_meta($trip_id, 'zoom_link', $zoom_link);
                     update_post_meta($trip_id, 'internal_notes', $internal_notes);
 
                     alpenia_send_notification('Neue Reise erstellt', 'Eine neue Reise wurde erstellt: ' . $trip_title);
@@ -716,11 +716,6 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
-                                <label for="meeting_date">Treffpunkt / Meeting Datum</label>
-                                <input type="date" id="meeting_date" name="meeting_date">
-                            </div>
-
-                            <div class="form-group">
                                 <label for="max_people">Max. Teilnehmer</label>
                                 <input type="number" id="max_people" name="max_people" min="1" placeholder="z. B. 40" required>
                             </div>
@@ -743,6 +738,11 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group full">
                                 <label for="whatsapp_link">WhatsApp Gruppenlink</label>
                                 <input type="url" id="whatsapp_link" name="whatsapp_link" placeholder="https://chat.whatsapp.com/...">
+                            </div>
+
+                            <div class="form-group full">
+                                <label for="zoom_link">Zoom Meeting Link</label>
+                                <input type="url" id="zoom_link" name="zoom_link" placeholder="https://zoom.us/j/...">
                             </div>
 
                             <div class="form-group full">
@@ -1221,8 +1221,8 @@ function alpenia_dashboard_shortcode() {
                         <div class="trip-meta-box"><strong>Zeitraum</strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'start_date', true)); ?> – <?php echo esc_html(get_post_meta($view_trip_id, 'end_date', true)); ?></span></div>
                         <div class="trip-meta-box"><strong>Freie Plätze</strong><span><?php echo esc_html(alpenia_get_trip_capacity_left($view_trip_id)); ?></span></div>
                         <div class="trip-meta-box"><strong>Reiseleiter</strong><span><?php echo esc_html($assigned_guide_name); ?></span></div>
-                        <div class="trip-meta-box"><strong>Treffpunkt</strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'meeting_date', true)); ?></span></div>
                         <div class="trip-meta-box"><strong>WhatsApp</strong><span><?php $wa = get_post_meta($view_trip_id, 'whatsapp_link', true); echo $wa ? '<a href="'.esc_url($wa).'" target="_blank">Öffnen</a>' : '—'; ?></span></div>
+                        <div class="trip-meta-box"><strong>Zoom</strong><span><?php $zoom = get_post_meta($view_trip_id, 'zoom_link', true); echo $zoom ? '<a href="'.esc_url($zoom).'" target="_blank">Öffnen</a>' : '—'; ?></span></div>
                     </div>
 
                     <?php $notes = get_post_meta($view_trip_id, 'internal_notes', true); ?>
@@ -1614,6 +1614,8 @@ function alpenia_dashboard_shortcode() {
                                         <span>
                                             Freie Plätze: <?php echo esc_html(alpenia_get_trip_capacity_left($trip->ID)); ?>
                                             · Reiseleiter: <?php echo esc_html($guide_name); ?>
+                                            · Start: <?php echo esc_html(get_post_meta($trip->ID, 'start_date', true)); ?>
+                                            · Ende: <?php echo esc_html(get_post_meta($trip->ID, 'end_date', true)); ?>
                                         </span>
                                     </div>
                                     <div class="list-actions">
