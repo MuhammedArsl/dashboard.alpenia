@@ -25,14 +25,6 @@ function alpenia_dashboard_shortcode() {
     $debug_mode = isset($_GET['alpenia_debug_auth']) && $_GET['alpenia_debug_auth'] == '1';
 
     if (!is_user_logged_in()) {
-        $cookie_user_id = wp_validate_auth_cookie('', 'logged_in');
-        if ($cookie_user_id) {
-            wp_set_current_user((int) $cookie_user_id);
-            wp_set_auth_cookie((int) $cookie_user_id, true);
-        }
-    }
-
-    if (!is_user_logged_in()) {
         return '<div class="alpenia-message">Bitte zuerst einloggen. <a href="' . esc_url(alpenia_get_login_url()) . '" style="color:#8ee0b8;font-weight:bold;">Zum Login</a></div>';
     }
 
@@ -2420,5 +2412,4 @@ function alpenia_dashboard_shortcode() {
     return ob_get_clean();
 }
 add_shortcode('alpenia_dashboard', 'alpenia_dashboard_shortcode');
-
 
