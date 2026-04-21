@@ -8,7 +8,11 @@ function alpenia_login_shortcode() {
     if (!defined('DONOTCACHEPAGE')) {
         define('DONOTCACHEPAGE', true);
     }
-    nocache_headers();
+    if (function_exists('alpenia_send_strict_no_cache_headers')) {
+        alpenia_send_strict_no_cache_headers();
+    } else {
+        nocache_headers();
+    }
 
     $debug_mode = isset($_GET['alpenia_debug_auth']) && $_GET['alpenia_debug_auth'] == '1';
 
@@ -37,6 +41,7 @@ function alpenia_login_shortcode() {
                     'remember'      => true,
                 ];
 
+                wp_clear_auth_cookie();
                 $signon = wp_signon($creds);
 
                 if (!is_wp_error($signon)) {
