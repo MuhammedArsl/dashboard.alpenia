@@ -8,7 +8,11 @@ function alpenia_login_shortcode() {
     if (!defined('DONOTCACHEPAGE')) {
         define('DONOTCACHEPAGE', true);
     }
-    nocache_headers();
+    if (function_exists('alpenia_send_strict_no_cache_headers')) {
+        alpenia_send_strict_no_cache_headers();
+    } else {
+        nocache_headers();
+    }
 
     $debug_mode = isset($_GET['alpenia_debug_auth']) && $_GET['alpenia_debug_auth'] == '1';
 
@@ -37,11 +41,10 @@ function alpenia_login_shortcode() {
                     'remember'      => true,
                 ];
 
+                wp_clear_auth_cookie();
                 $signon = wp_signon($creds);
 
                 if (!is_wp_error($signon)) {
-                    wp_set_current_user($signon->ID);
-                    wp_set_auth_cookie($signon->ID, true);
                     wp_safe_redirect(alpenia_get_dashboard_url());
                     exit;
                 } else {
@@ -98,4 +101,3 @@ function alpenia_login_shortcode() {
 }
 
 add_shortcode('alpenia_login', 'alpenia_login_shortcode');
-

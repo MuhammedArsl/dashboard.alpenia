@@ -93,6 +93,28 @@ function alpenia_user_can_delete_trip($trip_id) {
 /**
  * Frontend URLs for login/dashboard pages (resolved by shortcode page).
  */
+function alpenia_get_request_scheme() {
+    if (is_ssl()) {
+        return 'https';
+    }
+
+    $forwarded_proto = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? strtolower((string) wp_unslash($_SERVER['HTTP_X_FORWARDED_PROTO'])) : '';
+    if ($forwarded_proto !== '') {
+        $parts = array_map('trim', explode(',', $forwarded_proto));
+        if (in_array('https', $parts, true)) {
+            return 'https';
+        }
+    }
+
+    $request_scheme = isset($_SERVER['REQUEST_SCHEME']) ? strtolower((string) wp_unslash($_SERVER['REQUEST_SCHEME'])) : '';
+    if ($request_scheme === 'https') {
+        return 'https';
+    }
+
+    $home_scheme = wp_parse_url(home_url(), PHP_URL_SCHEME);
+    return $home_scheme === 'https' ? 'https' : 'http';
+}
+
 function alpenia_normalize_url_to_current_host($url) {
     $url = (string) $url;
     if ($url === '') return $url;
@@ -101,7 +123,7 @@ function alpenia_normalize_url_to_current_host($url) {
     if (!is_array($parts)) return $url;
 
     $host = isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '';
-    $scheme = is_ssl() ? 'https' : 'http';
+    $scheme = alpenia_get_request_scheme();
     if ($host === '') {
         return set_url_scheme($url, $scheme);
     }
@@ -226,4 +248,3 @@ function alpenia_gender_code($gender) {
     if ($gender === 'frau' || $gender === 'female' || $gender === 'f') return 'F';
     return 'M';
 }
-

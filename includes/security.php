@@ -1,20 +1,17 @@
 <?php
 if (!defined('ABSPATH')) exit;
 
-/**
- * Ensure frontend current user is restored from auth cookie early.
- */
-function alpenia_restore_current_user_from_cookie() {
-    if (is_user_logged_in()) {
-        return;
+function alpenia_send_strict_no_cache_headers() {
+    if (!headers_sent()) {
+        header('Cache-Control: no-store, no-cache, must-revalidate, max-age=0');
+        header('Cache-Control: post-check=0, pre-check=0', false);
+        header('Pragma: no-cache');
+        header('Expires: Wed, 11 Jan 1984 05:00:00 GMT');
+        header('Vary: Cookie', false);
     }
 
-    $cookie_user_id = wp_validate_auth_cookie('', 'logged_in');
-    if ($cookie_user_id) {
-        wp_set_current_user((int) $cookie_user_id);
-    }
+    nocache_headers();
 }
-add_action('init', 'alpenia_restore_current_user_from_cookie', 1);
 
 /**
  * Handle explicit logout via POST to avoid accidental GET prefetch logout.
@@ -43,18 +40,33 @@ function alpenia_handle_logout_request() {
 add_action('template_redirect', 'alpenia_handle_logout_request', 1);
 
 /**
- * Dashboard Schutz
+ * Disable caching on pages that contain auth-related shortcodes.
  */
-function alpenia_protect_dashboard() {
-    if (is_page() && !is_user_logged_in()) {
-        global $post;
-        if ($post && has_shortcode($post->post_content, 'alpenia_dashboard')) {
-            nocache_headers();
-            return;
+function alpenia_disable_cache_for_auth_shortcodes() {
+    if (!is_page()) {
+        return;
+    }
+
+    global $post;
+    if (!$post || empty($post->post_content)) {
+        return;
+    }
+
+    if (has_shortcode($post->post_content, 'alpenia_dashboard') || has_shortcode($post->post_content, 'alpenia_login')) {
+        if (!defined('DONOTCACHEPAGE')) {
+            define('DONOTCACHEPAGE', true);
         }
+        if (!defined('DONOTCACHEDB')) {
+            define('DONOTCACHEDB', true);
+        }
+        if (!defined('DONOTMINIFY')) {
+            define('DONOTMINIFY', true);
+        }
+
+        alpenia_send_strict_no_cache_headers();
     }
 }
-add_action('template_redirect', 'alpenia_protect_dashboard');
+add_action('template_redirect', 'alpenia_disable_cache_for_auth_shortcodes', 1);
 
 /**
  * Login Sperre für deaktivierte User
@@ -92,4 +104,3 @@ function alpenia_block_disabled_users_login($user, $username, $password) {
 
     return $user;
 }
-
