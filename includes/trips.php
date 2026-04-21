@@ -180,10 +180,12 @@ function alpenia_get_participant_doc_score($participant_id) {
     $photo_file      = (int) get_post_meta($participant_id, 'photo_file_id', true);
     $visa_photo_file = (int) get_post_meta($participant_id, 'visa_photo_file_id', true);
 
+    $passport_valid_from = trim((string) get_post_meta($participant_id, 'passport_valid_from_date', true));
     $passport_expiry = trim((string) get_post_meta($participant_id, 'passport_expiry_date', true));
     $passport_no     = trim((string) get_post_meta($participant_id, 'passport_no', true));
     $nationality     = trim((string) get_post_meta($participant_id, 'nationality', true));
     $visa_number     = trim((string) get_post_meta($participant_id, 'visa_number', true));
+    $visa_valid_from = trim((string) get_post_meta($participant_id, 'visa_valid_from_date', true));
     $visa_expiry     = trim((string) get_post_meta($participant_id, 'visa_expiry_date', true));
 
     $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
@@ -199,6 +201,9 @@ function alpenia_get_participant_doc_score($participant_id) {
 
     $required_items[] = 'photo_file';
     if ($photo_file) $filled_items++;
+
+    $required_items[] = 'passport_valid_from';
+    if ($passport_valid_from !== '') $filled_items++;
 
     $required_items[] = 'passport_expiry';
     if ($passport_expiry !== '') $filled_items++;
@@ -216,6 +221,9 @@ function alpenia_get_participant_doc_score($participant_id) {
     if (!alpenia_is_eu_nationality($nationality)) {
         $required_items[] = 'visa_number';
         if ($visa_number !== '') $filled_items++;
+
+        $required_items[] = 'visa_valid_from';
+        if ($visa_valid_from !== '') $filled_items++;
 
         $required_items[] = 'visa_expiry';
         if ($visa_expiry !== '') $filled_items++;
@@ -261,9 +269,11 @@ function alpenia_get_missing_docs_details($participant_id) {
     $photo_file      = (int) get_post_meta($participant_id, 'photo_file_id', true);
     $visa_photo_file = (int) get_post_meta($participant_id, 'visa_photo_file_id', true);
 
+    $passport_valid_from = trim((string) get_post_meta($participant_id, 'passport_valid_from_date', true));
     $passport_expiry = trim((string) get_post_meta($participant_id, 'passport_expiry_date', true));
     $nationality     = trim((string) get_post_meta($participant_id, 'nationality', true));
     $visa_number     = trim((string) get_post_meta($participant_id, 'visa_number', true));
+    $visa_valid_from = trim((string) get_post_meta($participant_id, 'visa_valid_from_date', true));
     $visa_expiry     = trim((string) get_post_meta($participant_id, 'visa_expiry_date', true));
 
     $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
@@ -272,16 +282,18 @@ function alpenia_get_missing_docs_details($participant_id) {
 
     if (!$passport_file) $missing[] = 'Pass Datei';
     if (!$photo_file) $missing[] = 'Foto Datei';
-    if ($passport_expiry === '') $missing[] = 'Pass Enddatum';
+    if ($passport_valid_from === '') $missing[] = 'Reisepass gültig von';
+    if ($passport_expiry === '') $missing[] = 'Reisepass gültig bis';
     if ($nationality === '') $missing[] = 'Staatsbürgerschaft';
     if ($check_passport !== 1) $missing[] = 'Pass nicht geprüft';
     if ($check_photo !== 1) $missing[] = 'Foto nicht geprüft';
 
     if (!alpenia_is_eu_nationality($nationality)) {
-        if ($visa_number === '') $missing[] = 'Visa Nummer';
-        if ($visa_expiry === '') $missing[] = 'Visa Ablaufdatum';
-        if (!$visa_photo_file) $missing[] = 'Visa Foto';
-        if ($check_visa !== 1) $missing[] = 'Visa nicht geprüft';
+        if ($visa_number === '') $missing[] = 'Aufenthaltstitel Nummer';
+        if ($visa_valid_from === '') $missing[] = 'Aufenthaltstitel gültig von';
+        if ($visa_expiry === '') $missing[] = 'Aufenthaltstitel gültig bis';
+        if (!$visa_photo_file) $missing[] = 'Aufenthaltstitel';
+        if ($check_visa !== 1) $missing[] = 'Visum nicht geprüft';
     }
 
     return $missing;
@@ -296,4 +308,3 @@ function alpenia_send_notification($subject, $message) {
         wp_mail($admin_email, $subject, $message);
     }
 }
-
