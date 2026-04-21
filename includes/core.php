@@ -143,12 +143,23 @@ function alpenia_get_dashboard_url() {
     static $dashboard_url = null;
     if ($dashboard_url !== null) return $dashboard_url;
 
+    global $post;
+    if ($post && !empty($post->post_content) && has_shortcode($post->post_content, 'alpenia_dashboard')) {
+        $current_url = get_permalink($post->ID);
+        if ($current_url) {
+            $dashboard_url = alpenia_normalize_url_to_current_host($current_url);
+            return $dashboard_url;
+        }
+    }
+
     $pages = get_posts([
         'post_type'           => 'page',
         'post_status'         => 'publish',
         'posts_per_page'      => -1,
         'suppress_filters'    => false,
         'ignore_sticky_posts' => true,
+        'orderby'             => 'ID',
+        'order'               => 'ASC',
     ]);
 
     foreach ((array) $pages as $page) {
@@ -169,12 +180,23 @@ function alpenia_get_login_url() {
     static $login_url = null;
     if ($login_url !== null) return $login_url;
 
+    global $post;
+    if ($post && !empty($post->post_content) && has_shortcode($post->post_content, 'alpenia_login')) {
+        $current_url = get_permalink($post->ID);
+        if ($current_url) {
+            $login_url = alpenia_normalize_url_to_current_host($current_url);
+            return $login_url;
+        }
+    }
+
     $pages = get_posts([
         'post_type'           => 'page',
         'post_status'         => 'publish',
         'posts_per_page'      => -1,
         'suppress_filters'    => false,
         'ignore_sticky_posts' => true,
+        'orderby'             => 'ID',
+        'order'               => 'ASC',
     ]);
 
     foreach ((array) $pages as $page) {
@@ -192,7 +214,12 @@ function alpenia_get_login_url() {
 }
 
 function alpenia_dashboard_link($args = []) {
-    $base_url = alpenia_get_dashboard_url();
+    global $post;
+    if ($post && !empty($post->post_content) && has_shortcode($post->post_content, 'alpenia_dashboard')) {
+        $base_url = get_permalink($post->ID);
+    } else {
+        $base_url = alpenia_get_dashboard_url();
+    }
     $base_url = alpenia_normalize_url_to_current_host($base_url);
 
     if (empty($args) || !is_array($args)) {
