@@ -36,11 +36,13 @@ function alpenia_export_trip_csv($trip_id) {
         'Date of Birth',
         'Nationality',
         'Passport Number',
-        'Passport Expiry Date',
-        'Visa Number',
-        'Visa Expiry Date',
-        'Visa Note',
-        'Visa Status',
+        'Passport Valid From',
+        'Passport Valid Until',
+        'Residence Permit Number',
+        'Residence Permit Valid From',
+        'Residence Permit Valid Until',
+        'Visum Note',
+        'Visum Status (Entry Country)',
         'Processing Status',
         'Room',
         'Group',
@@ -51,7 +53,7 @@ function alpenia_export_trip_csv($trip_id) {
         'Payment Status',
         'Passport File',
         'Photo File',
-        'Visa Photo File',
+        'Residence Permit File',
         'Registration File',
     ], ';');
 
@@ -74,8 +76,10 @@ function alpenia_export_trip_csv($trip_id) {
             get_post_meta($participant->ID, 'birth_date', true),
             get_post_meta($participant->ID, 'nationality', true),
             get_post_meta($participant->ID, 'passport_no', true),
+            get_post_meta($participant->ID, 'passport_valid_from_date', true),
             get_post_meta($participant->ID, 'passport_expiry_date', true),
             get_post_meta($participant->ID, 'visa_number', true),
+            get_post_meta($participant->ID, 'visa_valid_from_date', true),
             get_post_meta($participant->ID, 'visa_expiry_date', true),
             get_post_meta($participant->ID, 'visa_note', true),
             get_post_meta($participant->ID, 'visa_status', true),
@@ -164,10 +168,12 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                     <th>Gender</th>
                     <th>Nationality</th>
                     <th>Passport Number</th>
+                    <th>Passport Valid From</th>
                     <th>Passport Valid Until</th>
-                    <th>Visa Number</th>
-                    <th>Visa Valid Until</th>
-                    <th>Visa Note</th>
+                    <th>Residence Permit Number</th>
+                    <th>Residence Permit Valid From</th>
+                    <th>Residence Permit Valid Until</th>
+                    <th>Visum Note</th>
                 </tr>
             </thead>
             <tbody>
@@ -179,13 +185,15 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                         <td><?php echo esc_html(alpenia_gender_code(get_post_meta($participant->ID, 'gender', true))); ?></td>
                         <td><?php echo esc_html(get_post_meta($participant->ID, 'nationality', true)); ?></td>
                         <td><?php echo esc_html(get_post_meta($participant->ID, 'passport_no', true)); ?></td>
+                        <td><?php echo esc_html(get_post_meta($participant->ID, 'passport_valid_from_date', true)); ?></td>
                         <td><?php echo esc_html(get_post_meta($participant->ID, 'passport_expiry_date', true)); ?></td>
                         <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_number', true)); ?></td>
+                        <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_valid_from_date', true)); ?></td>
                         <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_expiry_date', true)); ?></td>
                         <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_note', true)); ?></td>
                     </tr>
                 <?php endforeach; else : ?>
-                    <tr><td colspan="10">No participants available.</td></tr>
+                    <tr><td colspan="12">No participants available.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
@@ -194,4 +202,3 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
     <?php
     exit;
 }
-
