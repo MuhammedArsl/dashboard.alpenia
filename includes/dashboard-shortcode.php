@@ -9,7 +9,9 @@ function alpenia_dashboard_logout_button() {
     ?>
     <form method="post" class="alpenia-logout-form" style="display:inline;">
         <?php wp_nonce_field('alpenia_logout_action', 'alpenia_logout_nonce'); ?>
-        <button type="submit" name="alpenia_logout" class="btn-primary btn-logout">Logout</button>
+        <input type="hidden" name="alpenia_logout" value="1">
+        <input type="hidden" name="alpenia_logout_intent" value="dashboard_logout">
+        <button type="submit" class="btn-primary btn-logout">Logout</button>
     </form>
     <?php
     return ob_get_clean();

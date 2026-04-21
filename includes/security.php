@@ -24,7 +24,11 @@ function alpenia_handle_logout_request() {
         return;
     }
 
-    if (!isset($_POST['alpenia_logout'])) {
+    if (!isset($_POST['alpenia_logout']) || (string) $_POST['alpenia_logout'] !== '1') {
+        return;
+    }
+
+    if (!isset($_POST['alpenia_logout_intent']) || (string) $_POST['alpenia_logout_intent'] !== 'dashboard_logout') {
         return;
     }
 
