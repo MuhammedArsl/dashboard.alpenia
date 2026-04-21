@@ -93,6 +93,28 @@ function alpenia_user_can_delete_trip($trip_id) {
 /**
  * Frontend URLs for login/dashboard pages (resolved by shortcode page).
  */
+function alpenia_get_request_scheme() {
+    if (is_ssl()) {
+        return 'https';
+    }
+
+    $forwarded_proto = isset($_SERVER['HTTP_X_FORWARDED_PROTO']) ? strtolower((string) wp_unslash($_SERVER['HTTP_X_FORWARDED_PROTO'])) : '';
+    if ($forwarded_proto !== '') {
+        $parts = array_map('trim', explode(',', $forwarded_proto));
+        if (in_array('https', $parts, true)) {
+            return 'https';
+        }
+    }
+
+    $request_scheme = isset($_SERVER['REQUEST_SCHEME']) ? strtolower((string) wp_unslash($_SERVER['REQUEST_SCHEME'])) : '';
+    if ($request_scheme === 'https') {
+        return 'https';
+    }
+
+    $home_scheme = wp_parse_url(home_url(), PHP_URL_SCHEME);
+    return $home_scheme === 'https' ? 'https' : 'http';
+}
+
 function alpenia_normalize_url_to_current_host($url) {
     $url = (string) $url;
     if ($url === '') return $url;
@@ -101,7 +123,7 @@ function alpenia_normalize_url_to_current_host($url) {
     if (!is_array($parts)) return $url;
 
     $host = isset($_SERVER['HTTP_HOST']) ? sanitize_text_field(wp_unslash($_SERVER['HTTP_HOST'])) : '';
-    $scheme = is_ssl() ? 'https' : 'http';
+    $scheme = alpenia_get_request_scheme();
     if ($host === '') {
         return set_url_scheme($url, $scheme);
     }
@@ -121,12 +143,23 @@ function alpenia_get_dashboard_url() {
     static $dashboard_url = null;
     if ($dashboard_url !== null) return $dashboard_url;
 
+    global $post;
+    if ($post && !empty($post->post_content) && has_shortcode($post->post_content, 'alpenia_dashboard')) {
+        $current_url = get_permalink($post->ID);
+        if ($current_url) {
+            $dashboard_url = alpenia_normalize_url_to_current_host($current_url);
+            return $dashboard_url;
+        }
+    }
+
     $pages = get_posts([
         'post_type'           => 'page',
         'post_status'         => 'publish',
         'posts_per_page'      => -1,
         'suppress_filters'    => false,
         'ignore_sticky_posts' => true,
+        'orderby'             => 'ID',
+        'order'               => 'ASC',
     ]);
 
     foreach ((array) $pages as $page) {
@@ -147,12 +180,23 @@ function alpenia_get_login_url() {
     static $login_url = null;
     if ($login_url !== null) return $login_url;
 
+    global $post;
+    if ($post && !empty($post->post_content) && has_shortcode($post->post_content, 'alpenia_login')) {
+        $current_url = get_permalink($post->ID);
+        if ($current_url) {
+            $login_url = alpenia_normalize_url_to_current_host($current_url);
+            return $login_url;
+        }
+    }
+
     $pages = get_posts([
         'post_type'           => 'page',
         'post_status'         => 'publish',
         'posts_per_page'      => -1,
         'suppress_filters'    => false,
         'ignore_sticky_posts' => true,
+        'orderby'             => 'ID',
+        'order'               => 'ASC',
     ]);
 
     foreach ((array) $pages as $page) {
@@ -170,7 +214,12 @@ function alpenia_get_login_url() {
 }
 
 function alpenia_dashboard_link($args = []) {
-    $base_url = alpenia_get_dashboard_url();
+    global $post;
+    if ($post && !empty($post->post_content) && has_shortcode($post->post_content, 'alpenia_dashboard')) {
+        $base_url = get_permalink($post->ID);
+    } else {
+        $base_url = alpenia_get_dashboard_url();
+    }
     $base_url = alpenia_normalize_url_to_current_host($base_url);
 
     if (empty($args) || !is_array($args)) {
@@ -226,4 +275,3 @@ function alpenia_gender_code($gender) {
     if ($gender === 'frau' || $gender === 'female' || $gender === 'f') return 'F';
     return 'M';
 }
-
