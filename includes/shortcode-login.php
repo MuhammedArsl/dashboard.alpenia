@@ -29,33 +29,71 @@ function alpenia_login_shortcode() {
         $error = 'Deine Sitzung ist wegen Inaktivität abgelaufen. Bitte erneut einloggen.';
     }
 
+    if (!function_exists('alpenia_login_attempt_key')) {
+        function alpenia_login_attempt_key($email, $ip_address) {
+            $identifier = strtolower(trim((string) $email)) . '|' . trim((string) $ip_address);
+            return 'alpenia_login_attempts_' . md5($identifier);
+        }
+    }
+
     if (isset($_POST['alpenia_login'])) {
-        $email = sanitize_email($_POST['email'] ?? '');
-        $password = $_POST['password'] ?? '';
-
-        if (empty($email) || empty($password)) {
-            $error = 'Bitte E-Mail und Passwort eingeben.';
+        if (!isset($_POST['alpenia_login_nonce']) || !wp_verify_nonce($_POST['alpenia_login_nonce'], 'alpenia_login_action')) {
+            $error = 'Sicherheitsfehler beim Login. Bitte Seite neu laden und erneut versuchen.';
         } else {
-            $user = get_user_by('email', $email);
+            $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+            $password = (string) ($_POST['password'] ?? '');
+            $ip_address = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'] ?? 'unknown'));
+            $attempt_key = alpenia_login_attempt_key($email, $ip_address);
+            $attempt_data = get_transient($attempt_key);
 
-            if ($user) {
-                $creds = [
-                    'user_login'    => $user->user_login,
-                    'user_password' => $password,
-                    'remember'      => false,
+            if (!is_array($attempt_data)) {
+                $attempt_data = [
+                    'count' => 0,
+                    'locked_until' => 0,
                 ];
+            }
 
-                wp_clear_auth_cookie();
-                $signon = wp_signon($creds);
+            if (!empty($attempt_data['locked_until']) && (int) $attempt_data['locked_until'] > time()) {
+                $minutes_left = max(1, (int) ceil(((int) $attempt_data['locked_until'] - time()) / MINUTE_IN_SECONDS));
+                $error = sprintf('Zu viele Fehlversuche. Bitte in %d Minute(n) erneut versuchen.', $minutes_left);
+            }
+        }
 
-                if (!is_wp_error($signon)) {
-                    wp_safe_redirect(alpenia_get_dashboard_url());
-                    exit;
-                } else {
-                    $error = 'Falsches Passwort.';
-                }
+        if (empty($error)) {
+            if (empty($email) || empty($password)) {
+                $error = 'Bitte E-Mail und Passwort eingeben.';
             } else {
-                $error = 'Benutzer nicht gefunden.';
+                $user = get_user_by('email', $email);
+
+                if ($user) {
+                    $creds = [
+                        'user_login'    => $user->user_login,
+                        'user_password' => $password,
+                        'remember'      => false,
+                    ];
+
+                    wp_clear_auth_cookie();
+                    $signon = wp_signon($creds);
+
+                    if (!is_wp_error($signon)) {
+                        delete_transient($attempt_key);
+                        wp_safe_redirect(alpenia_get_dashboard_url());
+                        exit;
+                    } else {
+                        $attempt_data['count'] = ((int) ($attempt_data['count'] ?? 0)) + 1;
+                        $attempt_data['locked_until'] = 0;
+
+                        if ($attempt_data['count'] >= 5) {
+                            $attempt_data['locked_until'] = time() + (10 * MINUTE_IN_SECONDS);
+                            $attempt_data['count'] = 0;
+                        }
+
+                        set_transient($attempt_key, $attempt_data, 10 * MINUTE_IN_SECONDS);
+                        $error = 'Falsches Passwort.';
+                    }
+                } else {
+                    $error = 'Benutzer nicht gefunden.';
+                }
             }
         }
     }
@@ -82,6 +120,7 @@ function alpenia_login_shortcode() {
         <?php endif; ?>
 
         <form method="post">
+            <?php wp_nonce_field('alpenia_login_action', 'alpenia_login_nonce'); ?>
             <p>
                 <label for="alpenia-login-email">E-Mail</label><br>
                 <input id="alpenia-login-email" type="email" name="email" required style="width:100%;height:46px;padding:0 12px;border-radius:8px;border:1px solid #ccc;">

@@ -436,8 +436,11 @@ function alpenia_dashboard_shortcode() {
 
         if (isset($_GET['dashboard_deactivate_user'])) {
             $target_id = (int) $_GET['dashboard_deactivate_user'];
+            $nonce = sanitize_text_field(wp_unslash($_GET['_dashboard_user_nonce'] ?? ''));
 
-            if ($target_id > 0 && $target_id !== get_current_user_id()) {
+            if (!wp_verify_nonce($nonce, 'alpenia_dashboard_deactivate_user_' . $target_id)) {
+                $message = '<div class="alpenia-message">Sicherheitsfehler beim Deaktivieren des Benutzers.</div>';
+            } elseif ($target_id > 0 && $target_id !== get_current_user_id()) {
                 update_user_meta($target_id, 'alpenia_disabled', 1);
                 $message = '<div class="alpenia-success">Benutzer deaktiviert.</div>';
             }
@@ -445,8 +448,11 @@ function alpenia_dashboard_shortcode() {
 
         if (isset($_GET['dashboard_activate_user'])) {
             $target_id = (int) $_GET['dashboard_activate_user'];
+            $nonce = sanitize_text_field(wp_unslash($_GET['_dashboard_user_nonce'] ?? ''));
 
-            if ($target_id > 0) {
+            if (!wp_verify_nonce($nonce, 'alpenia_dashboard_activate_user_' . $target_id)) {
+                $message = '<div class="alpenia-message">Sicherheitsfehler beim Aktivieren des Benutzers.</div>';
+            } elseif ($target_id > 0) {
                 delete_user_meta($target_id, 'alpenia_disabled');
                 $message = '<div class="alpenia-success">Benutzer aktiviert.</div>';
             }
@@ -454,8 +460,11 @@ function alpenia_dashboard_shortcode() {
 
         if (isset($_GET['dashboard_delete_user'])) {
             $target_id = (int) $_GET['dashboard_delete_user'];
+            $nonce = sanitize_text_field(wp_unslash($_GET['_dashboard_user_nonce'] ?? ''));
 
-            if (
+            if (!wp_verify_nonce($nonce, 'alpenia_dashboard_delete_user_' . $target_id)) {
+                $message = '<div class="alpenia-message">Sicherheitsfehler beim Löschen des Benutzers.</div>';
+            } elseif (
                 $target_id > 0 &&
                 $target_id !== get_current_user_id() &&
                 get_user_meta($target_id, 'alpenia_disabled', true)
@@ -1504,6 +1513,21 @@ function alpenia_dashboard_shortcode() {
                                 <?php foreach ($dashboard_users as $user) :
                                     $disabled = get_user_meta($user->ID, 'alpenia_disabled', true);
                                     $status = $disabled ? 'Deaktiviert' : 'Aktiv';
+                                    $activate_url = wp_nonce_url(
+                                        alpenia_dashboard_link(['manage_users' => 1, 'dashboard_activate_user' => (int) $user->ID]),
+                                        'alpenia_dashboard_activate_user_' . (int) $user->ID,
+                                        '_dashboard_user_nonce'
+                                    );
+                                    $deactivate_url = wp_nonce_url(
+                                        alpenia_dashboard_link(['manage_users' => 1, 'dashboard_deactivate_user' => (int) $user->ID]),
+                                        'alpenia_dashboard_deactivate_user_' . (int) $user->ID,
+                                        '_dashboard_user_nonce'
+                                    );
+                                    $delete_user_url = wp_nonce_url(
+                                        alpenia_dashboard_link(['manage_users' => 1, 'dashboard_delete_user' => (int) $user->ID]),
+                                        'alpenia_dashboard_delete_user_' . (int) $user->ID,
+                                        '_dashboard_user_nonce'
+                                    );
 
                                     $role_label = '-';
                                     if (in_array('administrator', (array) $user->roles, true)) {
@@ -1527,10 +1551,10 @@ function alpenia_dashboard_shortcode() {
                                                     <a href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_edit_user' => (int) $user->ID])); ?>">Bearbeiten</a>
 
                                                     <?php if ($disabled) : ?>
-                                                        <a href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_activate_user' => (int) $user->ID])); ?>">Aktivieren</a>
-                                                        <a class="delete-link" href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_delete_user' => (int) $user->ID])); ?>" onclick="return confirm('Benutzer wirklich löschen?');">Löschen</a>
+                                                        <a href="<?php echo esc_url($activate_url); ?>">Aktivieren</a>
+                                                        <a class="delete-link" href="<?php echo esc_url($delete_user_url); ?>" onclick="return confirm('Benutzer wirklich löschen?');">Löschen</a>
                                                     <?php else : ?>
-                                                        <a href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_deactivate_user' => (int) $user->ID])); ?>" onclick="return confirm('Benutzer wirklich deaktivieren?');">Deaktivieren</a>
+                                                        <a href="<?php echo esc_url($deactivate_url); ?>" onclick="return confirm('Benutzer wirklich deaktivieren?');">Deaktivieren</a>
                                                     <?php endif; ?>
                                                 </div>
                                             <?php endif; ?>
