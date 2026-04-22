@@ -19,15 +19,14 @@ function alpenia_login_shortcode() {
         .entry-title,
         .page-title,
         .wp-block-post-title{display:none !important;}
-        .entry-content,
-        .site-main,
-        .content-area,
-        article{margin:0 !important;padding:0 !important;background:transparent !important;}
-        .alpenia-login-page-shell{min-height:100vh;background:#2f9574;display:flex;align-items:center;justify-content:center;padding:20px;}
-        .alpenia-login-card{width:100%;max-width:420px;padding:34px;background:#050505;border-radius:18px;border:1px solid rgba(255,255,255,0.08);box-shadow:0 20px 50px rgba(0,0,0,0.38);color:#fff;}
+        .alpenia-login-page-shell{min-height:100vh;background:#ffffff;display:flex;align-items:center;justify-content:center;padding:28px 20px;}
+        .alpenia-login-card{width:100%;max-width:430px;padding:34px;background:linear-gradient(145deg,#0d1117 0%,#151c26 100%);border-radius:22px;border:1px solid rgba(255,255,255,0.14);box-shadow:0 30px 60px rgba(6,12,20,0.28),0 2px 12px rgba(6,12,20,0.24);color:#fff;position:relative;overflow:hidden;}
+        .alpenia-login-card::before{content:"";position:absolute;inset:-40% 10% auto 10%;height:180px;background:radial-gradient(circle,rgba(60,191,144,0.35) 0%,rgba(60,191,144,0) 70%);pointer-events:none;}
+        .alpenia-login-card > *{position:relative;z-index:1;}
         .alpenia-login-title{margin:0 0 8px;font-size:30px;letter-spacing:0.4px;color:#fff;}
-        .alpenia-login-subtitle{margin:0 0 22px;color:rgba(255,255,255,0.84);font-size:14px;}
-        .alpenia-login-page-shell input{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.16);background:rgba(255,255,255,0.05);color:#fff;outline:none;box-sizing:border-box;}
+        .alpenia-login-subtitle{margin:0 0 22px;color:rgba(255,255,255,0.80);font-size:14px;}
+        .alpenia-login-page-shell input{width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(255,255,255,0.08);color:#fff;outline:none;box-sizing:border-box;transition:border-color 0.2s ease, box-shadow 0.2s ease;}
+        .alpenia-login-page-shell input:focus{border-color:rgba(70,220,166,0.75);box-shadow:0 0 0 3px rgba(70,220,166,0.16);}
         .alpenia-login-page-shell input::placeholder{color:rgba(255,255,255,0.64);}
     </style>';
 
