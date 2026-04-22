@@ -150,6 +150,7 @@ function alpenia_dashboard_shortcode() {
                 for ($i = 1; $i <= $participant_count; $i++) {
                     $gender             = sanitize_text_field($_POST["gender_$i"] ?? '');
                     $first_name         = sanitize_text_field($_POST["first_name_$i"] ?? '');
+                    $second_first_name  = sanitize_text_field($_POST["second_first_name_$i"] ?? '');
                     $last_name          = sanitize_text_field($_POST["last_name_$i"] ?? '');
                     $birth_date         = sanitize_text_field($_POST["birth_date_$i"] ?? '');
                     $nationality        = sanitize_text_field($_POST["nationality_$i"] ?? '');
@@ -213,6 +214,7 @@ function alpenia_dashboard_shortcode() {
                     update_post_meta($participant_id, 'trip_id', $trip_id);
                     update_post_meta($participant_id, 'gender', $gender);
                     update_post_meta($participant_id, 'first_name', $first_name);
+                    update_post_meta($participant_id, 'second_first_name', $second_first_name);
                     update_post_meta($participant_id, 'last_name', $last_name);
                     update_post_meta($participant_id, 'birth_date', $birth_date);
                     update_post_meta($participant_id, 'nationality', $nationality);
@@ -267,7 +269,7 @@ function alpenia_dashboard_shortcode() {
                     alpenia_send_notification('Neue Teilnehmer erfasst', $saved_count . ' Teilnehmer wurden für eine Reise gespeichert.');
                     $message = '<div class="alpenia-success">' . (int) $saved_count . ' Teilnehmer erfolgreich gespeichert.</div>';
                 } elseif ($message === '') {
-                    $message = '<div class="alpenia-message">Bitte alle Pflichtfelder ausfüllen. Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Pass und Foto. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von, Aufenthaltstitel gültig bis und Aufenthaltstitel Pflicht.</div>';
+                    $message = '<div class="alpenia-message">Bitte alle Pflichtfelder ausfüllen. Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass und Porträtfoto. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Visum Nummer, Visum gültig von, Visum gültig bis und Visum Pflicht.</div>';
                 }
             }
         }
@@ -296,6 +298,7 @@ function alpenia_dashboard_shortcode() {
         } else {
             $gender             = sanitize_text_field($_POST['gender'] ?? '');
             $first_name         = sanitize_text_field($_POST['first_name'] ?? '');
+            $second_first_name  = sanitize_text_field($_POST['second_first_name'] ?? '');
             $last_name          = sanitize_text_field($_POST['last_name'] ?? '');
             $birth_date         = sanitize_text_field($_POST['birth_date'] ?? '');
             $nationality        = sanitize_text_field($_POST['nationality'] ?? '');
@@ -322,7 +325,7 @@ function alpenia_dashboard_shortcode() {
             if (empty($gender) || empty($first_name) || empty($last_name) || empty($nationality) || empty($passport_valid_from) || empty($passport_expiry)) {
                 $message = '<div class="alpenia-message">Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von und Reisepass gültig bis ausfüllen.</div>';
             } elseif (!$is_eu_citizen && (empty($visa_number) || empty($visa_valid_from) || empty($visa_expiry_date))) {
-                $message = '<div class="alpenia-message">Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.</div>';
+                $message = '<div class="alpenia-message">Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Visum Nummer, Visum gültig von und Visum gültig bis Pflicht.</div>';
             } else {
                 wp_update_post([
                     'ID'         => $participant_id,
@@ -331,6 +334,7 @@ function alpenia_dashboard_shortcode() {
 
                 update_post_meta($participant_id, 'gender', $gender);
                 update_post_meta($participant_id, 'first_name', $first_name);
+                update_post_meta($participant_id, 'second_first_name', $second_first_name);
                 update_post_meta($participant_id, 'last_name', $last_name);
                 update_post_meta($participant_id, 'birth_date', $birth_date);
                 update_post_meta($participant_id, 'nationality', $nationality);
@@ -703,8 +707,9 @@ function alpenia_dashboard_shortcode() {
                                 <label for="trip_type">Reisetyp</label>
                                 <select id="trip_type" name="trip_type" required>
                                     <option value="">Bitte wählen</option>
-                                    <option value="kultur">Kulturtourismus</option>
-                                    <option value="umrah">Hajj & Umrah</option>
+                                    <option value="kultur">Kulturreise</option>
+                                    <option value="umrah">Umrah</option>
+                                    <option value="hajj">Hajj</option>
                                 </select>
                             </div>
 
@@ -882,6 +887,21 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="first_name_<?php echo $i; ?>">Vorname <span class="required-mark">*</span></label>
+                                        <input type="text" id="first_name_<?php echo $i; ?>" name="first_name_<?php echo $i; ?>" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="second_first_name_<?php echo $i; ?>">2. Vorname</label>
+                                        <input type="text" id="second_first_name_<?php echo $i; ?>" name="second_first_name_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="last_name_<?php echo $i; ?>">Nachname <span class="required-mark">*</span></label>
+                                        <input type="text" id="last_name_<?php echo $i; ?>" name="last_name_<?php echo $i; ?>" required>
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="birth_date_<?php echo $i; ?>">Geburtsdatum</label>
                                         <input type="date" id="birth_date_<?php echo $i; ?>" name="birth_date_<?php echo $i; ?>">
                                     </div>
@@ -889,16 +909,6 @@ function alpenia_dashboard_shortcode() {
                                     <div class="form-group">
                                         <label for="nationality_<?php echo $i; ?>">Staatsbürgerschaft <span class="required-mark">*</span></label>
                                         <input type="text" id="nationality_<?php echo $i; ?>" name="nationality_<?php echo $i; ?>" list="alpenia-country-list" placeholder="z. B. Deutschland" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="first_name_<?php echo $i; ?>">Vorname <span class="required-mark">*</span></label>
-                                        <input type="text" id="first_name_<?php echo $i; ?>" name="first_name_<?php echo $i; ?>" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="last_name_<?php echo $i; ?>">Nachname <span class="required-mark">*</span></label>
-                                        <input type="text" id="last_name_<?php echo $i; ?>" name="last_name_<?php echo $i; ?>" required>
                                     </div>
 
                                     <div class="form-group">
@@ -916,6 +926,26 @@ function alpenia_dashboard_shortcode() {
                                         <input type="date" id="passport_expiry_date_<?php echo $i; ?>" name="passport_expiry_date_<?php echo $i; ?>" required>
                                     </div>
 
+                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
+                                        <label for="visa_number_<?php echo $i; ?>">Visum Nummer</label>
+                                        <input type="text" id="visa_number_<?php echo $i; ?>" name="visa_number_<?php echo $i; ?>" placeholder="Nummer des Visums">
+                                    </div>
+
+                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
+                                        <label for="visa_valid_from_date_<?php echo $i; ?>">Visum gültig von</label>
+                                        <input type="date" id="visa_valid_from_date_<?php echo $i; ?>" name="visa_valid_from_date_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
+                                        <label for="visa_expiry_date_<?php echo $i; ?>">Visum gültig bis</label>
+                                        <input type="date" id="visa_expiry_date_<?php echo $i; ?>" name="visa_expiry_date_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group full visa-field visa-field-<?php echo $i; ?>">
+                                        <label for="visa_note_<?php echo $i; ?>">Visum Bemerkung</label>
+                                        <input type="text" id="visa_note_<?php echo $i; ?>" name="visa_note_<?php echo $i; ?>" placeholder="z. B. Einreise-Visum für Saudi-Arabien">
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="participant_status_<?php echo $i; ?>">Bearbeitungsstatus</label>
                                         <select id="participant_status_<?php echo $i; ?>" name="participant_status_<?php echo $i; ?>">
@@ -928,26 +958,6 @@ function alpenia_dashboard_shortcode() {
                                     <div class="form-group">
                                         <label for="visa_status_<?php echo $i; ?>">Visumstatus (Einreiseland)</label>
                                         <input type="text" id="visa_status_<?php echo $i; ?>" name="visa_status_<?php echo $i; ?>" placeholder="z. B. Saudi-Arabien: beantragt">
-                                    </div>
-
-                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_number_<?php echo $i; ?>">Aufenthaltstitel Nummer</label>
-                                        <input type="text" id="visa_number_<?php echo $i; ?>" name="visa_number_<?php echo $i; ?>" placeholder="Nummer des Aufenthaltstitels">
-                                    </div>
-
-                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_valid_from_date_<?php echo $i; ?>">Aufenthaltstitel gültig von</label>
-                                        <input type="date" id="visa_valid_from_date_<?php echo $i; ?>" name="visa_valid_from_date_<?php echo $i; ?>">
-                                    </div>
-
-                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_expiry_date_<?php echo $i; ?>">Aufenthaltstitel gültig bis</label>
-                                        <input type="date" id="visa_expiry_date_<?php echo $i; ?>" name="visa_expiry_date_<?php echo $i; ?>">
-                                    </div>
-
-                                    <div class="form-group full visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_note_<?php echo $i; ?>">Visum Bemerkung</label>
-                                        <input type="text" id="visa_note_<?php echo $i; ?>" name="visa_note_<?php echo $i; ?>" placeholder="z. B. Einreise-Visum für Saudi-Arabien">
                                     </div>
 
                                     <div class="form-group">
@@ -966,12 +976,12 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="passport_file_<?php echo $i; ?>">Pass hochladen <span class="required-mark">*</span> <small>(max. 5 MB)</small></label>
+                                        <label for="passport_file_<?php echo $i; ?>">Reisepass hochladen <span class="required-mark">*</span> <small>(max. 5 MB)</small></label>
                                         <input type="file" id="passport_file_<?php echo $i; ?>" name="passport_file_<?php echo $i; ?>" accept=".pdf,.jpg,.jpeg,.png" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="photo_file_<?php echo $i; ?>">Foto hochladen <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
+                                        <label for="photo_file_<?php echo $i; ?>">Porträt Foto hochladen <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
                                         <input type="file" id="photo_file_<?php echo $i; ?>" name="photo_file_<?php echo $i; ?>" accept=".jpg,.jpeg,.png" required>
                                     </div>
 
@@ -1016,6 +1026,7 @@ function alpenia_dashboard_shortcode() {
 
                 $gender             = get_post_meta($participant_id, 'gender', true);
                 $first_name         = get_post_meta($participant_id, 'first_name', true);
+                $second_first_name  = get_post_meta($participant_id, 'second_first_name', true);
                 $last_name          = get_post_meta($participant_id, 'last_name', true);
                 $birth_date         = get_post_meta($participant_id, 'birth_date', true);
                 $nationality        = get_post_meta($participant_id, 'nationality', true);
@@ -1071,6 +1082,21 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
+                                <label for="first_name">Vorname <span class="required-mark">*</span></label>
+                                <input type="text" id="first_name" name="first_name" value="<?php echo esc_attr($first_name); ?>" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="second_first_name">2. Vorname</label>
+                                <input type="text" id="second_first_name" name="second_first_name" value="<?php echo esc_attr($second_first_name); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="last_name">Nachname <span class="required-mark">*</span></label>
+                                <input type="text" id="last_name" name="last_name" value="<?php echo esc_attr($last_name); ?>" required>
+                            </div>
+
+                            <div class="form-group">
                                 <label for="birth_date">Geburtsdatum</label>
                                 <input type="date" id="birth_date" name="birth_date" value="<?php echo esc_attr($birth_date); ?>">
                             </div>
@@ -1083,16 +1109,6 @@ function alpenia_dashboard_shortcode() {
                                         <option value="<?php echo esc_attr($country_name); ?>">
                                     <?php endforeach; ?>
                                 </datalist>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="first_name">Vorname <span class="required-mark">*</span></label>
-                                <input type="text" id="first_name" name="first_name" value="<?php echo esc_attr($first_name); ?>" required>
-                            </div>
-
-                            <div class="form-group">
-                                <label for="last_name">Nachname <span class="required-mark">*</span></label>
-                                <input type="text" id="last_name" name="last_name" value="<?php echo esc_attr($last_name); ?>" required>
                             </div>
 
                             <div class="form-group">
@@ -1110,6 +1126,26 @@ function alpenia_dashboard_shortcode() {
                                 <input type="date" id="passport_expiry_date" name="passport_expiry_date" value="<?php echo esc_attr($passport_expiry); ?>" required>
                             </div>
 
+                            <div class="form-group edit-visa-field">
+                                <label for="visa_number">Visum Nummer</label>
+                                <input type="text" id="visa_number" name="visa_number" value="<?php echo esc_attr($visa_number); ?>">
+                            </div>
+
+                            <div class="form-group edit-visa-field">
+                                <label for="visa_valid_from_date">Visum gültig von</label>
+                                <input type="date" id="visa_valid_from_date" name="visa_valid_from_date" value="<?php echo esc_attr($visa_valid_from); ?>">
+                            </div>
+
+                            <div class="form-group edit-visa-field">
+                                <label for="visa_expiry_date">Visum gültig bis</label>
+                                <input type="date" id="visa_expiry_date" name="visa_expiry_date" value="<?php echo esc_attr($visa_expiry_date); ?>">
+                            </div>
+
+                            <div class="form-group full edit-visa-field">
+                                <label for="visa_note">Visum Bemerkung</label>
+                                <input type="text" id="visa_note" name="visa_note" value="<?php echo esc_attr($visa_note); ?>" placeholder="z. B. Einreise-Visum für Saudi-Arabien">
+                            </div>
+
                             <div class="form-group">
                                 <label for="participant_status">Bearbeitungsstatus</label>
                                 <select id="participant_status" name="participant_status">
@@ -1122,26 +1158,6 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="visa_status">Visumstatus (Einreiseland)</label>
                                 <input type="text" id="visa_status" name="visa_status" value="<?php echo esc_attr($visa_status); ?>" placeholder="z. B. Saudi-Arabien: beantragt">
-                            </div>
-
-                            <div class="form-group edit-visa-field">
-                                <label for="visa_number">Aufenthaltstitel Nummer</label>
-                                <input type="text" id="visa_number" name="visa_number" value="<?php echo esc_attr($visa_number); ?>">
-                            </div>
-
-                            <div class="form-group edit-visa-field">
-                                <label for="visa_valid_from_date">Aufenthaltstitel gültig von</label>
-                                <input type="date" id="visa_valid_from_date" name="visa_valid_from_date" value="<?php echo esc_attr($visa_valid_from); ?>">
-                            </div>
-
-                            <div class="form-group edit-visa-field">
-                                <label for="visa_expiry_date">Aufenthaltstitel gültig bis</label>
-                                <input type="date" id="visa_expiry_date" name="visa_expiry_date" value="<?php echo esc_attr($visa_expiry_date); ?>">
-                            </div>
-
-                            <div class="form-group full edit-visa-field">
-                                <label for="visa_note">Visum Bemerkung</label>
-                                <input type="text" id="visa_note" name="visa_note" value="<?php echo esc_attr($visa_note); ?>" placeholder="z. B. Einreise-Visum für Saudi-Arabien">
                             </div>
 
                             <div class="form-group">
@@ -1170,12 +1186,12 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
-                                <label for="passport_file">Neuen Pass hochladen <small>(max. 5 MB)</small></label>
+                                <label for="passport_file">Neuen Reisepass hochladen <small>(max. 5 MB)</small></label>
                                 <input type="file" id="passport_file" name="passport_file" accept=".pdf,.jpg,.jpeg,.png">
                             </div>
 
                             <div class="form-group">
-                                <label for="photo_file">Neues Foto hochladen <small>(max. 2 MB)</small></label>
+                                <label for="photo_file">Neues Porträt Foto hochladen <small>(max. 2 MB)</small></label>
                                 <input type="file" id="photo_file" name="photo_file" accept=".jpg,.jpeg,.png">
                             </div>
 
@@ -1579,8 +1595,9 @@ function alpenia_dashboard_shortcode() {
 
                         <select name="trip_type_filter">
                             <option value="">Alle Reisearten</option>
-                            <option value="kultur" <?php selected($trip_type_filter, 'kultur'); ?>>Kulturtourismus</option>
-                            <option value="umrah" <?php selected($trip_type_filter, 'umrah'); ?>>Hajj & Umrah</option>
+                            <option value="kultur" <?php selected($trip_type_filter, 'kultur'); ?>>Kulturreise</option>
+                            <option value="umrah" <?php selected($trip_type_filter, 'umrah'); ?>>Umrah</option>
+                            <option value="hajj" <?php selected($trip_type_filter, 'hajj'); ?>>Hajj</option>
                         </select>
 
                         <select name="trip_status_filter">
