@@ -1812,12 +1812,12 @@ function alpenia_dashboard_shortcode() {
 
     <style>
         html, body, .site, .site-main, .entry-content, .content-area, .elementor, .elementor-section, .elementor-container, .elementor-widget-wrap {
-            background: #0b0b0b !important;
+            background: linear-gradient(150deg, #f5f5f3 0%, #efefea 45%, #eaeae6 100%) !important;
             overflow-x: hidden !important;
         }
 
         body.page, body.logged-in {
-            background: #0b0b0b !important;
+            background: linear-gradient(150deg, #f5f5f3 0%, #efefea 45%, #eaeae6 100%) !important;
         }
 
         .alpenia-dashboard-shell {
@@ -1827,19 +1827,34 @@ function alpenia_dashboard_shortcode() {
             margin-right: calc(50% - 50vw);
             margin-top: 0 !important;
             padding-top: 0 !important;
-            background: #0b0b0b;
+            background: linear-gradient(150deg, #f5f5f3 0%, #efefea 45%, #eaeae6 100%);
             overflow-x: hidden;
+            position: relative;
+            isolation: isolate;
+        }
+
+        .alpenia-dashboard-shell::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            z-index: 0;
+            background:
+                radial-gradient(circle at 8% 15%, rgba(31, 122, 99, 0.14), rgba(31, 122, 99, 0) 42%),
+                radial-gradient(circle at 90% 8%, rgba(43, 212, 163, 0.14), rgba(43, 212, 163, 0) 38%);
+            pointer-events: none;
         }
 
         .alpenia-dashboard {
             width: 100%;
             max-width: none;
-            background: #0b0b0b;
+            background: transparent;
             color: #fff;
             padding: 20px 40px 40px 40px;
             min-height: 100vh;
             font-family: Arial, sans-serif;
             box-sizing: border-box;
+            position: relative;
+            z-index: 1;
         }
 
         .alpenia-dashboard *,
