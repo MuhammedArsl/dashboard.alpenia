@@ -27,6 +27,7 @@ function alpenia_login_shortcode() {
 
     if (isset($_GET['session_expired']) && $_GET['session_expired'] === '1') {
         $error = 'Deine Sitzung ist wegen Inaktivität abgelaufen. Bitte erneut einloggen.';
+        wp_clear_auth_cookie();
     }
 
     if (!function_exists('alpenia_login_attempt_key')) {
@@ -76,6 +77,7 @@ function alpenia_login_shortcode() {
                     $signon = wp_signon($creds);
 
                     if (!is_wp_error($signon)) {
+                        wp_set_current_user($signon->ID);
                         delete_transient($attempt_key);
                         wp_safe_redirect(alpenia_get_dashboard_url());
                         exit;

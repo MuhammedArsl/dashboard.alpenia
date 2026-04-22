@@ -191,6 +191,7 @@ function alpenia_get_participant_doc_score($participant_id) {
     $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
     $check_photo     = (int) get_post_meta($participant_id, 'check_photo', true);
     $check_visa      = (int) get_post_meta($participant_id, 'check_visa', true);
+    $check_payment   = (int) get_post_meta($participant_id, 'check_payment', true);
 
     $required_items = [];
     $filled_items   = 0;
@@ -217,8 +218,11 @@ function alpenia_get_participant_doc_score($participant_id) {
     $required_items[] = 'check_photo';
     if ($check_photo === 1) $filled_items++;
 
-    // Nicht-EU zusätzlich Pflicht
-    if (!alpenia_is_eu_nationality($nationality)) {
+    $required_items[] = 'check_payment';
+    if ($check_payment === 1) $filled_items++;
+
+    // Nicht-EU-/Nicht-Schengen zusätzlich Pflicht
+    if (!alpenia_is_eu_or_schengen_nationality($nationality)) {
         $required_items[] = 'visa_number';
         if ($visa_number !== '') $filled_items++;
 
@@ -279,21 +283,23 @@ function alpenia_get_missing_docs_details($participant_id) {
     $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
     $check_photo     = (int) get_post_meta($participant_id, 'check_photo', true);
     $check_visa      = (int) get_post_meta($participant_id, 'check_visa', true);
+    $check_payment   = (int) get_post_meta($participant_id, 'check_payment', true);
 
-    if (!$passport_file) $missing[] = 'Pass Datei';
+    if (!$passport_file) $missing[] = 'Reisepass Datei';
     if (!$photo_file) $missing[] = 'Foto Datei';
     if ($passport_valid_from === '') $missing[] = 'Reisepass gültig von';
     if ($passport_expiry === '') $missing[] = 'Reisepass gültig bis';
     if ($nationality === '') $missing[] = 'Staatsbürgerschaft';
-    if ($check_passport !== 1) $missing[] = 'Pass nicht geprüft';
+    if ($check_passport !== 1) $missing[] = 'Reisepass nicht geprüft';
     if ($check_photo !== 1) $missing[] = 'Foto nicht geprüft';
+    if ($check_payment !== 1) $missing[] = 'Zahlung nicht geprüft';
 
-    if (!alpenia_is_eu_nationality($nationality)) {
+    if (!alpenia_is_eu_or_schengen_nationality($nationality)) {
         if ($visa_number === '') $missing[] = 'Aufenthaltstitel Nummer';
         if ($visa_valid_from === '') $missing[] = 'Aufenthaltstitel gültig von';
         if ($visa_expiry === '') $missing[] = 'Aufenthaltstitel gültig bis';
         if (!$visa_photo_file) $missing[] = 'Aufenthaltstitel';
-        if ($check_visa !== 1) $missing[] = 'Visum nicht geprüft';
+        if ($check_visa !== 1) $missing[] = 'Aufenthaltstitel nicht geprüft';
     }
 
     return $missing;
