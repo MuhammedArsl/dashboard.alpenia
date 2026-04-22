@@ -316,9 +316,9 @@ function alpenia_login_shortcode() {
         <nav class="alpenia-login-nav" aria-label="Travel sections">
             <ul class="alpenia-login-nav-list">
                 <li><span class="alpenia-login-nav-pill is-active">Login</span></li>
-                <li><span class="alpenia-login-nav-pill">Luxusreisen</span></li>
-                <li><span class="alpenia-login-nav-pill">Private Tours</span></li>
-                <li><span class="alpenia-login-nav-pill">Concierge</span></li>
+                <li><span class="alpenia-login-nav-pill">Kulturreisen</span></li>
+                <li><span class="alpenia-login-nav-pill">Umrah</span></li>
+                <li><span class="alpenia-login-nav-pill">Hajj</span></li>
             </ul>
         </nav>
         <div class="alpenia-login-card">
