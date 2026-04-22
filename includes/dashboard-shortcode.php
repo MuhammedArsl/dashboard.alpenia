@@ -176,7 +176,7 @@ function alpenia_dashboard_shortcode() {
                     $passport_missing   = empty($_FILES["passport_file_$i"]['name']);
                     $photo_missing      = empty($_FILES["photo_file_$i"]['name']);
                     $visa_photo_missing = empty($_FILES["visa_photo_file_$i"]['name']);
-                    $is_eu_citizen      = alpenia_is_eu_nationality($nationality);
+                    $is_eu_or_schengen_citizen = alpenia_is_eu_or_schengen_nationality($nationality);
 
                     if (
                         empty($gender) ||
@@ -192,11 +192,16 @@ function alpenia_dashboard_shortcode() {
                         break;
                     }
 
-                    if (!$is_eu_citizen) {
+                    if (!$is_eu_or_schengen_citizen) {
                         if (empty($visa_number) || empty($visa_valid_from) || empty($visa_expiry_date) || $visa_photo_missing) {
                             $all_ok = false;
                             break;
                         }
+                    }
+
+                    if ($check_passport !== 1 || $check_photo !== 1 || $check_payment !== 1 || (!$is_eu_or_schengen_citizen && $check_visa !== 1)) {
+                        $all_ok = false;
+                        break;
                     }
 
                     $participant_id = wp_insert_post([
@@ -269,7 +274,7 @@ function alpenia_dashboard_shortcode() {
                     alpenia_send_notification('Neue Teilnehmer erfasst', $saved_count . ' Teilnehmer wurden für eine Reise gespeichert.');
                     $message = '<div class="alpenia-success">' . (int) $saved_count . ' Teilnehmer erfolgreich gespeichert.</div>';
                 } elseif ($message === '') {
-                    $message = '<div class="alpenia-message">Bitte alle Pflichtfelder ausfüllen. Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass und Porträtfoto. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Visum Nummer, Visum gültig von, Visum gültig bis und Visum Pflicht.</div>';
+                    $message = '<div class="alpenia-message">Bitte alle Pflichtfelder ausfüllen. Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von, Aufenthaltstitel gültig bis und Aufenthaltstitel Pflicht.</div>';
                 }
             }
         }
@@ -320,12 +325,12 @@ function alpenia_dashboard_shortcode() {
             $check_photo        = !empty($_POST['check_photo']) ? 1 : 0;
             $check_visa         = !empty($_POST['check_visa']) ? 1 : 0;
             $check_payment      = !empty($_POST['check_payment']) ? 1 : 0;
-            $is_eu_citizen      = alpenia_is_eu_nationality($nationality);
+            $is_eu_or_schengen_citizen = alpenia_is_eu_or_schengen_nationality($nationality);
 
             if (empty($gender) || empty($first_name) || empty($last_name) || empty($nationality) || empty($passport_valid_from) || empty($passport_expiry)) {
                 $message = '<div class="alpenia-message">Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von und Reisepass gültig bis ausfüllen.</div>';
-            } elseif (!$is_eu_citizen && (empty($visa_number) || empty($visa_valid_from) || empty($visa_expiry_date))) {
-                $message = '<div class="alpenia-message">Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Visum Nummer, Visum gültig von und Visum gültig bis Pflicht.</div>';
+            } elseif (!$is_eu_or_schengen_citizen && (empty($visa_number) || empty($visa_valid_from) || empty($visa_expiry_date))) {
+                $message = '<div class="alpenia-message">Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.</div>';
             } else {
                 wp_update_post([
                     'ID'         => $participant_id,
@@ -936,22 +941,22 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_number_<?php echo $i; ?>">Visum Nummer</label>
+                                        <label for="visa_number_<?php echo $i; ?>">Aufenthaltstitel Nummer</label>
                                         <input type="text" id="visa_number_<?php echo $i; ?>" name="visa_number_<?php echo $i; ?>" placeholder="Nummer des Visums">
                                     </div>
 
                                     <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_valid_from_date_<?php echo $i; ?>">Visum gültig von</label>
+                                        <label for="visa_valid_from_date_<?php echo $i; ?>">Aufenthaltstitel gültig von</label>
                                         <input type="date" id="visa_valid_from_date_<?php echo $i; ?>" name="visa_valid_from_date_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_expiry_date_<?php echo $i; ?>">Visum gültig bis</label>
+                                        <label for="visa_expiry_date_<?php echo $i; ?>">Aufenthaltstitel gültig bis</label>
                                         <input type="date" id="visa_expiry_date_<?php echo $i; ?>" name="visa_expiry_date_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group full visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_note_<?php echo $i; ?>">Visum Bemerkung</label>
+                                        <label for="visa_note_<?php echo $i; ?>">Aufenthaltstitel Bemerkung</label>
                                         <input type="text" id="visa_note_<?php echo $i; ?>" name="visa_note_<?php echo $i; ?>" placeholder="z. B. Einreise-Visum für Saudi-Arabien">
                                     </div>
 
@@ -965,7 +970,7 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="visa_status_<?php echo $i; ?>">Visumstatus (Einreiseland)</label>
+                                        <label for="visa_status_<?php echo $i; ?>">Aufenthaltstitelstatus (Einreiseland)</label>
                                         <input type="text" id="visa_status_<?php echo $i; ?>" name="visa_status_<?php echo $i; ?>" placeholder="z. B. Saudi-Arabien: beantragt">
                                     </div>
 
@@ -995,7 +1000,7 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group full visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_photo_file_<?php echo $i; ?>">Aufenthaltstitel hochladen <small>(max. 2 MB)</small></label>
+                                        <label for="visa_photo_file_<?php echo $i; ?>">Aufenthaltstitel hochladen <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
                                         <input type="file" id="visa_photo_file_<?php echo $i; ?>" name="visa_photo_file_<?php echo $i; ?>" accept=".jpg,.jpeg,.png,.pdf">
                                     </div>
 
@@ -1005,12 +1010,12 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group full">
-                                        <label>Checkliste</label>
+                                        <label>Checkliste <span class="required-mark">*</span></label>
                                         <div class="check-grid">
-                                            <label class="checkbox-line"><input type="checkbox" name="check_passport_<?php echo $i; ?>" value="1"> Pass geprüft</label>
-                                            <label class="checkbox-line"><input type="checkbox" name="check_photo_<?php echo $i; ?>" value="1"> Foto geprüft</label>
+                                            <label class="checkbox-line"><input type="checkbox" name="check_passport_<?php echo $i; ?>" value="1" required> Reisepass geprüft</label>
+                                            <label class="checkbox-line"><input type="checkbox" name="check_photo_<?php echo $i; ?>" value="1" required> Foto geprüft</label>
                                             <label class="checkbox-line"><input type="checkbox" name="check_visa_<?php echo $i; ?>" value="1"> Aufenthaltstitel geprüft</label>
-                                            <label class="checkbox-line"><input type="checkbox" name="check_payment_<?php echo $i; ?>" value="1"> Zahlung geprüft</label>
+                                            <label class="checkbox-line"><input type="checkbox" name="check_payment_<?php echo $i; ?>" value="1" required> Zahlung geprüft</label>
                                         </div>
                                     </div>
                                 </div>
@@ -1217,7 +1222,7 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group full">
                                 <label>Checkliste</label>
                                 <div class="check-grid">
-                                    <label class="checkbox-line"><input type="checkbox" name="check_passport" value="1" <?php checked($check_passport, 1); ?>> Pass geprüft</label>
+                                    <label class="checkbox-line"><input type="checkbox" name="check_passport" value="1" <?php checked($check_passport, 1); ?>> Reisepass geprüft</label>
                                     <label class="checkbox-line"><input type="checkbox" name="check_photo" value="1" <?php checked($check_photo, 1); ?>> Foto geprüft</label>
                                     <label class="checkbox-line"><input type="checkbox" name="check_visa" value="1" <?php checked($check_visa, 1); ?>> Aufenthaltstitel geprüft</label>
                                     <label class="checkbox-line"><input type="checkbox" name="check_payment" value="1" <?php checked($check_payment, 1); ?>> Zahlung geprüft</label>
@@ -1313,7 +1318,7 @@ function alpenia_dashboard_shortcode() {
                                         <th>Status</th>
                                         <th>Zahlung</th>
                                         <th>Zimmer / Gruppe</th>
-                                        <th>Pass</th>
+                                        <th>Reisepass</th>
                                         <th>Foto</th>
                                         <th>Meldezettel</th>
                                         <th>Aktionen</th>
@@ -2422,11 +2427,12 @@ function alpenia_dashboard_shortcode() {
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const euCountries = [
+        const euOrSchengenCountries = [
             'Belgien','Bulgarien','Dänemark','Deutschland','Estland','Finnland','Frankreich',
             'Griechenland','Irland','Italien','Kroatien','Lettland','Litauen','Luxemburg',
             'Malta','Niederlande','Österreich','Polen','Portugal','Rumänien','Schweden',
-            'Slowakei','Slowenien','Spanien','Tschechien','Ungarn','Zypern'
+            'Slowakei','Slowenien','Spanien','Tschechien','Ungarn','Zypern','Island',
+            'Liechtenstein','Norwegen','Schweiz'
         ];
 
         const uploadLimits = {
@@ -2440,8 +2446,8 @@ function alpenia_dashboard_shortcode() {
             return (value || '').trim().toLowerCase();
         }
 
-        function isEuCountry(value) {
-            return euCountries.map(normalize).includes(normalize(value));
+        function isEuOrSchengenCountry(value) {
+            return euOrSchengenCountries.map(normalize).includes(normalize(value));
         }
 
         function validateFileInput(input, maxBytes, labelText) {
@@ -2463,10 +2469,11 @@ function alpenia_dashboard_shortcode() {
             const visaValidFrom = document.getElementById('visa_valid_from_date_' + index);
             const visaExpiry = document.getElementById('visa_expiry_date_' + index);
             const visaPhoto = document.getElementById('visa_photo_file_' + index);
+            const visaCheck = document.querySelector('input[name="check_visa_' + index + '"]');
 
             function toggleVisaFields() {
                 const nationality = input.value.trim();
-                const show = nationality !== '' && !isEuCountry(nationality);
+                const show = nationality !== '' && !isEuOrSchengenCountry(nationality);
 
                 visaFields.forEach(function (field) {
                     field.style.display = show ? '' : 'none';
@@ -2476,6 +2483,7 @@ function alpenia_dashboard_shortcode() {
                 if (visaValidFrom) visaValidFrom.required = show;
                 if (visaExpiry) visaExpiry.required = show;
                 if (visaPhoto) visaPhoto.required = show;
+                if (visaCheck) visaCheck.required = show;
             }
 
             input.addEventListener('input', toggleVisaFields);
@@ -2501,7 +2509,7 @@ function alpenia_dashboard_shortcode() {
 
             function toggleEditVisaFields() {
                 const nationality = nationalityEdit.value.trim();
-                const show = nationality !== '' && !isEuCountry(nationality);
+                const show = nationality !== '' && !isEuOrSchengenCountry(nationality);
 
                 editVisaFields.forEach(function (field) {
                     if (field) field.style.display = show ? '' : 'none';
@@ -2519,7 +2527,7 @@ function alpenia_dashboard_shortcode() {
 
         document.querySelectorAll('input[id^="passport_file_"], #passport_file').forEach(function(input) {
             input.addEventListener('change', function() {
-                validateFileInput(input, uploadLimits.passport, 'Pass-Datei');
+                validateFileInput(input, uploadLimits.passport, 'Reisepass-Datei');
             });
         });
 

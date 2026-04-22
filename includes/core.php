@@ -264,10 +264,26 @@ function alpenia_get_eu_countries() {
     ];
 }
 
+function alpenia_get_schengen_countries() {
+    return [
+        'Belgien','Bulgarien','Dänemark','Deutschland','Estland','Finnland','Frankreich','Griechenland','Island','Italien',
+        'Kroatien','Lettland','Liechtenstein','Litauen','Luxemburg','Malta','Niederlande','Norwegen','Österreich','Polen',
+        'Portugal','Rumänien','Schweden','Schweiz','Slowakei','Slowenien','Spanien','Tschechien','Ungarn'
+    ];
+}
+
 function alpenia_is_eu_nationality($nationality) {
     $nationality = trim((string) $nationality);
     if ($nationality === '') return false;
     return in_array($nationality, alpenia_get_eu_countries(), true);
+}
+
+function alpenia_is_eu_or_schengen_nationality($nationality) {
+    $nationality = trim((string) $nationality);
+    if ($nationality === '') return false;
+
+    return in_array($nationality, alpenia_get_eu_countries(), true)
+        || in_array($nationality, alpenia_get_schengen_countries(), true);
 }
 
 function alpenia_gender_code($gender) {
