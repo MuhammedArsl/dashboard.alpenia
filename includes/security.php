@@ -104,3 +104,50 @@ function alpenia_block_disabled_users_login($user, $username, $password) {
 
     return $user;
 }
+
+
+/**
+ * Inactivity timeout for frontend sessions.
+ */
+function alpenia_enforce_idle_session_timeout() {
+    if (!is_user_logged_in()) {
+        return;
+    }
+
+    if (is_admin() || wp_doing_ajax()) {
+        return;
+    }
+
+    $timeout_seconds = 15 * MINUTE_IN_SECONDS;
+    $user_id = get_current_user_id();
+    $now = time();
+    $last_activity = (int) get_user_meta($user_id, 'alpenia_last_activity', true);
+
+    if ($last_activity > 0 && ($now - $last_activity) >= $timeout_seconds) {
+        wp_logout();
+        wp_safe_redirect(add_query_arg('session_expired', '1', alpenia_get_login_url()));
+        exit;
+    }
+
+    update_user_meta($user_id, 'alpenia_last_activity', $now);
+}
+add_action('template_redirect', 'alpenia_enforce_idle_session_timeout', 2);
+
+
+function alpenia_set_initial_activity_timestamp($user_login, $user) {
+    if (!$user || empty($user->ID)) {
+        return;
+    }
+
+    update_user_meta($user->ID, 'alpenia_last_activity', time());
+}
+add_action('wp_login', 'alpenia_set_initial_activity_timestamp', 10, 2);
+
+function alpenia_clear_activity_timestamp_on_logout() {
+    $user_id = get_current_user_id();
+
+    if ($user_id) {
+        delete_user_meta($user_id, 'alpenia_last_activity');
+    }
+}
+add_action('wp_logout', 'alpenia_clear_activity_timestamp_on_logout');
