@@ -38,9 +38,9 @@ function alpenia_export_trip_csv($trip_id) {
         'Passport Number',
         'Passport Valid From',
         'Passport Valid Until',
-        'Residence Permit Number',
-        'Residence Permit Valid From',
-        'Residence Permit Valid Until',
+        'Entry Visa Number',
+        'Entry Visa Valid From',
+        'Entry Visa Valid Until',
         'Visum Note',
         'Visum Status (Entry Country)',
         'Processing Status',
@@ -53,7 +53,7 @@ function alpenia_export_trip_csv($trip_id) {
         'Payment Status',
         'Passport File',
         'Photo File',
-        'Residence Permit File',
+        'Entry Visa File',
         'Registration File',
     ], ';');
 
@@ -170,9 +170,9 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                     <th>Passport Number</th>
                     <th>Passport Valid From</th>
                     <th>Passport Valid Until</th>
-                    <th>Residence Permit Number</th>
-                    <th>Residence Permit Valid From</th>
-                    <th>Residence Permit Valid Until</th>
+                    <th>Entry Visa Number</th>
+                    <th>Entry Visa Valid From</th>
+                    <th>Entry Visa Valid Until</th>
                     <th>Visum Note</th>
                 </tr>
             </thead>

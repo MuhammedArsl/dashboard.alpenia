@@ -700,7 +700,7 @@ function alpenia_dashboard_shortcode() {
                         <div class="form-grid">
                             <div class="form-group full">
                                 <label for="trip_title">Reisetitel</label>
-                                <input type="text" id="trip_title" name="trip_title" placeholder="z. B. Frankfurt – Umrah – 13.12.2026 bis 25.12.2026" required>
+                                <input type="text" id="trip_title" name="trip_title" placeholder="z. B. Frankfurt – Umrah" required>
                             </div>
 
                             <div class="form-group">
@@ -1000,7 +1000,7 @@ function alpenia_dashboard_shortcode() {
                                         <div class="check-grid">
                                             <label class="checkbox-line"><input type="checkbox" name="check_passport_<?php echo $i; ?>" value="1"> Pass geprüft</label>
                                             <label class="checkbox-line"><input type="checkbox" name="check_photo_<?php echo $i; ?>" value="1"> Foto geprüft</label>
-                                            <label class="checkbox-line"><input type="checkbox" name="check_visa_<?php echo $i; ?>" value="1"> Visum geprüft</label>
+                                            <label class="checkbox-line"><input type="checkbox" name="check_visa_<?php echo $i; ?>" value="1"> Aufenthaltstitel geprüft</label>
                                             <label class="checkbox-line"><input type="checkbox" name="check_payment_<?php echo $i; ?>" value="1"> Zahlung geprüft</label>
                                         </div>
                                     </div>
@@ -1210,7 +1210,7 @@ function alpenia_dashboard_shortcode() {
                                 <div class="check-grid">
                                     <label class="checkbox-line"><input type="checkbox" name="check_passport" value="1" <?php checked($check_passport, 1); ?>> Pass geprüft</label>
                                     <label class="checkbox-line"><input type="checkbox" name="check_photo" value="1" <?php checked($check_photo, 1); ?>> Foto geprüft</label>
-                                    <label class="checkbox-line"><input type="checkbox" name="check_visa" value="1" <?php checked($check_visa, 1); ?>> Visum geprüft</label>
+                                    <label class="checkbox-line"><input type="checkbox" name="check_visa" value="1" <?php checked($check_visa, 1); ?>> Aufenthaltstitel geprüft</label>
                                     <label class="checkbox-line"><input type="checkbox" name="check_payment" value="1" <?php checked($check_payment, 1); ?>> Zahlung geprüft</label>
                                 </div>
                             </div>
