@@ -1902,13 +1902,14 @@ function alpenia_dashboard_shortcode() {
             font-size: 42px;
             margin: 0;
             line-height: 1.1;
-            color: #ffffff;
+            color: #0f3d2e;
         }
 
         .dashboard-brand-text p {
-            color: #d6d6d6;
+            color: #1f4f3f;
             margin: 8px 0 0;
             font-size: 16px;
+            font-weight: 500;
         }
 
         .actions {
@@ -1972,11 +1973,11 @@ function alpenia_dashboard_shortcode() {
 
         .card {
             min-width: 0;
-            background: rgba(29,77,63,0.35);
+            background: rgba(29,77,63,0.88);
             padding: 20px;
             border-radius: 14px;
             backdrop-filter: blur(10px);
-            border: 1px solid rgba(120,180,150,0.1);
+            border: 1px solid rgba(120,180,150,0.26);
         }
 
         .card h3 {
@@ -1992,10 +1993,10 @@ function alpenia_dashboard_shortcode() {
         }
 
         .panel {
-            background: rgba(18,46,38,0.6);
+            background: rgba(18,46,38,0.9);
             padding: 20px;
             border-radius: 14px;
-            border: 1px solid rgba(120,180,150,0.1);
+            border: 1px solid rgba(120,180,150,0.22);
             overflow: hidden;
         }
 
@@ -2050,8 +2051,8 @@ function alpenia_dashboard_shortcode() {
             min-height: 56px;
             padding: 0 16px;
             border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.18);
-            background-color: rgba(255,255,255,0.12);
+            border: 1px solid rgba(120,180,150,0.35);
+            background-color: rgba(16,36,29,0.9);
             color: #ffffff !important;
             outline: none;
             font-size: 16px;
@@ -2102,15 +2103,15 @@ function alpenia_dashboard_shortcode() {
             min-height: 56px;
             padding: 14px 16px;
             border-radius: 12px;
-            border: 1px solid rgba(255,255,255,0.18);
-            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(120,180,150,0.35);
+            background: rgba(16,36,29,0.9);
             color: #fff;
             font-size: 15px;
         }
 
         .participant-box {
-            background: rgba(255,255,255,0.04);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(16,36,29,0.82);
+            border: 1px solid rgba(120,180,150,0.22);
             border-radius: 14px;
             padding: 20px;
             margin-bottom: 22px;
@@ -2127,8 +2128,8 @@ function alpenia_dashboard_shortcode() {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(16,36,29,0.74);
+            border: 1px solid rgba(120,180,150,0.2);
             padding: 16px;
             border-radius: 10px;
         }
@@ -2192,8 +2193,8 @@ function alpenia_dashboard_shortcode() {
         }
 
         .badge {
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(16,36,29,0.75);
+            border: 1px solid rgba(120,180,150,0.2);
             border-radius: 999px;
             padding: 8px 12px;
             font-size: 13px;
@@ -2222,8 +2223,8 @@ function alpenia_dashboard_shortcode() {
         }
 
         .trip-meta-box {
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(16,36,29,0.78);
+            border: 1px solid rgba(120,180,150,0.2);
             border-radius: 12px;
             padding: 16px;
             display: flex;
@@ -2238,8 +2239,8 @@ function alpenia_dashboard_shortcode() {
 
         .notes-box {
             margin-top: 8px;
-            background: rgba(255,255,255,0.05);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(16,36,29,0.78);
+            border: 1px solid rgba(120,180,150,0.2);
             padding: 14px;
             border-radius: 10px;
             color: #fff;
@@ -2302,8 +2303,8 @@ function alpenia_dashboard_shortcode() {
             min-height: 56px;
             padding: 14px 18px;
             border-radius: 12px;
-            background: rgba(255,255,255,0.08);
-            border: 1px solid rgba(255,255,255,0.18);
+            background: rgba(16,36,29,0.82);
+            border: 1px solid rgba(120,180,150,0.3);
             color: #ffffff;
             font-size: 18px;
             font-weight: 700;
@@ -2408,7 +2409,7 @@ function alpenia_dashboard_shortcode() {
         .filter-bar select:-webkit-autofill,
         .form-group input:-webkit-autofill,
         .form-group select:-webkit-autofill {
-            -webkit-box-shadow: 0 0 0 1000px rgba(255,255,255,0.12) inset !important;
+            -webkit-box-shadow: 0 0 0 1000px rgba(16,36,29,0.9) inset !important;
             -webkit-text-fill-color: #ffffff !important;
             transition: background-color 9999s ease-out 0s;
         }
