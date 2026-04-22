@@ -25,6 +25,10 @@ function alpenia_login_shortcode() {
 
     $error = '';
 
+    if (isset($_GET['session_expired']) && $_GET['session_expired'] === '1') {
+        $error = 'Deine Sitzung ist wegen Inaktivität abgelaufen. Bitte erneut einloggen.';
+    }
+
     if (isset($_POST['alpenia_login'])) {
         $email = sanitize_email($_POST['email'] ?? '');
         $password = $_POST['password'] ?? '';
@@ -38,7 +42,7 @@ function alpenia_login_shortcode() {
                 $creds = [
                     'user_login'    => $user->user_login,
                     'user_password' => $password,
-                    'remember'      => true,
+                    'remember'      => false,
                 ];
 
                 wp_clear_auth_cookie();

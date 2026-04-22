@@ -652,6 +652,25 @@ function alpenia_dashboard_shortcode() {
 
             <?php echo $message; ?>
 
+
+            <form id="alpenia-idle-logout-form" method="post" style="display:none;">
+                <?php wp_nonce_field('alpenia_logout_action', 'alpenia_logout_nonce'); ?>
+                <input type="hidden" name="alpenia_logout" value="1">
+                <input type="hidden" name="alpenia_logout_intent" value="dashboard_logout">
+            </form>
+
+            <div id="alpenia-idle-timeout-modal" class="alpenia-idle-timeout-modal" aria-hidden="true">
+                <div class="alpenia-idle-timeout-card" role="dialog" aria-modal="true" aria-labelledby="alpenia-idle-timeout-title">
+                    <h2 id="alpenia-idle-timeout-title">Bist du noch da?</h2>
+                    <p>Du warst 15 Minuten inaktiv. Klicke auf „Weiterarbeiten“, sonst wirst du automatisch ausgeloggt.</p>
+                    <p class="alpenia-idle-timeout-countdown">Automatischer Logout in <span id="alpenia-idle-timeout-seconds">60</span> Sekunden.</p>
+                    <div class="alpenia-idle-timeout-actions">
+                        <button type="button" id="alpenia-idle-stay-btn" class="btn-secondary">Weiterarbeiten</button>
+                        <button type="button" id="alpenia-idle-logout-btn" class="btn-primary btn-logout">Jetzt ausloggen</button>
+                    </div>
+                </div>
+            </div>
+
             <?php if (isset($_GET['create_trip']) && $_GET['create_trip'] == '1') : ?>
 
                 <div class="dashboard-top">
@@ -2276,6 +2295,54 @@ function alpenia_dashboard_shortcode() {
             color: #ffc2c2 !important;
         }
 
+
+        .alpenia-idle-timeout-modal {
+            position: fixed;
+            inset: 0;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            background: rgba(6, 18, 14, 0.75);
+            z-index: 9999;
+            padding: 16px;
+        }
+
+        .alpenia-idle-timeout-modal.is-visible {
+            display: flex;
+        }
+
+        .alpenia-idle-timeout-card {
+            width: min(460px, 100%);
+            background: #17382e;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            border-radius: 14px;
+            padding: 20px;
+            color: #ffffff;
+            box-shadow: 0 20px 42px rgba(0, 0, 0, 0.35);
+        }
+
+        .alpenia-idle-timeout-card h2 {
+            margin: 0 0 10px;
+            font-size: 24px;
+        }
+
+        .alpenia-idle-timeout-card p {
+            margin: 0 0 10px;
+            line-height: 1.5;
+        }
+
+        .alpenia-idle-timeout-countdown {
+            font-weight: 700;
+            color: #8ee0b8;
+        }
+
+        .alpenia-idle-timeout-actions {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-top: 8px;
+        }
+
         .filter-bar input:-webkit-autofill,
         .filter-bar select:-webkit-autofill,
         .form-group input:-webkit-autofill,
@@ -2432,6 +2499,101 @@ function alpenia_dashboard_shortcode() {
                 validateFileInput(input, uploadLimits.meldezettel, 'Meldezettel');
             });
         });
+
+
+        const idleModal = document.getElementById('alpenia-idle-timeout-modal');
+        const stayButton = document.getElementById('alpenia-idle-stay-btn');
+        const logoutButton = document.getElementById('alpenia-idle-logout-btn');
+        const countdownSeconds = document.getElementById('alpenia-idle-timeout-seconds');
+        const logoutForm = document.getElementById('alpenia-idle-logout-form');
+
+        const idleTimeoutMs = 15 * 60 * 1000;
+        const warningTimeoutMs = 60 * 1000;
+        let idleTimer = null;
+        let forcedLogoutTimer = null;
+        let countdownTimer = null;
+        let modalOpen = false;
+        let warningDeadline = 0;
+
+        function submitIdleLogout() {
+            if (logoutForm) {
+                logoutForm.submit();
+            }
+        }
+
+        function hideIdleModal() {
+            if (!idleModal) return;
+            idleModal.classList.remove('is-visible');
+            idleModal.setAttribute('aria-hidden', 'true');
+            modalOpen = false;
+
+            if (forcedLogoutTimer) {
+                clearTimeout(forcedLogoutTimer);
+                forcedLogoutTimer = null;
+            }
+
+            if (countdownTimer) {
+                clearInterval(countdownTimer);
+                countdownTimer = null;
+            }
+        }
+
+        function resetIdleTimer() {
+            if (modalOpen) {
+                return;
+            }
+
+            if (idleTimer) {
+                clearTimeout(idleTimer);
+            }
+
+            idleTimer = setTimeout(function() {
+                if (!idleModal) {
+                    submitIdleLogout();
+                    return;
+                }
+
+                modalOpen = true;
+                idleModal.classList.add('is-visible');
+                idleModal.setAttribute('aria-hidden', 'false');
+                warningDeadline = Date.now() + warningTimeoutMs;
+
+                if (countdownSeconds) {
+                    countdownSeconds.textContent = '60';
+                }
+
+                forcedLogoutTimer = setTimeout(submitIdleLogout, warningTimeoutMs);
+
+                countdownTimer = setInterval(function() {
+                    if (!countdownSeconds) return;
+                    const secondsLeft = Math.max(0, Math.ceil((warningDeadline - Date.now()) / 1000));
+                    countdownSeconds.textContent = String(secondsLeft);
+                }, 250);
+            }, idleTimeoutMs);
+        }
+
+        ['click', 'mousemove', 'keydown', 'scroll', 'touchstart'].forEach(function(eventName) {
+            document.addEventListener(eventName, resetIdleTimer, { passive: true });
+        });
+
+        if (stayButton) {
+            stayButton.addEventListener('click', function() {
+                hideIdleModal();
+                resetIdleTimer();
+            });
+        }
+
+        if (logoutButton) {
+            logoutButton.addEventListener('click', submitIdleLogout);
+        }
+
+        document.addEventListener('visibilitychange', function() {
+            if (!document.hidden) {
+                resetIdleTimer();
+            }
+        });
+
+        resetIdleTimer();
     });
     </script>
     <?php
