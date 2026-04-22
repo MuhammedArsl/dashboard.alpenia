@@ -17,9 +17,11 @@ function alpenia_login_shortcode() {
     $debug_mode = isset($_GET['alpenia_debug_auth']) && $_GET['alpenia_debug_auth'] == '1';
 
     if (is_user_logged_in()) {
-        return '<div style="max-width:420px;margin:80px auto;padding:30px;background:rgba(18,46,38,0.7);border-radius:16px;color:#fff;text-align:center;">
-            Du bist bereits eingeloggt.<br><br>
-            <a href="' . esc_url(alpenia_get_dashboard_url()) . '" style="color:#8ee0b8;font-weight:bold;">Zum Dashboard</a>
+        return '<div style="min-height:100vh;display:flex;align-items:center;justify-content:center;background:radial-gradient(circle at top, #1c1c1c 0%, #090909 45%, #000 100%);padding:20px;">
+            <div style="width:100%;max-width:420px;padding:36px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);box-shadow:0 20px 50px rgba(0,0,0,0.45);backdrop-filter:blur(10px);border-radius:18px;color:#fff;text-align:center;">
+                Du bist bereits eingeloggt.<br><br>
+                <a href="' . esc_url(alpenia_get_dashboard_url()) . '" style="display:inline-block;color:#d5ffe9;background:linear-gradient(135deg,#1e664f,#2f9574);padding:10px 16px;border-radius:10px;font-weight:700;text-decoration:none;">Zum Dashboard</a>
+            </div>
         </div>';
     }
 
@@ -102,11 +104,13 @@ function alpenia_login_shortcode() {
 
     ob_start();
     ?>
-    <div style="max-width:420px;margin:80px auto;padding:30px;background:rgba(18,46,38,0.7);border-radius:16px;color:#fff;">
-        <h2 style="margin-top:0;">Login</h2>
+    <div style="min-height:100vh;background:radial-gradient(circle at top, #1c1c1c 0%, #090909 45%, #000 100%);display:flex;align-items:center;justify-content:center;padding:20px;">
+        <div style="width:100%;max-width:420px;padding:34px;background:rgba(255,255,255,0.06);border-radius:18px;border:1px solid rgba(255,255,255,0.12);box-shadow:0 20px 50px rgba(0,0,0,0.45);backdrop-filter:blur(10px);color:#fff;">
+        <h2 style="margin:0 0 8px;font-size:30px;letter-spacing:0.4px;">Willkommen zurück</h2>
+        <p style="margin:0 0 22px;color:rgba(255,255,255,0.75);font-size:14px;">Melde dich an, um dein Dashboard zu öffnen.</p>
 
         <?php if ($debug_mode) : ?>
-            <div style="margin:0 0 14px;padding:10px;border-radius:8px;background:rgba(255,255,255,0.08);font-size:12px;line-height:1.5;">
+            <div style="margin:0 0 14px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);font-size:12px;line-height:1.5;">
                 <strong>Auth Debug</strong><br>
                 Fail: <?php echo esc_html(sanitize_text_field($_GET['alpenia_auth_fail'] ?? 'none')); ?><br>
                 Logged in: <?php echo is_user_logged_in() ? 'yes' : 'no'; ?><br>
@@ -118,27 +122,28 @@ function alpenia_login_shortcode() {
         <?php endif; ?>
 
         <?php if (!empty($error)) : ?>
-            <p style="color:#ffb3b3;"><?php echo esc_html($error); ?></p>
+            <p style="color:#ffd2d2;background:rgba(154,0,0,0.25);border:1px solid rgba(255,130,130,0.45);padding:10px 12px;border-radius:10px;"><?php echo esc_html($error); ?></p>
         <?php endif; ?>
 
         <form method="post">
             <?php wp_nonce_field('alpenia_login_action', 'alpenia_login_nonce'); ?>
             <p>
-                <label for="alpenia-login-email">E-Mail</label><br>
-                <input id="alpenia-login-email" type="email" name="email" required style="width:100%;height:46px;padding:0 12px;border-radius:8px;border:1px solid #ccc;">
+                <label for="alpenia-login-email" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);">E-Mail</label><br>
+                <input id="alpenia-login-email" type="email" name="email" required style="width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(0,0,0,0.35);color:#fff;outline:none;box-sizing:border-box;">
             </p>
 
             <p>
-                <label for="alpenia-login-password">Passwort</label><br>
-                <input id="alpenia-login-password" type="password" name="password" required style="width:100%;height:46px;padding:0 12px;border-radius:8px;border:1px solid #ccc;">
+                <label for="alpenia-login-password" style="font-size:13px;font-weight:600;color:rgba(255,255,255,0.85);">Passwort</label><br>
+                <input id="alpenia-login-password" type="password" name="password" required style="width:100%;height:48px;padding:0 14px;border-radius:12px;border:1px solid rgba(255,255,255,0.18);background:rgba(0,0,0,0.35);color:#fff;outline:none;box-sizing:border-box;">
             </p>
 
-            <p style="margin-bottom:0;">
-                <button type="submit" name="alpenia_login" style="width:100%;height:48px;border:none;border-radius:10px;background:#1d4d3f;color:#fff;font-weight:bold;cursor:pointer;">
+            <p style="margin:14px 0 0;">
+                <button type="submit" name="alpenia_login" style="width:100%;height:50px;border:none;border-radius:12px;background:linear-gradient(135deg,#1e664f,#2f9574);color:#fff;font-weight:700;letter-spacing:0.2px;cursor:pointer;box-shadow:0 12px 26px rgba(35,119,92,0.36);">
                     Login
                 </button>
             </p>
         </form>
+        </div>
     </div>
     <?php
 
