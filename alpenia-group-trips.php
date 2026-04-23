@@ -11,6 +11,7 @@ define('ALPENIA_PLUGIN_FILE', __FILE__);
 define('ALPENIA_PLUGIN_DIR', plugin_dir_path(__FILE__));
 
 require_once ALPENIA_PLUGIN_DIR . 'includes/core.php';
+require_once ALPENIA_PLUGIN_DIR . 'includes/security-hardening.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/uploads.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/trips.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/export-print.php';
