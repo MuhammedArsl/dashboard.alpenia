@@ -236,8 +236,21 @@ function alpenia_audit_post_delete($post_id) {
 }
 add_action('before_delete_post', 'alpenia_audit_post_delete');
 
+function alpenia_can_use_argon2id() {
+    if (!defined('PASSWORD_ARGON2ID') || !function_exists('password_algos')) {
+        return false;
+    }
+
+    $algorithms = password_algos();
+    if (!is_array($algorithms)) {
+        return false;
+    }
+
+    return in_array('argon2id', $algorithms, true);
+}
+
 function alpenia_password_hash_algorithm($algo) {
-    if (defined('PASSWORD_ARGON2ID')) {
+    if (alpenia_can_use_argon2id()) {
         return PASSWORD_ARGON2ID;
     }
 
@@ -246,11 +259,12 @@ function alpenia_password_hash_algorithm($algo) {
 add_filter('wp_hash_password_algorithm', 'alpenia_password_hash_algorithm');
 
 function alpenia_password_hash_options($options) {
-    if (defined('PASSWORD_ARGON2ID')) {
+    if (alpenia_can_use_argon2id()) {
         return [
-            'memory_cost' => 1 << 17,
-            'time_cost' => 4,
-            'threads' => 2,
+            // Keep values conservative to avoid runtime failures on low-memory hosts.
+            'memory_cost' => 1 << 15,
+            'time_cost' => 2,
+            'threads' => 1,
         ];
     }
 
@@ -396,6 +410,12 @@ add_action('init', 'alpenia_handle_secure_download', 1);
 
 function alpenia_validate_mfa_for_privileged($user) {
     if (!$user || !($user instanceof WP_User)) {
+        return $user;
+    }
+
+    // MFA enforcement is opt-in until a complete user-facing MFA setup flow exists.
+    $mfa_enforcement_enabled = (int) get_option('alpenia_enforce_mfa_privileged', 0) === 1;
+    if (!$mfa_enforcement_enabled) {
         return $user;
     }
 
