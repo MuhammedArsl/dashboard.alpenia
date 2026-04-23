@@ -264,7 +264,45 @@ function alpenia_login_shortcode() {
                 return 'Ungültige Anmeldedaten.';
             }
 
-            return 'Anmeldung momentan nicht möglich. Bitte später erneut versuchen.';
+            $first_error = $signon_error->get_error_message();
+            if (is_string($first_error) && trim($first_error) !== '') {
+                return wp_strip_all_tags($first_error);
+            }
+
+            return 'Anmeldung momentan nicht möglich. Bitte Support kontaktieren.';
+        }
+    }
+
+    if (!function_exists('alpenia_attempt_signon')) {
+        function alpenia_attempt_signon($identifiers, $password) {
+            $identifiers = is_array($identifiers) ? $identifiers : [$identifiers];
+            $last_error = null;
+
+            foreach ($identifiers as $identifier) {
+                $identifier = trim((string) $identifier);
+                if ($identifier === '') {
+                    continue;
+                }
+
+                wp_clear_auth_cookie();
+                $signon = wp_signon([
+                    'user_login'    => $identifier,
+                    'user_password' => (string) $password,
+                    'remember'      => false,
+                ]);
+
+                if (!is_wp_error($signon)) {
+                    return $signon;
+                }
+
+                $last_error = $signon;
+            }
+
+            if ($last_error instanceof WP_Error) {
+                return $last_error;
+            }
+
+            return new WP_Error('invalid_username', 'Ungültige Anmeldedaten.');
         }
     }
 
@@ -309,12 +347,7 @@ function alpenia_login_shortcode() {
                 $user = get_user_by('id', $user_id);
 
                 if ($user && !empty($user->user_login)) {
-                    wp_clear_auth_cookie();
-                    $signon = wp_signon([
-                        'user_login'    => $user->user_login,
-                        'user_password' => $password,
-                        'remember'      => false,
-                    ]);
+                    $signon = alpenia_attempt_signon([$user->user_email ?? '', $user->user_login], $password);
 
                     if (!is_wp_error($signon)) {
                         wp_set_current_user($signon->ID);
@@ -365,17 +398,14 @@ function alpenia_login_shortcode() {
             if (empty($email) || empty($password)) {
                 $error = 'Bitte E-Mail und Passwort eingeben.';
             } else {
-                $user = get_user_by('email', $email);
+                if (!empty($email)) {
+                    $user = get_user_by('email', $email);
+                    $identifiers = [$email];
+                    if ($user && !empty($user->user_login)) {
+                        $identifiers[] = $user->user_login;
+                    }
 
-                if ($user) {
-                    $creds = [
-                        'user_login'    => $user->user_login,
-                        'user_password' => $password,
-                        'remember'      => false,
-                    ];
-
-                    wp_clear_auth_cookie();
-                    $signon = wp_signon($creds);
+                    $signon = alpenia_attempt_signon($identifiers, $password);
 
                     if (!is_wp_error($signon)) {
                         wp_set_current_user($signon->ID);
