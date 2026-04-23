@@ -413,6 +413,12 @@ function alpenia_validate_mfa_for_privileged($user) {
         return $user;
     }
 
+    // MFA enforcement is opt-in until a complete user-facing MFA setup flow exists.
+    $mfa_enforcement_enabled = (int) get_option('alpenia_enforce_mfa_privileged', 0) === 1;
+    if (!$mfa_enforcement_enabled) {
+        return $user;
+    }
+
     $roles = (array) $user->roles;
     $requires_mfa = array_intersect($roles, ['administrator', 'backoffice', 'manager', 'superadmin', 'staff']);
     if (empty($requires_mfa)) {
