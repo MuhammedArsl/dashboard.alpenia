@@ -180,13 +180,13 @@ function alpenia_get_participant_doc_score($participant_id) {
     $photo_file      = (int) get_post_meta($participant_id, 'photo_file_id', true);
     $visa_photo_file = (int) get_post_meta($participant_id, 'visa_photo_file_id', true);
 
-    $passport_valid_from = trim((string) get_post_meta($participant_id, 'passport_valid_from_date', true));
-    $passport_expiry = trim((string) get_post_meta($participant_id, 'passport_expiry_date', true));
-    $passport_no     = trim((string) get_post_meta($participant_id, 'passport_no', true));
-    $nationality     = trim((string) get_post_meta($participant_id, 'nationality', true));
-    $visa_number     = trim((string) get_post_meta($participant_id, 'visa_number', true));
-    $visa_valid_from = trim((string) get_post_meta($participant_id, 'visa_valid_from_date', true));
-    $visa_expiry     = trim((string) get_post_meta($participant_id, 'visa_expiry_date', true));
+    $passport_valid_from = trim((string) alpenia_get_secure_meta($participant_id, 'passport_valid_from_date', true));
+    $passport_expiry = trim((string) alpenia_get_secure_meta($participant_id, 'passport_expiry_date', true));
+    $passport_no     = trim((string) alpenia_get_secure_meta($participant_id, 'passport_no', true));
+    $nationality     = trim((string) alpenia_get_secure_meta($participant_id, 'nationality', true));
+    $visa_number     = trim((string) alpenia_get_secure_meta($participant_id, 'visa_number', true));
+    $visa_valid_from = trim((string) alpenia_get_secure_meta($participant_id, 'visa_valid_from_date', true));
+    $visa_expiry     = trim((string) alpenia_get_secure_meta($participant_id, 'visa_expiry_date', true));
 
     $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
     $check_photo     = (int) get_post_meta($participant_id, 'check_photo', true);
@@ -273,12 +273,12 @@ function alpenia_get_missing_docs_details($participant_id) {
     $photo_file      = (int) get_post_meta($participant_id, 'photo_file_id', true);
     $visa_photo_file = (int) get_post_meta($participant_id, 'visa_photo_file_id', true);
 
-    $passport_valid_from = trim((string) get_post_meta($participant_id, 'passport_valid_from_date', true));
-    $passport_expiry = trim((string) get_post_meta($participant_id, 'passport_expiry_date', true));
-    $nationality     = trim((string) get_post_meta($participant_id, 'nationality', true));
-    $visa_number     = trim((string) get_post_meta($participant_id, 'visa_number', true));
-    $visa_valid_from = trim((string) get_post_meta($participant_id, 'visa_valid_from_date', true));
-    $visa_expiry     = trim((string) get_post_meta($participant_id, 'visa_expiry_date', true));
+    $passport_valid_from = trim((string) alpenia_get_secure_meta($participant_id, 'passport_valid_from_date', true));
+    $passport_expiry = trim((string) alpenia_get_secure_meta($participant_id, 'passport_expiry_date', true));
+    $nationality     = trim((string) alpenia_get_secure_meta($participant_id, 'nationality', true));
+    $visa_number     = trim((string) alpenia_get_secure_meta($participant_id, 'visa_number', true));
+    $visa_valid_from = trim((string) alpenia_get_secure_meta($participant_id, 'visa_valid_from_date', true));
+    $visa_expiry     = trim((string) alpenia_get_secure_meta($participant_id, 'visa_expiry_date', true));
 
     $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
     $check_photo     = (int) get_post_meta($participant_id, 'check_photo', true);

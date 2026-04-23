@@ -233,6 +233,8 @@ function alpenia_login_shortcode() {
     }
 
     $error = '';
+    $success = '';
+    $mode = isset($_GET['mode']) ? sanitize_key($_GET['mode']) : 'login';
 
     if (isset($_GET['session_expired']) && $_GET['session_expired'] === '1') {
         $error = 'Deine Sitzung ist wegen Inaktivität abgelaufen. Bitte erneut einloggen.';
@@ -243,6 +245,51 @@ function alpenia_login_shortcode() {
         function alpenia_login_attempt_key($email, $ip_address) {
             $identifier = strtolower(trim((string) $email)) . '|' . trim((string) $ip_address);
             return 'alpenia_login_attempts_' . md5($identifier);
+        }
+    }
+
+    if (isset($_POST['alpenia_request_reset'])) {
+        if (!isset($_POST['alpenia_reset_nonce']) || !wp_verify_nonce($_POST['alpenia_reset_nonce'], 'alpenia_reset_action')) {
+            $error = 'Sicherheitsfehler. Bitte erneut versuchen.';
+        } else {
+            $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
+            if (!empty($email)) {
+                $user = get_user_by('email', $email);
+                if ($user && !empty($user->ID)) {
+                    $token = alpenia_generate_password_reset_token($user->ID);
+                    $reset_url = add_query_arg([
+                        'mode' => 'reset',
+                        'uid' => (int) $user->ID,
+                        'token' => rawurlencode($token),
+                    ], alpenia_get_login_url());
+                    wp_mail($email, 'Passwort zurücksetzen', 'Setze dein Passwort hier zurück: ' . esc_url_raw($reset_url));
+                    alpenia_security_log('password_reset_requested', ['target_user_id' => (int) $user->ID]);
+                }
+            }
+            $success = 'Wenn die E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet.';
+            $mode = 'login';
+        }
+    }
+
+    if (isset($_POST['alpenia_set_new_password'])) {
+        if (!isset($_POST['alpenia_set_password_nonce']) || !wp_verify_nonce($_POST['alpenia_set_password_nonce'], 'alpenia_set_password_action')) {
+            $error = 'Sicherheitsfehler. Bitte erneut versuchen.';
+            $mode = 'reset';
+        } else {
+            $user_id = (int) ($_POST['uid'] ?? 0);
+            $token = sanitize_text_field(wp_unslash($_POST['token'] ?? ''));
+            $password = (string) ($_POST['new_password'] ?? '');
+
+            if ($user_id <= 0 || strlen($password) < 12 || !alpenia_validate_password_reset_token($user_id, $token)) {
+                $error = 'Reset-Link ungültig oder abgelaufen.';
+                alpenia_security_log('password_reset_failed', ['target_user_id' => $user_id]);
+            } else {
+                wp_set_password($password, $user_id);
+                alpenia_consume_password_reset_token($user_id);
+                $success = 'Passwort erfolgreich geändert. Bitte einloggen.';
+                alpenia_security_log('password_reset_success', ['target_user_id' => $user_id]);
+                $mode = 'login';
+            }
         }
     }
 
@@ -300,10 +347,12 @@ function alpenia_login_shortcode() {
                         }
 
                         set_transient($attempt_key, $attempt_data, 10 * MINUTE_IN_SECONDS);
-                        $error = 'Falsches Passwort.';
+                        $error = 'Ungültige Anmeldedaten.';
+                        alpenia_security_log('login_failed', ['email_hash' => hash('sha256', strtolower($email))]);
                     }
                 } else {
-                    $error = 'Benutzer nicht gefunden.';
+                    $error = 'Ungültige Anmeldedaten.';
+                    alpenia_security_log('login_failed', ['email_hash' => hash('sha256', strtolower($email))]);
                 }
             }
         }
@@ -315,7 +364,7 @@ function alpenia_login_shortcode() {
     <div class="alpenia-login-page-shell">
         <nav class="alpenia-login-nav" aria-label="Travel sections">
             <ul class="alpenia-login-nav-list">
-                <li><span class="alpenia-login-nav-pill is-active">Login</span></li>
+                <li><span class="alpenia-login-nav-pill is-active"><?php echo $mode === 'reset_request' ? 'Passwort vergessen' : ($mode === 'reset' ? 'Passwort ändern' : 'Login'); ?></span></li>
                 <li><span class="alpenia-login-nav-pill">Kulturreisen</span></li>
                 <li><span class="alpenia-login-nav-pill">Umrah</span></li>
                 <li><span class="alpenia-login-nav-pill">Hajj</span></li>
@@ -340,7 +389,32 @@ function alpenia_login_shortcode() {
         <?php if (!empty($error)) : ?>
             <p class="alpenia-login-error"><?php echo esc_html($error); ?></p>
         <?php endif; ?>
+        <?php if (!empty($success)) : ?>
+            <p class="alpenia-login-error" style="background:rgba(8,120,62,.32);border-color:rgba(130,255,178,.44);color:#d8ffe8;"><?php echo esc_html($success); ?></p>
+        <?php endif; ?>
 
+        <?php if ($mode === 'reset_request') : ?>
+        <form class="alpenia-login-form" method="post">
+            <?php wp_nonce_field('alpenia_reset_action', 'alpenia_reset_nonce'); ?>
+            <p class="alpenia-form-group">
+                <label class="alpenia-form-label" for="alpenia-reset-email">E-Mail</label>
+                <input id="alpenia-reset-email" type="email" name="email" required>
+            </p>
+            <p class="alpenia-login-submit"><button type="submit" name="alpenia_request_reset">Reset-Link senden</button></p>
+            <p><a style="color:#fff;" href="<?php echo esc_url(alpenia_get_login_url()); ?>">Zurück zum Login</a></p>
+        </form>
+        <?php elseif ($mode === 'reset') : ?>
+        <form class="alpenia-login-form" method="post">
+            <?php wp_nonce_field('alpenia_set_password_action', 'alpenia_set_password_nonce'); ?>
+            <input type="hidden" name="uid" value="<?php echo (int) ($_GET['uid'] ?? 0); ?>">
+            <input type="hidden" name="token" value="<?php echo esc_attr(sanitize_text_field(wp_unslash($_GET['token'] ?? ''))); ?>">
+            <p class="alpenia-form-group">
+                <label class="alpenia-form-label" for="alpenia-new-password">Neues Passwort (mind. 12 Zeichen)</label>
+                <input id="alpenia-new-password" type="password" name="new_password" minlength="12" required>
+            </p>
+            <p class="alpenia-login-submit"><button type="submit" name="alpenia_set_new_password">Passwort speichern</button></p>
+        </form>
+        <?php else : ?>
         <form class="alpenia-login-form" method="post">
             <?php wp_nonce_field('alpenia_login_action', 'alpenia_login_nonce'); ?>
             <p class="alpenia-form-group">
@@ -358,7 +432,9 @@ function alpenia_login_shortcode() {
                     Login
                 </button>
             </p>
+            <p><a style="color:#fff;" href="<?php echo esc_url(add_query_arg('mode', 'reset_request', alpenia_get_login_url())); ?>">Passwort vergessen?</a></p>
         </form>
+        <?php endif; ?>
         </div>
     </div>
     <?php

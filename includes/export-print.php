@@ -6,8 +6,10 @@ if (!defined('ABSPATH')) exit;
  */
 function alpenia_export_trip_csv($trip_id) {
     if (!alpenia_user_can_access_trip($trip_id)) {
+        alpenia_security_log('trip_export_denied', ['trip_id' => (int) $trip_id]);
         wp_die('Kein Zugriff.');
     }
+    alpenia_security_log('trip_export_csv', ['trip_id' => (int) $trip_id]);
 
     $trip = get_post($trip_id);
     if (!$trip || $trip->post_type !== 'group_trip') {
@@ -71,21 +73,21 @@ function alpenia_export_trip_csv($trip_id) {
             get_post_meta($trip_id, 'country', true),
             get_post_meta($trip_id, 'city', true),
             alpenia_gender_code(get_post_meta($participant->ID, 'gender', true)),
-            get_post_meta($participant->ID, 'first_name', true),
-            get_post_meta($participant->ID, 'last_name', true),
-            get_post_meta($participant->ID, 'birth_date', true),
-            get_post_meta($participant->ID, 'nationality', true),
-            get_post_meta($participant->ID, 'passport_no', true),
-            get_post_meta($participant->ID, 'passport_valid_from_date', true),
-            get_post_meta($participant->ID, 'passport_expiry_date', true),
-            get_post_meta($participant->ID, 'visa_number', true),
-            get_post_meta($participant->ID, 'visa_valid_from_date', true),
-            get_post_meta($participant->ID, 'visa_expiry_date', true),
-            get_post_meta($participant->ID, 'visa_note', true),
+            alpenia_get_secure_meta($participant->ID, 'first_name', true),
+            alpenia_get_secure_meta($participant->ID, 'last_name', true),
+            alpenia_get_secure_meta($participant->ID, 'birth_date', true),
+            alpenia_get_secure_meta($participant->ID, 'nationality', true),
+            alpenia_get_secure_meta($participant->ID, 'passport_no', true),
+            alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true),
+            alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true),
+            alpenia_get_secure_meta($participant->ID, 'visa_number', true),
+            alpenia_get_secure_meta($participant->ID, 'visa_valid_from_date', true),
+            alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true),
+            alpenia_get_secure_meta($participant->ID, 'visa_note', true),
             get_post_meta($participant->ID, 'visa_status', true),
             get_post_meta($participant->ID, 'participant_status', true),
-            get_post_meta($participant->ID, 'room_assignment', true),
-            get_post_meta($participant->ID, 'subgroup', true),
+            alpenia_get_secure_meta($participant->ID, 'room_assignment', true),
+            alpenia_get_secure_meta($participant->ID, 'subgroup', true),
             $total,
             $deposit,
             $paid,
@@ -107,8 +109,10 @@ function alpenia_export_trip_csv($trip_id) {
  */
 function alpenia_render_print_view($trip_id, $logo_url = '') {
     if (!alpenia_user_can_access_trip($trip_id)) {
+        alpenia_security_log('trip_print_denied', ['trip_id' => (int) $trip_id]);
         wp_die('Kein Zugriff.');
     }
+    alpenia_security_log('trip_print_view', ['trip_id' => (int) $trip_id]);
 
     $trip = get_post($trip_id);
     if (!$trip || $trip->post_type !== 'group_trip') {
@@ -179,18 +183,18 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             <tbody>
                 <?php if ($participants) : foreach ($participants as $participant) : ?>
                     <tr>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'first_name', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'last_name', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'birth_date', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'first_name', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'last_name', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'birth_date', true)); ?></td>
                         <td><?php echo esc_html(alpenia_gender_code(get_post_meta($participant->ID, 'gender', true))); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'nationality', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'passport_no', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'passport_valid_from_date', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'passport_expiry_date', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_number', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_valid_from_date', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_expiry_date', true)); ?></td>
-                        <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_note', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'nationality', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_no', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_number', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_valid_from_date', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_note', true)); ?></td>
                     </tr>
                 <?php endforeach; else : ?>
                     <tr><td colspan="12">No participants available.</td></tr>

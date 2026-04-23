@@ -18,6 +18,26 @@ function alpenia_add_roles() {
             'upload_files' => true,
         ]);
     }
+
+    if (!get_role('customer')) {
+        add_role('customer', 'Customer', ['read' => true]);
+    }
+
+    if (!get_role('support')) {
+        add_role('support', 'Support', ['read' => true]);
+    }
+
+    if (!get_role('staff')) {
+        add_role('staff', 'Staff', ['read' => true, 'upload_files' => true]);
+    }
+
+    if (!get_role('manager')) {
+        add_role('manager', 'Manager', ['read' => true, 'upload_files' => true]);
+    }
+
+    if (!get_role('superadmin')) {
+        add_role('superadmin', 'Superadmin', ['read' => true, 'upload_files' => true, 'list_users' => true]);
+    }
 }
 
 register_activation_hook(ALPENIA_PLUGIN_FILE, 'alpenia_add_roles');
@@ -67,13 +87,24 @@ function alpenia_is_backoffice_user() {
     return in_array('backoffice', alpenia_get_current_user_roles(), true);
 }
 
+function alpenia_has_role($role) {
+    return in_array($role, alpenia_get_current_user_roles(), true);
+}
+
 function alpenia_user_can_access_dashboard() {
     if (!is_user_logged_in()) return false;
-    return alpenia_is_admin_user() || alpenia_is_reiseleiter_user() || alpenia_is_backoffice_user();
+
+    return alpenia_is_admin_user()
+        || alpenia_has_role('superadmin')
+        || alpenia_has_role('manager')
+        || alpenia_has_role('staff')
+        || alpenia_has_role('support')
+        || alpenia_is_reiseleiter_user()
+        || alpenia_is_backoffice_user();
 }
 
 function alpenia_user_can_manage_users() {
-    return alpenia_is_admin_user();
+    return alpenia_is_admin_user() || alpenia_has_role('superadmin') || alpenia_has_role('manager');
 }
 
 function alpenia_user_can_delete_trip($trip_id) {
