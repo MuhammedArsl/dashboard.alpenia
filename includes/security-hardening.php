@@ -427,6 +427,12 @@ function alpenia_validate_mfa_for_privileged($user) {
     }
 
     $mfa_enabled = get_user_meta($user->ID, 'alpenia_mfa_enabled', true);
+    if ($mfa_enabled === '' || $mfa_enabled === null) {
+        update_user_meta($user->ID, 'alpenia_mfa_enabled', 1);
+        alpenia_security_log('mfa_auto_enabled', ['target_user_id' => (int) $user->ID, 'trigger' => 'login_backfill']);
+        return $user;
+    }
+
     if ((int) $mfa_enabled !== 1) {
         return new WP_Error('alpenia_mfa_required', 'MFA ist für privilegierte Konten erforderlich.');
     }
@@ -441,12 +447,18 @@ function alpenia_auto_enable_mfa_for_privileged_user($user_id) {
         return;
     }
 
-    if (!alpenia_roles_require_mfa((array) $user->roles)) {
+    $created_by_admin = is_user_logged_in() && current_user_can('administrator');
+    $requires_mfa_by_role = alpenia_roles_require_mfa((array) $user->roles);
+
+    if (!$created_by_admin && !$requires_mfa_by_role) {
         return;
     }
 
     update_user_meta($user->ID, 'alpenia_mfa_enabled', 1);
-    alpenia_security_log('mfa_auto_enabled', ['target_user_id' => (int) $user->ID]);
+    alpenia_security_log('mfa_auto_enabled', [
+        'target_user_id' => (int) $user->ID,
+        'trigger' => $created_by_admin ? 'user_register_admin_created' : 'user_register_privileged_role',
+    ]);
 }
 add_action('user_register', 'alpenia_auto_enable_mfa_for_privileged_user', 20);
 
