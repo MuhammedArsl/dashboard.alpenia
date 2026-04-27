@@ -411,19 +411,18 @@ function alpenia_handle_secure_download() {
 }
 add_action('init', 'alpenia_handle_secure_download', 1);
 
+function alpenia_roles_require_mfa($roles) {
+    $roles = is_array($roles) ? $roles : [];
+    $requires_mfa = array_intersect($roles, ['administrator', 'backoffice', 'manager', 'superadmin', 'staff']);
+    return !empty($requires_mfa);
+}
+
 function alpenia_validate_mfa_for_privileged($user) {
     if (!$user || !($user instanceof WP_User)) {
         return $user;
     }
 
-    $mfa_exempt_emails = ['office@holytravel.at'];
-    if (in_array(strtolower((string) $user->user_email), $mfa_exempt_emails, true)) {
-        return $user;
-    }
-
-    $roles = (array) $user->roles;
-    $requires_mfa = array_intersect($roles, ['administrator', 'backoffice', 'manager', 'superadmin', 'staff']);
-    if (empty($requires_mfa)) {
+    if (!alpenia_roles_require_mfa((array) $user->roles)) {
         return $user;
     }
 
@@ -435,3 +434,28 @@ function alpenia_validate_mfa_for_privileged($user) {
     return $user;
 }
 add_filter('wp_authenticate_user', 'alpenia_validate_mfa_for_privileged', 20);
+
+function alpenia_auto_enable_mfa_for_privileged_user($user_id) {
+    $user = get_user_by('id', (int) $user_id);
+    if (!$user || !($user instanceof WP_User)) {
+        return;
+    }
+
+    if (!alpenia_roles_require_mfa((array) $user->roles)) {
+        return;
+    }
+
+    update_user_meta($user->ID, 'alpenia_mfa_enabled', 1);
+    alpenia_security_log('mfa_auto_enabled', ['target_user_id' => (int) $user->ID]);
+}
+add_action('user_register', 'alpenia_auto_enable_mfa_for_privileged_user', 20);
+
+function alpenia_auto_enable_mfa_on_role_change($user_id, $role, $old_roles) {
+    if (!alpenia_roles_require_mfa([$role])) {
+        return;
+    }
+
+    update_user_meta((int) $user_id, 'alpenia_mfa_enabled', 1);
+    alpenia_security_log('mfa_auto_enabled', ['target_user_id' => (int) $user_id, 'role' => (string) $role]);
+}
+add_action('set_user_role', 'alpenia_auto_enable_mfa_on_role_change', 20, 3);
