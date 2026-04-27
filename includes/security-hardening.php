@@ -196,8 +196,11 @@ function alpenia_login_session_regeneration($user_login, $user) {
     }
 
     if (class_exists('WP_Session_Tokens')) {
-        $manager = WP_Session_Tokens::get_instance($user->ID);
-        $manager->destroy_others(wp_get_session_token());
+        $current_token = wp_get_session_token();
+        if (is_string($current_token) && $current_token !== '') {
+            $manager = WP_Session_Tokens::get_instance($user->ID);
+            $manager->destroy_others($current_token);
+        }
     }
 
     update_user_meta($user->ID, 'alpenia_last_activity', time());
