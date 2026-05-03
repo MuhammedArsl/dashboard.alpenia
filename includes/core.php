@@ -298,6 +298,28 @@ function alpenia_travel_get_translations() {
 function alpenia_travel_t($text) {
     $lang = alpenia_travel_get_language();
     $translations = alpenia_travel_get_translations();
+    $extra_tr = [
+        'Fehlende Unterlagen im Überblick' => 'Eksik belgeler genel bakış',
+        'Zum Dashboard' => 'Kontrol paneline git',
+        'Ungültige Anmeldedaten.' => 'Geçersiz giriş bilgileri.',
+        'Bitte E-Mail und Passwort eingeben.' => 'Lütfen e-posta ve şifre girin.',
+        'Passwort vergessen' => 'Şifremi unuttum',
+        'Passwort ändern' => 'Şifreyi değiştir',
+        'Login' => 'Giriş',
+        'Kulturreisen' => 'Kültür gezileri',
+        'Willkommen zurück' => 'Tekrar hoş geldiniz',
+        'Melde dich an, um dein Dashboard zu öffnen.' => 'Kontrol panelinizi açmak için giriş yapın.',
+        'Reset-Link senden' => 'Sıfırlama bağlantısı gönder',
+        'Zurück zum Login' => 'Girişe dön',
+        'Neues Passwort (mind. 12 Zeichen)' => 'Yeni şifre (en az 12 karakter)',
+        'Passwort speichern' => 'Şifreyi kaydet',
+        'Passwort vergessen?' => 'Şifrenizi mi unuttunuz?',
+        'Reisepassnummer' => 'Pasaport numarası',
+    ];
+
+    if (isset($translations['tr']) && is_array($translations['tr'])) {
+        $translations['tr'] = array_merge($translations['tr'], $extra_tr);
+    }
 
     if ($lang === 'tr' && isset($translations['tr'][$text])) {
         return $translations['tr'][$text];

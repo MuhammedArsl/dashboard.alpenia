@@ -227,7 +227,7 @@ function alpenia_login_shortcode() {
         return $layout_styles . '<div class="alpenia-login-page-shell">
             <div class="alpenia-login-card" style="padding:36px;text-align:center;">
                 Du bist bereits eingeloggt.<br><br>
-                <a href="' . esc_url(alpenia_get_dashboard_url()) . '" style="display:inline-block;color:#d5ffe9;background:linear-gradient(135deg,#1e664f,#2f9574);padding:10px 16px;border-radius:10px;font-weight:700;text-decoration:none;">Zum Dashboard</a>
+                <a href="' . esc_url(alpenia_get_dashboard_url()) . '" style="display:inline-block;color:#d5ffe9;background:linear-gradient(135deg,#1e664f,#2f9574);padding:10px 16px;border-radius:10px;font-weight:700;text-decoration:none;">' . esc_html(alpenia_travel_t('Zum Dashboard')) . '</a>
             </div>
         </div>';
     }
@@ -251,7 +251,7 @@ function alpenia_login_shortcode() {
     if (!function_exists('alpenia_auth_error_message')) {
         function alpenia_auth_error_message($signon_error) {
             if (!is_wp_error($signon_error)) {
-                return 'Ungültige Anmeldedaten.';
+                return alpenia_travel_t('Ungültige Anmeldedaten.');
             }
 
             $codes = (array) $signon_error->get_error_codes();
@@ -261,7 +261,7 @@ function alpenia_login_shortcode() {
             }
 
             if (in_array('incorrect_password', $codes, true) || in_array('invalid_username', $codes, true)) {
-                return 'Ungültige Anmeldedaten.';
+                return alpenia_travel_t('Ungültige Anmeldedaten.');
             }
 
             $first_error = $signon_error->get_error_message();
@@ -302,7 +302,7 @@ function alpenia_login_shortcode() {
                 return $last_error;
             }
 
-            return new WP_Error('invalid_username', 'Ungültige Anmeldedaten.');
+            return new WP_Error('invalid_username', alpenia_travel_t('Ungültige Anmeldedaten.'));
         }
     }
 
@@ -396,7 +396,7 @@ function alpenia_login_shortcode() {
 
         if (empty($error)) {
             if (empty($email) || empty($password)) {
-                $error = 'Bitte E-Mail und Passwort eingeben.';
+                $error = alpenia_travel_t('Bitte E-Mail und Passwort eingeben.');
             } else {
                 if (!empty($email)) {
                     $user = get_user_by('email', $email);
@@ -426,7 +426,7 @@ function alpenia_login_shortcode() {
                         alpenia_security_log('login_failed', ['email_hash' => hash('sha256', strtolower($email))]);
                     }
                 } else {
-                    $error = 'Ungültige Anmeldedaten.';
+                    $error = alpenia_travel_t('Ungültige Anmeldedaten.');
                     alpenia_security_log('login_failed', ['email_hash' => hash('sha256', strtolower($email))]);
                 }
             }
@@ -437,17 +437,21 @@ function alpenia_login_shortcode() {
     ?>
     <?php echo $layout_styles; ?>
     <div class="alpenia-login-page-shell">
+        <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
+            <a href="<?php echo esc_url(add_query_arg('ui_lang', 'de')); ?>" class="alpenia-login-nav-pill" style="text-decoration:none;"><?php echo esc_html(alpenia_travel_t('Deutsch')); ?></a>
+            <a href="<?php echo esc_url(add_query_arg('ui_lang', 'tr')); ?>" class="alpenia-login-nav-pill" style="text-decoration:none;"><?php echo esc_html(alpenia_travel_t('Türkçe')); ?></a>
+        </div>
         <nav class="alpenia-login-nav" aria-label="Travel sections">
             <ul class="alpenia-login-nav-list">
-                <li><span class="alpenia-login-nav-pill is-active"><?php echo $mode === 'reset_request' ? 'Passwort vergessen' : ($mode === 'reset' ? 'Passwort ändern' : 'Login'); ?></span></li>
-                <li><span class="alpenia-login-nav-pill">Kulturreisen</span></li>
+                <li><span class="alpenia-login-nav-pill is-active"><?php echo esc_html($mode === 'reset_request' ? alpenia_travel_t('Passwort vergessen') : ($mode === 'reset' ? alpenia_travel_t('Passwort ändern') : alpenia_travel_t('Login'))); ?></span></li>
+                <li><span class="alpenia-login-nav-pill"><?php echo esc_html(alpenia_travel_t('Kulturreisen')); ?></span></li>
                 <li><span class="alpenia-login-nav-pill">Umrah</span></li>
                 <li><span class="alpenia-login-nav-pill">Hajj</span></li>
             </ul>
         </nav>
         <div class="alpenia-login-card">
-        <h2 class="alpenia-login-title">Willkommen zurück</h2>
-        <p class="alpenia-login-subtitle">Melde dich an, um dein Dashboard zu öffnen.</p>
+        <h2 class="alpenia-login-title"><?php echo esc_html(alpenia_travel_t('Willkommen zurück')); ?></h2>
+        <p class="alpenia-login-subtitle"><?php echo esc_html(alpenia_travel_t('Melde dich an, um dein Dashboard zu öffnen.')); ?></p>
 
         <?php if ($debug_mode) : ?>
             <div style="margin:0 0 14px;padding:10px;border-radius:10px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.12);font-size:12px;line-height:1.5;">
@@ -472,11 +476,11 @@ function alpenia_login_shortcode() {
         <form class="alpenia-login-form" method="post">
             <?php wp_nonce_field('alpenia_reset_action', 'alpenia_reset_nonce'); ?>
             <p class="alpenia-form-group">
-                <label class="alpenia-form-label" for="alpenia-reset-email">E-Mail</label>
+                <label class="alpenia-form-label" for="alpenia-reset-email"><?php echo esc_html(alpenia_travel_t('E-Mail')); ?></label>
                 <input id="alpenia-reset-email" type="email" name="email" required>
             </p>
-            <p class="alpenia-login-submit"><button type="submit" name="alpenia_request_reset">Reset-Link senden</button></p>
-            <p><a style="color:#fff;" href="<?php echo esc_url(alpenia_get_login_url()); ?>">Zurück zum Login</a></p>
+            <p class="alpenia-login-submit"><button type="submit" name="alpenia_request_reset"><?php echo esc_html(alpenia_travel_t('Reset-Link senden')); ?></button></p>
+            <p><a style="color:#fff;" href="<?php echo esc_url(alpenia_get_login_url()); ?>"><?php echo esc_html(alpenia_travel_t('Zurück zum Login')); ?></a></p>
         </form>
         <?php elseif ($mode === 'reset') : ?>
         <form class="alpenia-login-form" method="post">
@@ -484,30 +488,30 @@ function alpenia_login_shortcode() {
             <input type="hidden" name="uid" value="<?php echo (int) ($_GET['uid'] ?? 0); ?>">
             <input type="hidden" name="token" value="<?php echo esc_attr(sanitize_text_field(wp_unslash($_GET['token'] ?? ''))); ?>">
             <p class="alpenia-form-group">
-                <label class="alpenia-form-label" for="alpenia-new-password">Neues Passwort (mind. 12 Zeichen)</label>
+                <label class="alpenia-form-label" for="alpenia-new-password"><?php echo esc_html(alpenia_travel_t('Neues Passwort (mind. 12 Zeichen)')); ?></label>
                 <input id="alpenia-new-password" type="password" name="new_password" minlength="12" required>
             </p>
-            <p class="alpenia-login-submit"><button type="submit" name="alpenia_set_new_password">Passwort speichern</button></p>
+            <p class="alpenia-login-submit"><button type="submit" name="alpenia_set_new_password"><?php echo esc_html(alpenia_travel_t('Passwort speichern')); ?></button></p>
         </form>
         <?php else : ?>
         <form class="alpenia-login-form" method="post">
             <?php wp_nonce_field('alpenia_login_action', 'alpenia_login_nonce'); ?>
             <p class="alpenia-form-group">
-                <label class="alpenia-form-label" for="alpenia-login-email">E-Mail</label>
+                <label class="alpenia-form-label" for="alpenia-login-email"><?php echo esc_html(alpenia_travel_t('E-Mail')); ?></label>
                 <input id="alpenia-login-email" type="email" name="email" required>
             </p>
 
             <p class="alpenia-form-group">
-                <label class="alpenia-form-label" for="alpenia-login-password">Passwort</label>
+                <label class="alpenia-form-label" for="alpenia-login-password"><?php echo esc_html(alpenia_travel_t('Passwort')); ?></label>
                 <input id="alpenia-login-password" type="password" name="password" required>
             </p>
 
             <p class="alpenia-login-submit">
                 <button type="submit" name="alpenia_login">
-                    Login
+                    <?php echo esc_html(alpenia_travel_t('Login')); ?>
                 </button>
             </p>
-            <p><a style="color:#fff;" href="<?php echo esc_url(add_query_arg('mode', 'reset_request', alpenia_get_login_url())); ?>">Passwort vergessen?</a></p>
+            <p><a style="color:#fff;" href="<?php echo esc_url(add_query_arg('mode', 'reset_request', alpenia_get_login_url())); ?>"><?php echo esc_html(alpenia_travel_t('Passwort vergessen?')); ?></a></p>
         </form>
         <?php endif; ?>
         </div>
