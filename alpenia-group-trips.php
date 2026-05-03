@@ -3,6 +3,8 @@
  * Plugin Name: Alpenia Travel Operations Dashboard
  * Description: Dashboard für Reisen, Teilnehmer, Dokumente, Zahlungen, Gruppenplanung und Benutzerverwaltung.
  * Version: 4.4
+ * Text Domain: alpenia-travel
+ * Domain Path: /languages
  */
 
 if (!defined('ABSPATH')) exit;
@@ -21,3 +23,13 @@ require_once ALPENIA_PLUGIN_DIR . 'includes/security.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/dashboard-shortcode.php';
 
 
+
+
+add_action('plugins_loaded', 'alpenia_travel_load_textdomain');
+function alpenia_travel_load_textdomain() {
+    load_plugin_textdomain(
+        'alpenia-travel',
+        false,
+        dirname(plugin_basename(__FILE__)) . '/languages'
+    );
+}

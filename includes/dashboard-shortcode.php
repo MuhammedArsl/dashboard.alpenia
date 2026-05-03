@@ -100,7 +100,7 @@ function alpenia_dashboard_shortcode() {
                     update_post_meta($trip_id, 'zoom_link', $zoom_link);
                     alpenia_update_secure_meta($trip_id, 'internal_notes', $internal_notes);
 
-                    alpenia_send_notification('Neue Reise erstellt', 'Eine neue Reise wurde erstellt: ' . $trip_title);
+                    alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
                     $message = '<div class="alpenia-success">Reise erfolgreich erstellt.</div>';
                 } else {
                     $message = '<div class="alpenia-message">Fehler beim Erstellen der Reise.</div>';
