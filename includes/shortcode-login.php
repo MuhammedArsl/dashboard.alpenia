@@ -236,7 +236,7 @@ function alpenia_login_shortcode() {
     $success = '';
     $mode = isset($_GET['mode']) ? sanitize_key($_GET['mode']) : 'login';
 
-    if (isset($_GET['session_expired']) && $_GET['session_expired'] === '1') {
+    if (isset($_GET['session_expired']) && $_GET['session_expired'] === '1' && $_SERVER['REQUEST_METHOD'] === 'GET') {
         $error = 'Deine Sitzung ist wegen Inaktivität abgelaufen. Bitte erneut einloggen.';
         wp_clear_auth_cookie();
     }
