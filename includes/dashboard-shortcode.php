@@ -1583,7 +1583,7 @@ function alpenia_dashboard_shortcode() {
                                     <th>E-Mail</th>
                                     <th>Rolle</th>
                                     <th>Status</th>
-                                    <th>Aktion</th>
+                                    <th><?php echo esc_html(alpenia_travel_t('Aktion')); ?></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -1690,20 +1690,20 @@ function alpenia_dashboard_shortcode() {
                 </div>
 
                 <div class="panel">
-                    <h2>Reisen mit Teilnehmerliste</h2>
+                    <h2><?php echo esc_html(alpenia_travel_t('Reisen mit Teilnehmerliste')); ?></h2>
 
                     <form method="get" class="filter-bar">
-                        <input type="text" name="trip_search" value="<?php echo esc_attr($trip_search); ?>" placeholder="Reise oder Ziel suchen">
+                        <input type="text" name="trip_search" value="<?php echo esc_attr($trip_search); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('Reise oder Ziel suchen')); ?>">
 
                         <select name="trip_type_filter">
-                            <option value="">Alle Reisearten</option>
+                            <option value=""><?php echo esc_html(alpenia_travel_t('Alle Reisearten')); ?></option>
                             <option value="kultur" <?php selected($trip_type_filter, 'kultur'); ?>>Kulturreise</option>
                             <option value="umrah" <?php selected($trip_type_filter, 'umrah'); ?>>Umrah</option>
                             <option value="hajj" <?php selected($trip_type_filter, 'hajj'); ?>>Hajj</option>
                         </select>
 
                         <select name="trip_status_filter">
-                            <option value="">Alle Status</option>
+                            <option value=""><?php echo esc_html(alpenia_travel_t('Alle Status')); ?></option>
                             <option value="draft" <?php selected($trip_status_filter, 'draft'); ?>>Entwurf</option>
                             <option value="open" <?php selected($trip_status_filter, 'open'); ?>>Offen</option>
                             <option value="full" <?php selected($trip_status_filter, 'full'); ?>>Voll</option>
@@ -1711,7 +1711,7 @@ function alpenia_dashboard_shortcode() {
                         </select>
 
                         <select name="trip_country_filter">
-                            <option value="">Alle Länder</option>
+                            <option value=""><?php echo esc_html(alpenia_travel_t('Alle Länder')); ?></option>
                             <?php foreach ($countries as $country_option) : ?>
                                 <option value="<?php echo esc_attr($country_option); ?>" <?php selected($trip_country_filter, $country_option); ?>>
                                     <?php echo esc_html($country_option); ?>
@@ -1720,7 +1720,7 @@ function alpenia_dashboard_shortcode() {
                         </select>
 
                         <select name="trip_city_filter">
-                            <option value="">Alle Städte</option>
+                            <option value=""><?php echo esc_html(alpenia_travel_t('Alle Städte')); ?></option>
                             <?php foreach ($cities as $city_option) : ?>
                                 <option value="<?php echo esc_attr($city_option); ?>" <?php selected($trip_city_filter, $city_option); ?>>
                                     <?php echo esc_html($city_option); ?>
@@ -1730,7 +1730,7 @@ function alpenia_dashboard_shortcode() {
 
                         <?php if (alpenia_is_admin_user() || alpenia_is_backoffice_user()) : ?>
                             <select name="guide_filter">
-                                <option value="">Alle Reiseleiter</option>
+                                <option value=""><?php echo esc_html(alpenia_travel_t('Alle Reiseleiter')); ?></option>
                                 <?php foreach ($guides as $guide) : ?>
                                     <option value="<?php echo esc_attr($guide->ID); ?>" <?php selected($guide_filter, $guide->ID); ?>>
                                         <?php echo esc_html($guide->display_name); ?>
@@ -1739,8 +1739,8 @@ function alpenia_dashboard_shortcode() {
                             </select>
                         <?php endif; ?>
 
-                        <button type="submit" class="btn-primary">Filtern</button>
-                        <a href="<?php echo esc_url(alpenia_dashboard_link()); ?>" class="btn-secondary">Zurücksetzen</a>
+                        <button type="submit" class="btn-primary"><?php echo esc_html(alpenia_travel_t('Filtern')); ?></button>
+                        <a href="<?php echo esc_url(alpenia_dashboard_link()); ?>" class="btn-secondary"><?php echo esc_html(alpenia_travel_t('Zurücksetzen')); ?></a>
                     </form>
 
                     <?php if ($filtered_trips) : ?>
@@ -1765,15 +1765,15 @@ function alpenia_dashboard_shortcode() {
                                             <?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($trip->ID, 'trip_status', true))); ?>
                                         </span>
                                         <span>
-                                            Freie Plätze: <?php echo esc_html(alpenia_get_trip_capacity_left($trip->ID)); ?>
-                                            · Reiseleiter: <?php echo esc_html($guide_name); ?>
+                                            <?php echo esc_html(alpenia_travel_t('Freie Plätze')); ?>: <?php echo esc_html(alpenia_get_trip_capacity_left($trip->ID)); ?>
+                                            · <?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?>: <?php echo esc_html($guide_name); ?>
                                             · Start: <?php echo esc_html(get_post_meta($trip->ID, 'start_date', true)); ?>
                                             · Ende: <?php echo esc_html(get_post_meta($trip->ID, 'end_date', true)); ?>
                                         </span>
                                     </div>
                                     <div class="list-actions">
-                                        <span class="badge"><?php echo count($trip_participants); ?> Teilnehmer</span>
-                                        <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip->ID])); ?>">Teilnehmer ansehen</a>
+                                        <span class="badge"><?php echo count($trip_participants); ?> <?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></span>
+                                        <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer ansehen')); ?></a>
                                         <?php if (alpenia_user_can_delete_trip($trip->ID)) : ?>
                                             <a class="table-btn table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $trip->ID, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');">Löschen</a>
                                         <?php endif; ?>
@@ -1782,22 +1782,22 @@ function alpenia_dashboard_shortcode() {
                             <?php endforeach; ?>
                         </ul>
                     <?php else : ?>
-                        <p>Keine Reisen für diese Suche / Filter gefunden.</p>
+                        <p><?php echo esc_html(alpenia_travel_t('Keine Reisen für diese Suche / Filter gefunden.')); ?></p>
                     <?php endif; ?>
                 </div>
 
                 <div class="panel" style="margin-top:20px;">
-                    <h2>Fehlende Unterlagen im Überblick</h2>
+                    <h2><?php echo esc_html(alpenia_travel_t('Fehlende Unterlagen im Überblick')); ?></h2>
 
                     <?php if (!empty($missing_docs_items)) : ?>
                         <div class="table-wrap">
                             <table class="alpenia-table">
                                 <thead>
                                     <tr>
-                                        <th>Reise</th>
-                                        <th>Teilnehmer</th>
-                                        <th>Fehlende Unterlagen</th>
-                                        <th>Aktion</th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Reise')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Fehlende Unterlagen')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Aktion')); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1807,8 +1807,8 @@ function alpenia_dashboard_shortcode() {
                                             <td><?php echo esc_html($item['participant_name']); ?></td>
                                             <td><?php echo esc_html(!empty($item['missing_docs']) ? implode(', ', $item['missing_docs']) : '—'); ?></td>
                                             <td>
-                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>">Reise öffnen</a>
-                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>">Teilnehmer öffnen</a>
+                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -1816,23 +1816,23 @@ function alpenia_dashboard_shortcode() {
                             </table>
                         </div>
                     <?php else : ?>
-                        <p>Aktuell keine fehlenden Unterlagen.</p>
+                        <p><?php echo esc_html(alpenia_travel_t('Aktuell keine fehlenden Unterlagen.')); ?></p>
                     <?php endif; ?>
                 </div>
 
                 <div class="panel" style="margin-top:20px;">
-                    <h2>Offene Zahlungen im Überblick</h2>
+                    <h2><?php echo esc_html(alpenia_travel_t('Offene Zahlungen im Überblick')); ?></h2>
 
                     <?php if (!empty($open_payments_items)) : ?>
                         <div class="table-wrap">
                             <table class="alpenia-table">
                                 <thead>
                                     <tr>
-                                        <th>Reise</th>
-                                        <th>Teilnehmer</th>
-                                        <th>Offener Betrag</th>
-                                        <th>Zahlungsstatus</th>
-                                        <th>Aktion</th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Reise')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Offener Betrag')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Zahlungsstatus')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Aktion')); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1843,8 +1843,8 @@ function alpenia_dashboard_shortcode() {
                                             <td>€ <?php echo esc_html(number_format($item['payment_open'], 2, ',', '.')); ?></td>
                                             <td><?php echo esc_html($item['payment_status']); ?></td>
                                             <td>
-                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>">Reise öffnen</a>
-                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>">Teilnehmer öffnen</a>
+                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -1852,12 +1852,12 @@ function alpenia_dashboard_shortcode() {
                             </table>
                         </div>
                     <?php else : ?>
-                        <p>Aktuell keine offenen Zahlungen.</p>
+                        <p><?php echo esc_html(alpenia_travel_t('Aktuell keine offenen Zahlungen.')); ?></p>
                     <?php endif; ?>
                 </div>
 
                 <div class="panel" style="margin-top:20px;">
-                    <h2>Letzte Teilnehmer</h2>
+                    <h2><?php echo esc_html(alpenia_travel_t('Letzte Teilnehmer')); ?></h2>
                     <?php if ($participants) : ?>
                         <ul class="list-table">
                             <?php foreach (array_slice($participants, 0, 5) as $participant) :
@@ -1867,14 +1867,14 @@ function alpenia_dashboard_shortcode() {
                                 <li>
                                     <div class="list-main">
                                         <strong><?php echo esc_html(trim($gender . ' ' . $participant->post_title)); ?></strong>
-                                        <span><?php echo $trip_id ? esc_html(get_the_title($trip_id)) : 'Keine Reise'; ?></span>
+                                        <span><?php echo $trip_id ? esc_html(get_the_title($trip_id)) : esc_html(alpenia_travel_t('Keine Reise')); ?></span>
                                         <span><?php echo wp_kses_post(alpenia_get_participant_doc_badge($participant->ID)); ?></span>
                                     </div>
                                 </li>
                             <?php endforeach; ?>
                         </ul>
                     <?php else : ?>
-                        <p>Noch keine Teilnehmer vorhanden.</p>
+                        <p><?php echo esc_html(alpenia_travel_t('Noch keine Teilnehmer vorhanden.')); ?></p>
                     <?php endif; ?>
                 </div>
 

@@ -174,13 +174,13 @@ function alpenia_trip_status_badge($status) {
 
     switch ($status) {
         case 'draft':
-            return '<span class="status-badge status-gray">Entwurf</span>';
+            return '<span class="status-badge status-gray">' . esc_html(alpenia_travel_t('Entwurf')) . '</span>';
         case 'open':
-            return '<span class="status-badge status-green">Offen</span>';
+            return '<span class="status-badge status-green">' . esc_html(alpenia_travel_t('Offen')) . '</span>';
         case 'full':
-            return '<span class="status-badge status-yellow">Voll</span>';
+            return '<span class="status-badge status-yellow">' . esc_html(alpenia_travel_t('Voll')) . '</span>';
         case 'closed':
-            return '<span class="status-badge status-red">Abgeschlossen</span>';
+            return '<span class="status-badge status-red">' . esc_html(alpenia_travel_t('Abgeschlossen')) . '</span>';
         default:
             return '<span class="status-badge status-gray">—</span>';
     }
@@ -267,14 +267,14 @@ function alpenia_get_participant_doc_badge($participant_id) {
     $score = alpenia_get_participant_doc_score($participant_id);
 
     if ($score === 'complete') {
-        return '<span class="status-badge status-green">Unterlagen komplett</span>';
+        return '<span class="status-badge status-green">' . esc_html(alpenia_travel_t('Unterlagen komplett')) . '</span>';
     }
 
     if ($score === 'partial') {
         return '<span class="status-badge status-yellow"></span>';
     }
 
-    return '<span class="status-badge status-red">Unterlagen fehlen</span>';
+    return '<span class="status-badge status-red">' . esc_html(alpenia_travel_t('Unterlagen fehlen')) . '</span>';
 }
 
 function alpenia_get_missing_docs_details($participant_id) {
