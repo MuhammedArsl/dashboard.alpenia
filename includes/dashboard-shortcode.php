@@ -297,7 +297,7 @@ function alpenia_dashboard_shortcode() {
                     alpenia_send_notification('Neue Teilnehmer erfasst', $saved_count . ' Teilnehmer wurden für eine Reise gespeichert.');
                     $message = '<div class="alpenia-success">' . (int) $saved_count . ' ' . esc_html(alpenia_travel_t('Teilnehmer erfolgreich gespeichert.')) . '</div>';
                 } elseif ($message === '') {
-                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von, Aufenthaltstitel gültig bis und Aufenthaltstitel Pflicht.</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' ' . esc_html(alpenia_travel_t('Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von, Aufenthaltstitel gültig bis und Aufenthaltstitel Pflicht.')) . '</div>';
                 }
             }
         }
@@ -355,9 +355,9 @@ function alpenia_dashboard_shortcode() {
             $is_eu_or_schengen_citizen = alpenia_is_eu_or_schengen_nationality($nationality);
 
             if (empty($gender) || empty($first_name) || empty($last_name) || empty($nationality) || empty($passport_valid_from) || empty($passport_expiry)) {
-                $message = '<div class="alpenia-message">Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von und Reisepass gültig bis ausfüllen.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von und Reisepass gültig bis ausfüllen.')) . '</div>';
             } elseif (!$is_eu_or_schengen_citizen && (empty($visa_number) || empty($visa_valid_from) || empty($visa_expiry_date))) {
-                $message = '<div class="alpenia-message">Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.')) . '</div>';
             } else {
                 wp_update_post([
                     'ID'         => $participant_id,
@@ -1462,7 +1462,7 @@ function alpenia_dashboard_shortcode() {
                             </table>
                         </div>
                     <?php else : ?>
-                        <p>Noch keine Teilnehmer für diese Reise vorhanden.</p>
+                        <p><?php echo esc_html(alpenia_travel_t('Noch keine Teilnehmer für diese Reise vorhanden.')); ?></p>
                     <?php endif; ?>
                 </div>
 
@@ -1475,7 +1475,7 @@ function alpenia_dashboard_shortcode() {
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
                             <h1><?php echo esc_html(alpenia_travel_t("Benutzerverwaltung")); ?></h1>
-                            <p>Reiseleiter und Backoffice verwalten</p>
+                            <p><?php echo esc_html(alpenia_travel_t('Reiseleiter und Backoffice verwalten')); ?></p>
                         </div>
                     </div>
                     <div class="actions">
