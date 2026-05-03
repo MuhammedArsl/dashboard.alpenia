@@ -17,6 +17,21 @@ function alpenia_dashboard_logout_button() {
     return ob_get_clean();
 }
 
+
+function alpenia_dashboard_language_switcher() {
+    $de_url = alpenia_dashboard_link(array_merge($_GET, ['ui_lang' => 'de']));
+    $tr_url = alpenia_dashboard_link(array_merge($_GET, ['ui_lang' => 'tr']));
+
+    ob_start();
+    ?>
+    <div class="dashboard-language-switch" role="group" aria-label="Language switch">
+        <a class="btn-secondary" href="<?php echo esc_url($de_url); ?>" title="Deutsch">🇩🇪 DE</a>
+        <a class="btn-secondary" href="<?php echo esc_url($tr_url); ?>" title="Türkçe">🇹🇷 TR</a>
+    </div>
+    <?php
+    return ob_get_clean();
+}
+
 function alpenia_dashboard_shortcode() {
     if (!defined('DONOTCACHEPAGE')) {
         define('DONOTCACHEPAGE', true);
@@ -718,7 +733,8 @@ function alpenia_dashboard_shortcode() {
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>">Zurück zum Dashboard</a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_t("Zurück zum Dashboard", "Panele geri dön")); ?></a>
+                        <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
                 </div>
@@ -831,7 +847,8 @@ function alpenia_dashboard_shortcode() {
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>">Zurück zum Dashboard</a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_t("Zurück zum Dashboard", "Panele geri dön")); ?></a>
+                        <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
                 </div>
@@ -886,6 +903,7 @@ function alpenia_dashboard_shortcode() {
                     </div>
                     <div class="actions">
                         <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link(['add_participant' => 1])); ?>">Zurück</a>
+                        <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
                 </div>
@@ -1115,6 +1133,7 @@ function alpenia_dashboard_shortcode() {
                     </div>
                     <div class="actions">
                         <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip_id])); ?>">Zurück zur Reise</a>
+                        <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
                 </div>
@@ -1324,7 +1343,8 @@ function alpenia_dashboard_shortcode() {
                         <?php if (alpenia_user_can_delete_trip($view_trip_id)) : ?>
                             <a class="btn-secondary table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $view_trip_id, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('Reise wirklich löschen? Alle zugehörigen Teilnehmer werden ebenfalls gelöscht.');">Reise löschen</a>
                         <?php endif; ?>
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>">Zurück zum Dashboard</a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_t("Zurück zum Dashboard", "Panele geri dön")); ?></a>
+                        <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
                 </div>
@@ -1459,7 +1479,8 @@ function alpenia_dashboard_shortcode() {
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>">Zurück zum Dashboard</a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_t("Zurück zum Dashboard", "Panele geri dön")); ?></a>
+                        <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
                 </div>
@@ -1641,6 +1662,7 @@ function alpenia_dashboard_shortcode() {
                         <?php if (alpenia_user_can_manage_users()) : ?>
                             <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1])); ?>">Benutzerverwaltung</a>
                         <?php endif; ?>
+                        <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
                 </div>
@@ -1997,9 +2019,14 @@ function alpenia_dashboard_shortcode() {
         }
 
         .btn-secondary {
-            background: rgba(255,255,255,0.16);
-            color: #f3fffa;
+            background: linear-gradient(135deg, #245845, #2f7460);
+            color: #fff;
             border: 1px solid rgba(167, 197, 184, 0.45);
+        }
+
+        .dashboard-language-switch {
+            display: inline-flex;
+            gap: 8px;
         }
 
         .btn-logout {
@@ -2037,7 +2064,7 @@ function alpenia_dashboard_shortcode() {
         .btn-primary:active { background: linear-gradient(135deg, #163e32, #225a49); }
         .btn-secondary:hover,
         .btn-secondary:focus,
-        .btn-secondary:active { background: rgba(39, 72, 61, 0.95); }
+        .btn-secondary:active { background: linear-gradient(135deg, #1d4a3a, #275f4e); }
         .btn-logout:hover,
         .btn-logout:focus,
         .btn-logout:active,

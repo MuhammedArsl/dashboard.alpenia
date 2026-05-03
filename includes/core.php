@@ -244,6 +244,34 @@ function alpenia_get_login_url() {
     return $login_url;
 }
 
+
+function alpenia_get_ui_lang() {
+    $allowed = ['de', 'tr'];
+
+    if (isset($_GET['ui_lang'])) {
+        $lang = sanitize_key(wp_unslash($_GET['ui_lang']));
+        if (in_array($lang, $allowed, true)) {
+            if (!headers_sent()) {
+                setcookie('alpenia_ui_lang', $lang, time() + MONTH_IN_SECONDS * 6, COOKIEPATH ?: '/', COOKIE_DOMAIN, is_ssl(), true);
+            }
+            return $lang;
+        }
+    }
+
+    if (isset($_COOKIE['alpenia_ui_lang'])) {
+        $cookie_lang = sanitize_key(wp_unslash($_COOKIE['alpenia_ui_lang']));
+        if (in_array($cookie_lang, $allowed, true)) {
+            return $cookie_lang;
+        }
+    }
+
+    return 'de';
+}
+
+function alpenia_t($de, $tr) {
+    return alpenia_get_ui_lang() === 'tr' ? $tr : $de;
+}
+
 function alpenia_dashboard_link($args = []) {
     global $post;
     if ($post && !empty($post->post_content) && has_shortcode($post->post_content, 'alpenia_dashboard')) {
