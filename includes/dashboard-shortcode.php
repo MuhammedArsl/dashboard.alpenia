@@ -25,8 +25,8 @@ function alpenia_dashboard_language_switcher() {
     ob_start();
     ?>
     <div class="dashboard-language-switch" role="group" aria-label="Language switch">
-        <a class="btn-secondary" href="<?php echo esc_url($de_url); ?>" title="Deutsch">🇩🇪 DE</a>
-        <a class="btn-secondary" href="<?php echo esc_url($tr_url); ?>" title="Türkçe">🇹🇷 TR</a>
+        <a class="lang-flag" href="<?php echo esc_url($de_url); ?>" title="Deutsch" aria-label="Deutsch">🇩🇪</a>
+        <a class="lang-flag" href="<?php echo esc_url($tr_url); ?>" title="Türkçe" aria-label="Türkçe">🇹🇷</a>
     </div>
     <?php
     return ob_get_clean();
@@ -2025,8 +2025,39 @@ function alpenia_dashboard_shortcode() {
         }
 
         .dashboard-language-switch {
+            position: fixed;
+            top: 16px;
+            right: 16px;
+            z-index: 9999;
             display: inline-flex;
-            gap: 8px;
+            gap: 6px;
+            background: rgba(16, 56, 45, 0.88);
+            border: 1px solid rgba(167, 197, 184, 0.4);
+            border-radius: 999px;
+            padding: 6px 8px;
+            backdrop-filter: blur(6px);
+        }
+
+        .lang-flag {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 36px;
+            height: 36px;
+            border-radius: 999px;
+            font-size: 21px;
+            line-height: 1;
+            text-decoration: none;
+            background: rgba(255,255,255,0.14);
+            border: 1px solid rgba(255,255,255,0.22);
+        }
+
+        .lang-flag:hover,
+        .lang-flag:focus,
+        .lang-flag:active {
+            background: rgba(255,255,255,0.24);
+            transform: translateY(-1px);
+            outline: none;
         }
 
         .btn-logout {
