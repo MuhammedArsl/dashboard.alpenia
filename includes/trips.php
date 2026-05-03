@@ -148,11 +148,22 @@ function alpenia_get_trip_capacity_left($trip_id) {
  */
 function alpenia_doc_status_label($attachment_id, $optional = false) {
     if ($attachment_id) {
-        return '<span class="doc-ok">Vorhanden</span>';
+        return '<span class="doc-ok">' . esc_html__('Vorhanden', 'alpenia-travel') . '</span>';
     }
     return $optional
-        ? '<span class="doc-optional">Optional</span>'
-        : '<span class="doc-missing">Fehlt</span>';
+        ? '<span class="doc-optional">' . esc_html__('Optional', 'alpenia-travel') . '</span>'
+        : '<span class="doc-missing">' . esc_html__('Nicht vorhanden', 'alpenia-travel') . '</span>';
+}
+
+function alpenia_travel_translate_label($value) {
+    $labels = [
+        'offen' => __('offen', 'alpenia-travel'),
+        'neu' => __('neu', 'alpenia-travel'),
+        'bezahlt' => __('bezahlt', 'alpenia-travel'),
+        'nicht bezahlt' => __('nicht bezahlt', 'alpenia-travel'),
+    ];
+
+    return $labels[$value] ?? $value;
 }
 
 /**
