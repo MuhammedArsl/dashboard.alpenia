@@ -308,7 +308,7 @@ function alpenia_login_shortcode() {
 
     if (isset($_POST['alpenia_request_reset'])) {
         if (!isset($_POST['alpenia_reset_nonce']) || !wp_verify_nonce($_POST['alpenia_reset_nonce'], 'alpenia_reset_action')) {
-            $error = 'Sicherheitsfehler. Bitte erneut versuchen.';
+            $error = esc_html__('Sicherheitsfehler. Bitte erneut versuchen.', 'alpenia-travel');
         } else {
             $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
             if (!empty($email)) {
@@ -331,7 +331,7 @@ function alpenia_login_shortcode() {
 
     if (isset($_POST['alpenia_set_new_password'])) {
         if (!isset($_POST['alpenia_set_password_nonce']) || !wp_verify_nonce($_POST['alpenia_set_password_nonce'], 'alpenia_set_password_action')) {
-            $error = 'Sicherheitsfehler. Bitte erneut versuchen.';
+            $error = esc_html__('Sicherheitsfehler. Bitte erneut versuchen.', 'alpenia-travel');
             $mode = 'reset';
         } else {
             $user_id = (int) ($_POST['uid'] ?? 0);
