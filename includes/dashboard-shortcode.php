@@ -24,9 +24,9 @@ function alpenia_dashboard_language_switcher() {
 
     ob_start();
     ?>
-    <div class="dashboard-language-switch" role="group" aria-label="Plugin language switch">
-        <a class="lang-link <?php echo alpenia_travel_get_language() === 'de' ? 'active' : ''; ?>" href="<?php echo esc_url($de_url); ?>">Deutsch</a> |
-        <a class="lang-link <?php echo alpenia_travel_get_language() === 'tr' ? 'active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>">Türkçe</a>
+    <div class="dashboard-language-switch" role="group" aria-label="<?php echo esc_attr(alpenia_travel_t('Plugin language switch')); ?>">
+        <a class="lang-link <?php echo alpenia_travel_get_language() === 'de' ? 'active' : ''; ?>" href="<?php echo esc_url($de_url); ?>" title="<?php echo esc_attr(alpenia_travel_t('Deutsch')); ?>" aria-label="<?php echo esc_attr(alpenia_travel_t('Deutsch')); ?>"><span class="flag-icon flag-de" aria-hidden="true"></span></a>
+        <a class="lang-link <?php echo alpenia_travel_get_language() === 'tr' ? 'active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" title="<?php echo esc_attr(alpenia_travel_t('Türkçe')); ?>" aria-label="<?php echo esc_attr(alpenia_travel_t('Türkçe')); ?>"><span class="flag-icon flag-tr" aria-hidden="true"></span></a>
     </div>
     <?php
     return ob_get_clean();
@@ -44,11 +44,11 @@ function alpenia_dashboard_shortcode() {
     $debug_mode = isset($_GET['alpenia_debug_auth']) && $_GET['alpenia_debug_auth'] == '1';
 
     if (!is_user_logged_in()) {
-        return '<div class="alpenia-message">Bitte zuerst einloggen. <a href="' . esc_url(alpenia_get_login_url()) . '" style="color:#8ee0b8;font-weight:bold;">Zum Login</a></div>';
+        return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte zuerst einloggen.')) . ' <a href="' . esc_url(alpenia_get_login_url()) . '" style="color:#8ee0b8;font-weight:bold;">' . esc_html(alpenia_travel_t('Zum Login')) . '</a></div>'; 
     }
 
     if (!alpenia_user_can_access_dashboard()) {
-        return '<div class="alpenia-message">Kein Zugriff.</div>';
+        return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff.')) . '</div>';
     }
 
     $current_user = wp_get_current_user();
@@ -72,7 +72,7 @@ function alpenia_dashboard_shortcode() {
 
     if (isset($_POST['save_trip'])) {
         if (!isset($_POST['alpenia_trip_nonce']) || !wp_verify_nonce($_POST['alpenia_trip_nonce'], 'alpenia_save_trip')) {
-            $message = '<div class="alpenia-message">Sicherheitsfehler. Bitte erneut versuchen.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.')) . '</div>';
         } else {
             $trip_title      = sanitize_text_field($_POST['trip_title'] ?? '');
             $trip_type       = sanitize_text_field($_POST['trip_type'] ?? '');
@@ -90,7 +90,7 @@ function alpenia_dashboard_shortcode() {
             $internal_notes  = sanitize_textarea_field($_POST['internal_notes'] ?? '');
 
             if (empty($trip_title) || empty($trip_type) || empty($destination) || empty($country) || empty($city) || empty($start_date) || empty($end_date)) {
-                $message = '<div class="alpenia-message">Bitte alle Pflichtfelder ausfüllen.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
             } else {
                 $trip_id = wp_insert_post([
                     'post_title'   => $trip_title,
@@ -116,9 +116,9 @@ function alpenia_dashboard_shortcode() {
                     alpenia_update_secure_meta($trip_id, 'internal_notes', $internal_notes);
 
                     alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
-                    $message = '<div class="alpenia-success">Reise erfolgreich erstellt.</div>';
+                    $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
                 } else {
-                    $message = '<div class="alpenia-message">Fehler beim Erstellen der Reise.</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Fehler beim Erstellen der Reise.')) . '</div>';
                 }
             }
         }
@@ -128,7 +128,7 @@ function alpenia_dashboard_shortcode() {
         $trip_id = (int) $_GET['delete_trip'];
 
         if (!alpenia_user_can_delete_trip($trip_id)) {
-            $message = '<div class="alpenia-message">Kein Zugriff zum Löschen dieser Reise.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff zum Löschen dieser Reise.')) . '</div>';
         } elseif (wp_verify_nonce($_GET['_delete_trip_nonce'], 'alpenia_delete_trip_' . $trip_id)) {
             $trip_participants = get_posts([
                 'post_type'   => 'trip_participant',
@@ -143,21 +143,21 @@ function alpenia_dashboard_shortcode() {
             }
 
             wp_delete_post($trip_id, true);
-            $message = '<div class="alpenia-success">Reise wurde gelöscht.</div>';
+            $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise wurde gelöscht.')) . '</div>';
         } else {
-            $message = '<div class="alpenia-message">Löschen nicht erlaubt.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Löschen nicht erlaubt.')) . '</div>';
         }
     }
 
     if (isset($_POST['save_participants_batch'])) {
         if (!isset($_POST['alpenia_participant_batch_nonce']) || !wp_verify_nonce($_POST['alpenia_participant_batch_nonce'], 'alpenia_save_participants_batch')) {
-            $message = '<div class="alpenia-message">Sicherheitsfehler beim Teilnehmerformular.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Teilnehmerformular.')) . '</div>';
         } else {
             $trip_id = (int) ($_POST['trip_id'] ?? 0);
             $participant_count = (int) ($_POST['participant_count'] ?? 0);
 
             if (!$trip_id || $participant_count < 1 || !alpenia_user_can_access_trip($trip_id)) {
-                $message = '<div class="alpenia-message">Ungültige Reise oder kein Zugriff.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Ungültige Reise oder kein Zugriff.')) . '</div>';
             } else {
                 $all_ok = true;
                 $saved_count = 0;
@@ -273,7 +273,7 @@ function alpenia_dashboard_shortcode() {
                     if (is_wp_error($passport_file_id) || is_wp_error($photo_file_id) || is_wp_error($visa_photo_file_id) || is_wp_error($meldezettel_file_id)) {
                         $all_ok = false;
 
-                        $error_text = 'Eine oder mehrere Dateien sind zu groß.';
+                        $error_text = '' . esc_html(alpenia_travel_t('Eine oder mehrere Dateien sind zu groß.')) . '';
                         if (is_wp_error($passport_file_id)) $error_text = $passport_file_id->get_error_message();
                         elseif (is_wp_error($photo_file_id)) $error_text = $photo_file_id->get_error_message();
                         elseif (is_wp_error($visa_photo_file_id)) $error_text = $visa_photo_file_id->get_error_message();
@@ -295,9 +295,9 @@ function alpenia_dashboard_shortcode() {
 
                 if ($all_ok) {
                     alpenia_send_notification('Neue Teilnehmer erfasst', $saved_count . ' Teilnehmer wurden für eine Reise gespeichert.');
-                    $message = '<div class="alpenia-success">' . (int) $saved_count . ' Teilnehmer erfolgreich gespeichert.</div>';
+                    $message = '<div class="alpenia-success">' . (int) $saved_count . ' ' . esc_html(alpenia_travel_t('Teilnehmer erfolgreich gespeichert.')) . '</div>';
                 } elseif ($message === '') {
-                    $message = '<div class="alpenia-message">Bitte alle Pflichtfelder ausfüllen. Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von, Aufenthaltstitel gültig bis und Aufenthaltstitel Pflicht.</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von, Aufenthaltstitel gültig bis und Aufenthaltstitel Pflicht.</div>';
                 }
             }
         }
@@ -307,12 +307,12 @@ function alpenia_dashboard_shortcode() {
         $participant_id = (int) $_GET['delete_participant'];
 
         if (!alpenia_user_can_access_participant($participant_id)) {
-            $message = '<div class="alpenia-message">Kein Zugriff.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff.')) . '</div>';
         } elseif (wp_verify_nonce($_GET['_delete_nonce'], 'alpenia_delete_participant_' . $participant_id)) {
             wp_delete_post($participant_id, true);
-            $message = '<div class="alpenia-success">Teilnehmer wurde gelöscht.</div>';
+            $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Teilnehmer wurde gelöscht.')) . '</div>';
         } else {
-            $message = '<div class="alpenia-message">Löschen nicht erlaubt.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Löschen nicht erlaubt.')) . '</div>';
         }
     }
 
@@ -320,9 +320,9 @@ function alpenia_dashboard_shortcode() {
         $participant_id = (int) ($_POST['participant_id'] ?? 0);
 
         if (!alpenia_user_can_access_participant($participant_id)) {
-            $message = '<div class="alpenia-message">Kein Zugriff.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff.')) . '</div>';
         } elseif (!isset($_POST['alpenia_edit_participant_nonce']) || !wp_verify_nonce($_POST['alpenia_edit_participant_nonce'], 'alpenia_edit_participant_' . $participant_id)) {
-            $message = '<div class="alpenia-message">Sicherheitsfehler beim Bearbeiten.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Bearbeiten.')) . '</div>';
         } else {
             $gender             = sanitize_text_field($_POST['gender'] ?? '');
             $first_name         = sanitize_text_field($_POST['first_name'] ?? '');
@@ -409,7 +409,7 @@ function alpenia_dashboard_shortcode() {
                     if ($visa_photo_file_id) update_post_meta($participant_id, 'visa_photo_file_id', $visa_photo_file_id);
                     if ($meldezettel_file_id) update_post_meta($participant_id, 'meldezettel_file_id', $meldezettel_file_id);
 
-                    $message = '<div class="alpenia-success">Teilnehmer erfolgreich aktualisiert.</div>';
+                    $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Teilnehmer erfolgreich aktualisiert.')) . '</div>';
                 }
             }
         }
@@ -459,7 +459,7 @@ function alpenia_dashboard_shortcode() {
 
                     $reloaded_user = get_user_by('id', $user_id);
                     if ($reloaded_user && in_array($role, (array) $reloaded_user->roles, true)) {
-                        $message = '<div class="alpenia-success">Benutzer erfolgreich erstellt.</div>';
+                        $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer erfolgreich erstellt.')) . '</div>';
                     } else {
                         $message = '<div class="alpenia-message">Benutzer wurde erstellt, aber die Rolle konnte nicht korrekt gesetzt werden.</div>';
                     }
@@ -507,7 +507,7 @@ function alpenia_dashboard_shortcode() {
             ) {
                 require_once ABSPATH . 'wp-admin/includes/user.php';
                 wp_delete_user($target_id);
-                $message = '<div class="alpenia-success">Benutzer gelöscht.</div>';
+                $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer gelöscht.')) . '</div>';
             }
         }
 
@@ -532,7 +532,7 @@ function alpenia_dashboard_shortcode() {
                 $existing_email_owner = email_exists($edit_email);
 
                 if (!$edit_user_id || empty($edit_display_name) || empty($edit_email)) {
-                    $message = '<div class="alpenia-message">Bitte alle Pflichtfelder ausfüllen.</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
                 } elseif ($existing_email_owner && (int) $existing_email_owner !== $edit_user_id) {
                     $message = '<div class="alpenia-message">Diese E-Mail wird bereits verwendet.</div>';
                 } else {
@@ -543,7 +543,7 @@ function alpenia_dashboard_shortcode() {
                     ]);
 
                     if (is_wp_error($updated)) {
-                        $message = '<div class="alpenia-message">Fehler beim Speichern.</div>';
+                        $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Fehler beim Speichern.')) . '</div>';
                     } else {
                         $edited_user = new WP_User($edit_user_id);
                         $edited_user->set_role($edit_role);
@@ -552,7 +552,7 @@ function alpenia_dashboard_shortcode() {
                             wp_set_password($edit_password, $edit_user_id);
                         }
 
-                        $message = '<div class="alpenia-success">Benutzer erfolgreich aktualisiert.</div>';
+                        $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer erfolgreich aktualisiert.')) . '</div>';
                     }
                 }
             }
@@ -1085,7 +1085,7 @@ function alpenia_dashboard_shortcode() {
                 $participant_id = (int) $_GET['edit_participant'];
 
                 if (!alpenia_user_can_access_participant($participant_id)) {
-                    return '<div class="alpenia-message">Kein Zugriff.</div>';
+        return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff.')) . '</div>';
                 }
 
                 $participant = get_post($participant_id);
@@ -1317,7 +1317,7 @@ function alpenia_dashboard_shortcode() {
                 $view_trip_id = (int) $_GET['view_trip'];
 
                 if (!alpenia_user_can_access_trip($view_trip_id)) {
-                    return '<div class="alpenia-message">Kein Zugriff.</div>';
+        return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff.')) . '</div>';
                 }
 
                 $trip = get_post($view_trip_id);
@@ -2038,7 +2038,7 @@ function alpenia_dashboard_shortcode() {
             backdrop-filter: blur(6px);
         }
 
-        .lang-flag {
+        .lang-link {
             display: inline-flex;
             align-items: center;
             justify-content: center;
@@ -2052,13 +2052,23 @@ function alpenia_dashboard_shortcode() {
             border: 1px solid rgba(255,255,255,0.22);
         }
 
-        .lang-flag:hover,
-        .lang-flag:focus,
-        .lang-flag:active {
+        .lang-link:hover,
+        .lang-link:focus,
+        .lang-link:active {
             background: rgba(255,255,255,0.24);
             transform: translateY(-1px);
             outline: none;
         }
+
+        
+        .lang-link.active {
+            box-shadow: 0 0 0 2px rgba(43,212,163,0.7);
+        }
+        .flag-icon { display:block; width:22px; height:15px; border-radius:2px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.25); }
+        .flag-de { background: linear-gradient(to bottom, #000 0 33.33%, #dd0000 33.33% 66.66%, #ffce00 66.66% 100%); }
+        .flag-tr { position:relative; background:#e30a17; }
+        .flag-tr::before { content:''; position:absolute; left:5px; top:3px; width:7px; height:7px; border-radius:50%; background:#fff; }
+        .flag-tr::after { content:''; position:absolute; left:7px; top:4px; width:7px; height:7px; border-radius:50%; background:#e30a17; }
 
         .btn-logout {
             background: linear-gradient(135deg, #a12626, #c94a4a) !important;
