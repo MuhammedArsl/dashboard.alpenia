@@ -138,3 +138,11 @@ msgid "bearbeiten"
 msgstr "düzenle"
 msgid "löschen"
 msgstr "sil"
+msgid "Öffnen"
+msgstr "Aç"
+
+msgid "Teilnehmer wirklich löschen?"
+msgstr "Katılımcı gerçekten silinsin mi?"
+
+msgid "Reise wirklich löschen? Alle zugehörigen Teilnehmer werden ebenfalls gelöscht."
+msgstr "Seyahat gerçekten silinsin mi? Bağlı tüm katılımcılar da silinecek."
