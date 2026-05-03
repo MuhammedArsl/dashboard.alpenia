@@ -1305,19 +1305,17 @@ function alpenia_dashboard_shortcode() {
                                         <th>Anrede</th>
                                         <th>Name</th>
                                         <th>Dokumente</th>
-                                        <th>Visumstatus</th>
+                                        <th>Einreiseland-Visumstatus</th>
                                         <th>Staatsbürgerschaft</th>
                                         <th>Reisepass Nr.</th>
                                         <th>Reisepass gültig von</th>
                                         <th>Reisepass gültig bis</th>
-                                        <th>Aufenthaltstitel Nr.</th>
-                                        <th>Aufenthaltstitel gültig von</th>
-                                        <th>Aufenthaltstitel gültig bis</th>
-                                        <th>Visum Bemerkung</th>
-                                        <th>Aufenthaltstitel</th>
+                                        <th>Visum Nr.</th>
+                                        <th>Visum gültig von</th>
+                                        <th>Visum gültig bis</th>
+                                        <th>Visum</th>
                                         <th>Status</th>
                                         <th>Zahlung</th>
-                                        <th>Zimmer / Gruppe</th>
                                         <th>Reisepass</th>
                                         <th>Foto</th>
                                         <th>Meldezettel</th>
@@ -1351,7 +1349,6 @@ function alpenia_dashboard_shortcode() {
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_number', true) ?: '—'); ?></td>
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_valid_from_date', true) ?: '—'); ?></td>
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true) ?: '—'); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_note', true) ?: '—'); ?></td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($visa_photo_file_id, true)); ?>
                                                 <?php if ($visa_photo_file_id) : ?>
@@ -1362,10 +1359,6 @@ function alpenia_dashboard_shortcode() {
                                             <td>
                                                 <?php echo esc_html(alpenia_get_payment_status($participant->ID)); ?><br>
                                                 <small>Offen: € <?php echo esc_html(number_format($payment_open, 2, ',', '.')); ?></small>
-                                            </td>
-                                            <td>
-                                                Zimmer: <?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'room_assignment', true) ?: '—'); ?><br>
-                                                Gruppe: <?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'subgroup', true) ?: '—'); ?>
                                             </td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($passport_file_id, false)); ?>
@@ -1935,6 +1928,10 @@ function alpenia_dashboard_shortcode() {
             line-height: 1.2;
             white-space: nowrap;
         }
+        .alpenia-dashboard a,
+        .alpenia-dashboard button {
+            text-decoration: none !important;
+        }
 
         .btn-primary {
             background: linear-gradient(135deg, #1d4d3f, #2d6a57);
@@ -1942,8 +1939,9 @@ function alpenia_dashboard_shortcode() {
         }
 
         .btn-secondary {
-            background: rgba(255,255,255,0.10);
-            color: #fff;
+            background: rgba(255,255,255,0.16);
+            color: #f3fffa;
+            border: 1px solid rgba(167, 197, 184, 0.45);
         }
 
         .btn-logout {
@@ -1963,6 +1961,42 @@ function alpenia_dashboard_shortcode() {
             background: rgba(130, 25, 25, 0.7) !important;
             color: #fff !important;
         }
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active,
+        .table-btn:hover,
+        .table-btn:focus,
+        .table-btn:active,
+        .btn-secondary:hover,
+        .btn-secondary:focus,
+        .btn-secondary:active {
+            color: #fff !important;
+            text-decoration: none !important;
+            outline: none;
+        }
+        .btn-primary:hover,
+        .btn-primary:focus,
+        .btn-primary:active { background: linear-gradient(135deg, #163e32, #225a49); }
+        .btn-secondary:hover,
+        .btn-secondary:focus,
+        .btn-secondary:active { background: rgba(39, 72, 61, 0.95); }
+        .btn-logout:hover,
+        .btn-logout:focus,
+        .btn-logout:active,
+        .table-btn-danger:hover,
+        .table-btn-danger:focus,
+        .table-btn-danger:active { background: linear-gradient(135deg, #8f1d1d, #af2f2f) !important; }
+        a[href*="export_trip_csv"].btn-primary,
+        a[href*="print_trip"].btn-primary { background: linear-gradient(135deg, #0f7566, #15967f); }
+        a[href*="export_trip_csv"].btn-primary:hover,
+        a[href*="print_trip"].btn-primary:hover,
+        a[href*="export_trip_csv"].btn-primary:focus,
+        a[href*="print_trip"].btn-primary:focus { background: linear-gradient(135deg, #0c6356, #117a67); }
+        a[href*="delete_trip"].btn-secondary,
+        a[href*="delete_participant"].table-btn-danger,
+        .delete-link { color: #ffd9d9 !important; }
+        a[href*="view_trip"] .table-btn,
+        a[href*="edit_participant"] .table-btn { background: linear-gradient(135deg, #1d4d3f, #2d6a57); }
 
         .cards {
             display: grid;
@@ -2274,6 +2308,11 @@ function alpenia_dashboard_shortcode() {
         .alpenia-table td a {
             color: #8ee0b8;
             text-decoration: none;
+        }
+        .alpenia-dashboard-shell h1.entry-title,
+        .alpenia-dashboard-shell .page-title,
+        .alpenia-dashboard-shell .elementor-heading-title {
+            display: none !important;
         }
 
         .doc-ok { color: #8ee0b8; }

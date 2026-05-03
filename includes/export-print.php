@@ -127,14 +127,16 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
         <meta charset="utf-8">
         <title><?php echo esc_html($trip->post_title); ?> - Participant List</title>
         <style>
-            body { font-family: Arial, sans-serif; padding: 28px; color: #111; background: #fff; }
+            body { font-family: Arial, sans-serif; padding: 28px; color: #17211d; background: #fff; }
             .header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
             .logo { width:72px; height:auto; }
             .meta { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0 24px; }
             .box { border:1px solid #ddd; padding:12px; border-radius:10px; }
             table { width:100%; border-collapse:collapse; }
-            th, td { border:1px solid #ddd; padding:10px; text-align:left; font-size:14px; vertical-align:top; }
-            th { background:#f2f2f2; }
+            th, td { border:1px solid #ddd; padding:10px; text-align:left; font-size:13px; vertical-align:top; text-decoration:none; }
+            th { background:#e8f1ed; color:#103a2d; font-size:13px; white-space:nowrap; }
+            h1 { margin:0; color:#103a2d; font-size:28px; }
+            a { color:#103a2d; text-decoration:none; }
             .actions { margin-bottom:20px; }
             @media print { .actions { display:none; } body { padding:0; } }
         </style>
@@ -149,7 +151,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                 <img src="<?php echo esc_url($logo_url); ?>" alt="Logo" class="logo">
             <?php endif; ?>
             <div>
-                <h1 style="margin:0;">Alpenia Travel Dashboard</h1>
+                <h1>Alpenia Travel Dashboard</h1>
                 <div><?php echo esc_html($trip->post_title); ?> – Participant List</div>
             </div>
         </div>
@@ -172,12 +174,9 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                     <th>Gender</th>
                     <th>Nationality</th>
                     <th>Passport Number</th>
-                    <th>Passport Valid From</th>
                     <th>Passport Valid Until</th>
                     <th>Entry Visa Number</th>
-                    <th>Entry Visa Valid From</th>
                     <th>Entry Visa Valid Until</th>
-                    <th>Visum Note</th>
                 </tr>
             </thead>
             <tbody>
@@ -189,15 +188,12 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                         <td><?php echo esc_html(alpenia_gender_code(get_post_meta($participant->ID, 'gender', true))); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'nationality', true)); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_no', true)); ?></td>
-                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true)); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true)); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_number', true)); ?></td>
-                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_valid_from_date', true)); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true)); ?></td>
-                        <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_note', true)); ?></td>
                     </tr>
                 <?php endforeach; else : ?>
-                    <tr><td colspan="12">No participants available.</td></tr>
+                    <tr><td colspan="9">No participants available.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
