@@ -21,15 +21,18 @@ function alpenia_handle_logout_request() {
         return;
     }
 
-    if (!isset($_POST['alpenia_logout']) || (string) $_POST['alpenia_logout'] !== '1') {
+    $logout_flag = isset($_POST['alpenia_logout']) ? sanitize_text_field(wp_unslash($_POST['alpenia_logout'])) : '';
+    if ($logout_flag !== '1') {
         return;
     }
 
-    if (!isset($_POST['alpenia_logout_intent']) || (string) $_POST['alpenia_logout_intent'] !== 'dashboard_logout') {
+    $logout_intent = isset($_POST['alpenia_logout_intent']) ? sanitize_text_field(wp_unslash($_POST['alpenia_logout_intent'])) : '';
+    if ($logout_intent !== 'dashboard_logout') {
         return;
     }
 
-    if (!isset($_POST['alpenia_logout_nonce']) || !wp_verify_nonce($_POST['alpenia_logout_nonce'], 'alpenia_logout_action')) {
+    $logout_nonce = isset($_POST['alpenia_logout_nonce']) ? sanitize_text_field(wp_unslash($_POST['alpenia_logout_nonce'])) : '';
+    if ($logout_nonce === '' || !wp_verify_nonce($logout_nonce, 'alpenia_logout_action')) {
         return;
     }
 
