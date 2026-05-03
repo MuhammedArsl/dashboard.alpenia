@@ -245,16 +245,30 @@ function alpenia_get_login_url() {
 }
 
 
-function alpenia_get_ui_lang() {
+
+function alpenia_travel_get_language() {
     $allowed = ['de', 'tr'];
 
     if (isset($_GET['ui_lang'])) {
         $lang = sanitize_key(wp_unslash($_GET['ui_lang']));
         if (in_array($lang, $allowed, true)) {
+            if (is_user_logged_in()) {
+                update_user_meta(get_current_user_id(), 'alpenia_travel_ui_lang', $lang);
+            }
+
             if (!headers_sent()) {
                 setcookie('alpenia_ui_lang', $lang, time() + MONTH_IN_SECONDS * 6, COOKIEPATH ?: '/', COOKIE_DOMAIN, is_ssl(), true);
+                $_COOKIE['alpenia_ui_lang'] = $lang;
             }
+
             return $lang;
+        }
+    }
+
+    if (is_user_logged_in()) {
+        $user_lang = sanitize_key((string) get_user_meta(get_current_user_id(), 'alpenia_travel_ui_lang', true));
+        if (in_array($user_lang, $allowed, true)) {
+            return $user_lang;
         }
     }
 
@@ -268,9 +282,28 @@ function alpenia_get_ui_lang() {
     return 'de';
 }
 
-function alpenia_t($de, $tr) {
-    return alpenia_get_ui_lang() === 'tr' ? $tr : $de;
+function alpenia_travel_get_translations() {
+    return [
+        'tr' => [
+            'Dashboard' => 'Kontrol Paneli','Umre 2026' => 'Umre 2026','Teilnehmerliste dieser Reise' => 'Bu seyahatin katılımcı listesi','Teilnehmer dieser Reise' => 'Bu seyahatin katılımcıları','CSV Export' => 'CSV Dışa Aktar','PDF Export' => 'PDF Dışa Aktar','PDF erstellen' => 'PDF oluştur','Reise löschen' => 'Seyahati sil','Zurück zum Dashboard' => 'Kontrol paneline dön','Logout' => 'Çıkış','Bearbeiten' => 'Düzenle','Löschen' => 'Sil','Speichern' => 'Kaydet','Abbrechen' => 'İptal','Neu' => 'Yeni','Offen' => 'Açık','Status' => 'Durum','Reisetyp' => 'Seyahat türü','Zeitraum' => 'Tarih aralığı','Freie Plätze' => 'Boş kontenjan','Ziel' => 'Hedef','Land' => 'Ülke','Stadt' => 'Şehir','Reiseleiter' => 'Seyahat rehberi','WhatsApp' => 'WhatsApp','Zoom' => 'Zoom','Anrede' => 'Hitap','Herr' => 'Bay','Frau' => 'Bayan','Name' => 'Ad','Vorname' => 'Ad','Nachname' => 'Soyad','Geburtsdatum' => 'Doğum tarihi','Geschlecht' => 'Cinsiyet','Staatsbürgerschaft' => 'Vatandaşlık','Nationalität' => 'Uyruk','Reisepass Nr.' => 'Pasaport No.','Reisepass' => 'Pasaport','Reisepass gültig von' => 'Pasaport başlangıç tarihi','Reisepass gültig bis' => 'Pasaport geçerlilik tarihi','Einreiseland-Visumstatus' => 'Giriş ülkesi vize durumu','Visumstatus' => 'Vize durumu','Visum' => 'Vize','Visum gültig von' => 'Vize başlangıç tarihi','Visum gültig bis' => 'Vize geçerlilik tarihi','Dokumente' => 'Belgeler','Foto' => 'Fotoğraf','Meldezettel' => 'İkamet kayıt belgesi','Optional' => 'İsteğe bağlı','Vorhanden' => 'Mevcut','Nicht vorhanden' => 'Mevcut değil','Bezahlt' => 'Ödendi','Nicht bezahlt' => 'Ödenmedi','Zahlung' => 'Ödeme','Betrag' => 'Tutar','Offen:' => 'Açık:','Bezahlt:' => 'Ödendi:','Zimmer' => 'Oda','Gruppe' => 'Grup','Zimmer / Gruppe' => 'Oda / Grup','Aktionen' => 'İşlemler','Unterlagen unvollständig' => 'Belgeler eksik','neu' => 'yeni','offen' => 'açık','bearbeiten' => 'düzenle','löschen' => 'sil','Bist du sicher?' => 'Emin misiniz?','Reise wirklich löschen?' => 'Seyahat gerçekten silinsin mi?','Teilnehmer wirklich löschen?' => 'Katılımcı gerçekten silinsin mi?'
+        ],
+    ];
 }
+
+function alpenia_travel_t($text) {
+    $lang = alpenia_travel_get_language();
+    $translations = alpenia_travel_get_translations();
+
+    if ($lang === 'tr' && isset($translations['tr'][$text])) {
+        return $translations['tr'][$text];
+    }
+
+    return $text;
+}
+
+function alpenia_get_ui_lang() { return alpenia_travel_get_language(); }
+
+function alpenia_t($de, $tr) { return alpenia_travel_get_language() === 'tr' ? $tr : $de; }
 
 function alpenia_dashboard_link($args = []) {
     global $post;

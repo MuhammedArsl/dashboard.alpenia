@@ -11,7 +11,7 @@ function alpenia_dashboard_logout_button() {
         <?php wp_nonce_field('alpenia_logout_action', 'alpenia_logout_nonce'); ?>
         <input type="hidden" name="alpenia_logout" value="1">
         <input type="hidden" name="alpenia_logout_intent" value="dashboard_logout">
-        <button type="submit" class="btn-primary btn-logout"><?php echo esc_html__("Logout", "alpenia-travel"); ?></button>
+        <button type="submit" class="btn-primary btn-logout"><?php echo esc_html(alpenia_travel_t("Logout")); ?></button>
     </form>
     <?php
     return ob_get_clean();
@@ -24,9 +24,9 @@ function alpenia_dashboard_language_switcher() {
 
     ob_start();
     ?>
-    <div class="dashboard-language-switch" role="group" aria-label="Language switch">
-        <a class="lang-flag" href="<?php echo esc_url($de_url); ?>" title="Deutsch" aria-label="Deutsch">🇩🇪</a>
-        <a class="lang-flag" href="<?php echo esc_url($tr_url); ?>" title="Türkçe" aria-label="Türkçe">🇹🇷</a>
+    <div class="dashboard-language-switch" role="group" aria-label="Plugin language switch">
+        <a class="lang-link <?php echo alpenia_travel_get_language() === 'de' ? 'active' : ''; ?>" href="<?php echo esc_url($de_url); ?>">Deutsch</a> |
+        <a class="lang-link <?php echo alpenia_travel_get_language() === 'tr' ? 'active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>">Türkçe</a>
     </div>
     <?php
     return ob_get_clean();
@@ -733,7 +733,7 @@ function alpenia_dashboard_shortcode() {
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html__("Zurück zum Dashboard", "alpenia-travel"); ?></a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_travel_t("Zurück zum Dashboard")); ?></a>
                         <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
@@ -847,7 +847,7 @@ function alpenia_dashboard_shortcode() {
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html__("Zurück zum Dashboard", "alpenia-travel"); ?></a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_travel_t("Zurück zum Dashboard")); ?></a>
                         <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
@@ -1334,16 +1334,16 @@ function alpenia_dashboard_shortcode() {
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
                             <h1><?php echo esc_html($trip ? $trip->post_title : 'Reise'); ?></h1>
-                            <p><?php echo esc_html__("Teilnehmerliste dieser Reise", "alpenia-travel"); ?></p>
+                            <p><?php echo esc_html(alpenia_travel_t("Teilnehmerliste dieser Reise")); ?></p>
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['export_trip_csv' => $view_trip_id])); ?>"><?php echo esc_html__("CSV Export", "alpenia-travel"); ?></a>
+                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['export_trip_csv' => $view_trip_id])); ?>"><?php echo esc_html(alpenia_travel_t("CSV Export")); ?></a>
                         <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['print_trip' => $view_trip_id])); ?>" target="_blank">PDF / Drucken</a>
                         <?php if (alpenia_user_can_delete_trip($view_trip_id)) : ?>
-                            <a class="btn-secondary table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $view_trip_id, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(__('Reise wirklich löschen? Alle zugehörigen Teilnehmer werden ebenfalls gelöscht.', 'alpenia-travel')); ?>');">Reise löschen</a>
+                            <a class="btn-secondary table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $view_trip_id, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');">Reise löschen</a>
                         <?php endif; ?>
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html__("Zurück zum Dashboard", "alpenia-travel"); ?></a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_travel_t("Zurück zum Dashboard")); ?></a>
                         <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
@@ -1373,31 +1373,31 @@ function alpenia_dashboard_shortcode() {
                 </div>
 
                 <div class="panel" style="margin-top:20px;">
-                    <h2><?php echo esc_html__("Teilnehmer dieser Reise", "alpenia-travel"); ?></h2>
+                    <h2><?php echo esc_html(alpenia_travel_t("Teilnehmer dieser Reise")); ?></h2>
 
                     <?php if (!empty($trip_participants)) : ?>
                         <div class="table-wrap">
                             <table class="alpenia-table">
                                 <thead>
                                     <tr>
-                                        <th><?php echo esc_html__('Anrede', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Name', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Dokumente', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Einreiseland-Visumstatus', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Staatsbürgerschaft', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Reisepass Nr.', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Reisepass gültig von', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Reisepass gültig bis', 'alpenia-travel'); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Anrede')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Name')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Dokumente')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Einreiseland-Visumstatus')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Reisepass Nr.')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Reisepass gültig von')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Reisepass gültig bis')); ?></th>
                                         <th><?php echo esc_html__('Visum Nr.', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Visum gültig von', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Visum gültig bis', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Visum', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Status', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Zahlung', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Reisepass', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Foto', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Meldezettel', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html__('Aktionen', 'alpenia-travel'); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Visum gültig von')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Visum')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Status')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Zahlung')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Reisepass')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Foto')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Meldezettel')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Aktionen')); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -1436,7 +1436,7 @@ function alpenia_dashboard_shortcode() {
                                             <td><?php echo esc_html(alpenia_travel_translate_label(get_post_meta($participant->ID, 'participant_status', true))); ?></td>
                                             <td>
                                                 <?php echo esc_html(alpenia_travel_translate_label(alpenia_get_payment_status($participant->ID))); ?><br>
-                                                <small><?php echo esc_html__('Offen:', 'alpenia-travel'); ?> € <?php echo esc_html(number_format($payment_open, 2, ',', '.')); ?></small>
+                                                <small><?php echo esc_html(alpenia_travel_t('Offen:')); ?> € <?php echo esc_html(number_format($payment_open, 2, ',', '.')); ?></small>
                                             </td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($passport_file_id, false)); ?>
@@ -1452,8 +1452,8 @@ function alpenia_dashboard_shortcode() {
                                             </td>
                                             <td>
                                                 <div class="row-actions">
-                                                    <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $participant->ID])); ?>"><?php echo esc_html__('Bearbeiten', 'alpenia-travel'); ?></a>
-                                                    <a class="table-btn table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $view_trip_id, 'delete_participant' => $participant->ID, '_delete_nonce' => $delete_nonce])); ?>" onclick="return confirm('<?php echo esc_js(__('Teilnehmer wirklich löschen?', 'alpenia-travel')); ?>');"><?php echo esc_html__('Löschen', 'alpenia-travel'); ?></a>
+                                                    <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $participant->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Bearbeiten')); ?></a>
+                                                    <a class="table-btn table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $view_trip_id, 'delete_participant' => $participant->ID, '_delete_nonce' => $delete_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Teilnehmer wirklich löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></a>
                                                 </div>
                                             </td>
                                         </tr>
@@ -1479,7 +1479,7 @@ function alpenia_dashboard_shortcode() {
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html__("Zurück zum Dashboard", "alpenia-travel"); ?></a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_travel_t("Zurück zum Dashboard")); ?></a>
                         <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
@@ -1775,7 +1775,7 @@ function alpenia_dashboard_shortcode() {
                                         <span class="badge"><?php echo count($trip_participants); ?> Teilnehmer</span>
                                         <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip->ID])); ?>">Teilnehmer ansehen</a>
                                         <?php if (alpenia_user_can_delete_trip($trip->ID)) : ?>
-                                            <a class="table-btn table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $trip->ID, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(__('Reise wirklich löschen? Alle zugehörigen Teilnehmer werden ebenfalls gelöscht.', 'alpenia-travel')); ?>');">Löschen</a>
+                                            <a class="table-btn table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $trip->ID, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');">Löschen</a>
                                         <?php endif; ?>
                                     </div>
                                 </li>
