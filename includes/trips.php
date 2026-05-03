@@ -148,19 +148,19 @@ function alpenia_get_trip_capacity_left($trip_id) {
  */
 function alpenia_doc_status_label($attachment_id, $optional = false) {
     if ($attachment_id) {
-        return '<span class="doc-ok">' . esc_html__('Vorhanden', 'alpenia-travel') . '</span>';
+        return '<span class="doc-ok">' . esc_html(alpenia_travel_t('Vorhanden')) . '</span>';
     }
     return $optional
-        ? '<span class="doc-optional">' . esc_html__('Optional', 'alpenia-travel') . '</span>'
-        : '<span class="doc-missing">' . esc_html__('Nicht vorhanden', 'alpenia-travel') . '</span>';
+        ? '<span class="doc-optional">' . esc_html(alpenia_travel_t('Optional')) . '</span>'
+        : '<span class="doc-missing">' . esc_html(alpenia_travel_t('Nicht vorhanden')) . '</span>';
 }
 
 function alpenia_travel_translate_label($value) {
     $labels = [
-        'offen' => __('offen', 'alpenia-travel'),
-        'neu' => __('neu', 'alpenia-travel'),
-        'bezahlt' => __('bezahlt', 'alpenia-travel'),
-        'nicht bezahlt' => __('nicht bezahlt', 'alpenia-travel'),
+        'offen' => alpenia_travel_t('offen'),
+        'neu' => alpenia_travel_t('neu'),
+        'bezahlt' => alpenia_travel_t('bezahlt'),
+        'nicht bezahlt' => alpenia_travel_t('nicht bezahlt'),
     ];
 
     return $labels[$value] ?? $value;
@@ -271,7 +271,7 @@ function alpenia_get_participant_doc_badge($participant_id) {
     }
 
     if ($score === 'partial') {
-        return '<span class="status-badge status-yellow">Unterlagen unvollständig</span>';
+        return '<span class="status-badge status-yellow"></span>';
     }
 
     return '<span class="status-badge status-red">Unterlagen fehlen</span>';
