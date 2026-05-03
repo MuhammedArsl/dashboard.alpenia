@@ -155,6 +155,10 @@ function alpenia_dashboard_shortcode() {
                     $birth_date         = sanitize_text_field($_POST["birth_date_$i"] ?? '');
                     $nationality        = sanitize_text_field($_POST["nationality_$i"] ?? '');
                     $passport_no        = sanitize_text_field($_POST["passport_no_$i"] ?? '');
+                    $phone_number       = sanitize_text_field($_POST["phone_number_$i"] ?? '');
+                    $email_address      = sanitize_email($_POST["email_address_$i"] ?? '');
+                    $emergency_contact_name = sanitize_text_field($_POST["emergency_contact_name_$i"] ?? '');
+                    $emergency_contact_phone = sanitize_text_field($_POST["emergency_contact_phone_$i"] ?? '');
                     $passport_valid_from = sanitize_text_field($_POST["passport_valid_from_$i"] ?? '');
                     $passport_expiry     = sanitize_text_field($_POST["passport_expiry_date_$i"] ?? '');
                     $visa_number        = sanitize_text_field($_POST["visa_number_$i"] ?? '');
@@ -224,6 +228,10 @@ function alpenia_dashboard_shortcode() {
                     alpenia_update_secure_meta($participant_id, 'birth_date', $birth_date);
                     alpenia_update_secure_meta($participant_id, 'nationality', $nationality);
                     alpenia_update_secure_meta($participant_id, 'passport_no', $passport_no);
+                    alpenia_update_secure_meta($participant_id, 'phone_number', $phone_number);
+                    alpenia_update_secure_meta($participant_id, 'email_address', $email_address);
+                    alpenia_update_secure_meta($participant_id, 'emergency_contact_name', $emergency_contact_name);
+                    alpenia_update_secure_meta($participant_id, 'emergency_contact_phone', $emergency_contact_phone);
                     alpenia_update_secure_meta($participant_id, 'passport_valid_from_date', $passport_valid_from);
                     alpenia_update_secure_meta($participant_id, 'passport_expiry_date', $passport_expiry);
                     alpenia_update_secure_meta($participant_id, 'visa_number', $visa_number);
@@ -308,6 +316,10 @@ function alpenia_dashboard_shortcode() {
             $birth_date         = sanitize_text_field($_POST['birth_date'] ?? '');
             $nationality        = sanitize_text_field($_POST['nationality'] ?? '');
             $passport_no        = sanitize_text_field($_POST['passport_no'] ?? '');
+            $phone_number       = sanitize_text_field($_POST['phone_number'] ?? '');
+            $email_address      = sanitize_email($_POST['email_address'] ?? '');
+            $emergency_contact_name = sanitize_text_field($_POST['emergency_contact_name'] ?? '');
+            $emergency_contact_phone = sanitize_text_field($_POST['emergency_contact_phone'] ?? '');
             $passport_valid_from = sanitize_text_field($_POST['passport_valid_from_date'] ?? '');
             $passport_expiry     = sanitize_text_field($_POST['passport_expiry_date'] ?? '');
             $visa_number        = sanitize_text_field($_POST['visa_number'] ?? '');
@@ -344,6 +356,10 @@ function alpenia_dashboard_shortcode() {
                 alpenia_update_secure_meta($participant_id, 'birth_date', $birth_date);
                 alpenia_update_secure_meta($participant_id, 'nationality', $nationality);
                 alpenia_update_secure_meta($participant_id, 'passport_no', $passport_no);
+                alpenia_update_secure_meta($participant_id, 'phone_number', $phone_number);
+                alpenia_update_secure_meta($participant_id, 'email_address', $email_address);
+                alpenia_update_secure_meta($participant_id, 'emergency_contact_name', $emergency_contact_name);
+                alpenia_update_secure_meta($participant_id, 'emergency_contact_phone', $emergency_contact_phone);
                 alpenia_update_secure_meta($participant_id, 'passport_valid_from_date', $passport_valid_from);
                 alpenia_update_secure_meta($participant_id, 'passport_expiry_date', $passport_expiry);
                 alpenia_update_secure_meta($participant_id, 'visa_number', $visa_number);
@@ -929,6 +945,25 @@ function alpenia_dashboard_shortcode() {
                                         <label for="passport_no_<?php echo $i; ?>">Reisepassnummer</label>
                                         <input type="text" id="passport_no_<?php echo $i; ?>" name="passport_no_<?php echo $i; ?>">
                                     </div>
+                                    <div class="form-group">
+                                        <label for="phone_number_<?php echo $i; ?>">Telefonnummer</label>
+                                        <input type="text" id="phone_number_<?php echo $i; ?>" name="phone_number_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email_address_<?php echo $i; ?>">E-Mail Adresse</label>
+                                        <input type="email" id="email_address_<?php echo $i; ?>" name="email_address_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="emergency_contact_name_<?php echo $i; ?>">Notfallkontakt Name</label>
+                                        <input type="text" id="emergency_contact_name_<?php echo $i; ?>" name="emergency_contact_name_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="emergency_contact_phone_<?php echo $i; ?>">Notfallkontakt Telefonnummer</label>
+                                        <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>">
+                                    </div>
 
                                     <div class="form-group">
                                         <label for="passport_valid_from_<?php echo $i; ?>">Reisepass gültig von <span class="required-mark">*</span></label>
@@ -1045,6 +1080,10 @@ function alpenia_dashboard_shortcode() {
                 $birth_date         = alpenia_get_secure_meta($participant_id, 'birth_date', true);
                 $nationality        = alpenia_get_secure_meta($participant_id, 'nationality', true);
                 $passport_no        = alpenia_get_secure_meta($participant_id, 'passport_no', true);
+                $phone_number       = alpenia_get_secure_meta($participant_id, 'phone_number', true);
+                $email_address      = alpenia_get_secure_meta($participant_id, 'email_address', true);
+                $emergency_contact_name = alpenia_get_secure_meta($participant_id, 'emergency_contact_name', true);
+                $emergency_contact_phone = alpenia_get_secure_meta($participant_id, 'emergency_contact_phone', true);
                 $passport_valid_from = alpenia_get_secure_meta($participant_id, 'passport_valid_from_date', true);
                 $passport_expiry     = alpenia_get_secure_meta($participant_id, 'passport_expiry_date', true);
                 $visa_number        = alpenia_get_secure_meta($participant_id, 'visa_number', true);
@@ -1128,6 +1167,25 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="passport_no">Reisepassnummer</label>
                                 <input type="text" id="passport_no" name="passport_no" value="<?php echo esc_attr($passport_no); ?>">
+                            </div>
+                            <div class="form-group">
+                                <label for="phone_number">Telefonnummer</label>
+                                <input type="text" id="phone_number" name="phone_number" value="<?php echo esc_attr($phone_number); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email_address">E-Mail Adresse</label>
+                                <input type="email" id="email_address" name="email_address" value="<?php echo esc_attr($email_address); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergency_contact_name">Notfallkontakt Name</label>
+                                <input type="text" id="emergency_contact_name" name="emergency_contact_name" value="<?php echo esc_attr($emergency_contact_name); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergency_contact_phone">Notfallkontakt Telefonnummer</label>
+                                <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" value="<?php echo esc_attr($emergency_contact_phone); ?>">
                             </div>
 
                             <div class="form-group">
