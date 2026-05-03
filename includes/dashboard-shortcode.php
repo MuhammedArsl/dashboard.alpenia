@@ -960,7 +960,7 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="passport_no_<?php echo $i; ?>">Reisepassnummer</label>
+                                        <label for="passport_no_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Reisepassnummer')); ?></label>
                                         <input type="text" id="passport_no_<?php echo $i; ?>" name="passport_no_<?php echo $i; ?>">
                                     </div>
                                     <div class="form-group">
@@ -1184,7 +1184,7 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
-                                <label for="passport_no">Reisepassnummer</label>
+                                <label for="passport_no"><?php echo esc_html(alpenia_travel_t('Reisepassnummer')); ?></label>
                                 <input type="text" id="passport_no" name="passport_no" value="<?php echo esc_attr($passport_no); ?>">
                             </div>
                             <div class="form-group">
