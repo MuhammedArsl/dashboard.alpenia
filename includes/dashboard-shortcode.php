@@ -728,7 +728,7 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1>Neue Reise erstellen</h1>
+                            <h1><?php echo esc_html(alpenia_travel_t("Neue Reise erstellen")); ?></h1>
                             <p>Erstelle hier eine neue Kultur- oder Pilgerreise.</p>
                         </div>
                     </div>
@@ -752,7 +752,7 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="trip_type">Reisetyp</label>
                                 <select id="trip_type" name="trip_type" required>
-                                    <option value="">Bitte wählen</option>
+                                    <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <option value="kultur">Kulturreise</option>
                                     <option value="umrah">Umrah</option>
                                     <option value="hajj">Hajj</option>
@@ -763,7 +763,7 @@ function alpenia_dashboard_shortcode() {
                                 <label for="trip_status">Reisestatus</label>
                                 <select id="trip_status" name="trip_status" required>
                                     <option value="draft">Entwurf</option>
-                                    <option value="open" selected>Offen</option>
+                                    <option value="open" selected><?php echo esc_html(alpenia_travel_t("Offen")); ?></option>
                                     <option value="full">Voll</option>
                                     <option value="closed">Abgeschlossen</option>
                                 </select>
@@ -807,7 +807,7 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="assigned_guide">Reiseleiter</label>
                                 <select id="assigned_guide" name="assigned_guide">
-                                    <option value="">Bitte wählen</option>
+                                    <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <?php foreach ($guides as $guide) : ?>
                                         <option value="<?php echo esc_attr($guide->ID); ?>"><?php echo esc_html($guide->display_name); ?></option>
                                     <?php endforeach; ?>
@@ -830,7 +830,7 @@ function alpenia_dashboard_shortcode() {
                             </div>
                         </div>
 
-                        <button type="submit" name="save_trip" class="btn-primary">Reise speichern</button>
+                        <button type="submit" name="save_trip" class="btn-primary"><?php echo esc_html(alpenia_travel_t("Reise speichern")); ?></button>
                     </form>
                 </div>
 
@@ -842,7 +842,7 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1>Teilnehmer hinzufügen</h1>
+                            <h1><?php echo esc_html(alpenia_travel_t("Teilnehmer hinzufügen")); ?></h1>
                             <p>Wähle die Reise und gib an, wie viele Teilnehmer du erfassen willst.</p>
                         </div>
                     </div>
@@ -897,7 +897,7 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1>Teilnehmerdaten erfassen</h1>
+                            <h1><?php echo esc_html(alpenia_travel_t("Teilnehmerdaten erfassen")); ?></h1>
                             <p>Bitte alle Pflichtfelder pro Person ausfüllen.</p>
                         </div>
                     </div>
@@ -928,7 +928,7 @@ function alpenia_dashboard_shortcode() {
                                     <div class="form-group">
                                         <label for="gender_<?php echo $i; ?>">Anrede <span class="required-mark">*</span></label>
                                         <select id="gender_<?php echo $i; ?>" name="gender_<?php echo $i; ?>" required>
-                                            <option value="">Bitte wählen</option>
+                                            <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                             <option value="Herr">Herr</option>
                                             <option value="Frau">Frau</option>
                                         </select>
@@ -1147,7 +1147,7 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="gender">Anrede <span class="required-mark">*</span></label>
                                 <select id="gender" name="gender" required>
-                                    <option value="">Bitte wählen</option>
+                                    <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <option value="Herr" <?php selected($gender, 'Herr'); ?>>Herr</option>
                                     <option value="Frau" <?php selected($gender, 'Frau'); ?>>Frau</option>
                                 </select>
@@ -1341,7 +1341,7 @@ function alpenia_dashboard_shortcode() {
                         <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['export_trip_csv' => $view_trip_id])); ?>"><?php echo esc_html(alpenia_travel_t("CSV Export")); ?></a>
                         <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['print_trip' => $view_trip_id])); ?>" target="_blank">PDF / Drucken</a>
                         <?php if (alpenia_user_can_delete_trip($view_trip_id)) : ?>
-                            <a class="btn-secondary table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $view_trip_id, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');">Reise löschen</a>
+                            <a class="btn-secondary table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $view_trip_id, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Reise löschen')); ?></a>
                         <?php endif; ?>
                         <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_travel_t("Zurück zum Dashboard")); ?></a>
                         <?php echo alpenia_dashboard_language_switcher(); ?>
@@ -1474,7 +1474,7 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1>Benutzerverwaltung</h1>
+                            <h1><?php echo esc_html(alpenia_travel_t("Benutzerverwaltung")); ?></h1>
                             <p>Reiseleiter und Backoffice verwalten</p>
                         </div>
                     </div>
@@ -1574,7 +1574,7 @@ function alpenia_dashboard_shortcode() {
                 </div>
 
                 <div class="panel" style="margin-top:20px;">
-                    <h2>Benutzerliste</h2>
+                    <h2><?php echo esc_html(alpenia_travel_t("Benutzerliste")); ?></h2>
                     <div class="table-wrap">
                         <table class="alpenia-table">
                             <thead>
@@ -1629,7 +1629,7 @@ function alpenia_dashboard_shortcode() {
 
                                                     <?php if ($disabled) : ?>
                                                         <a href="<?php echo esc_url($activate_url); ?>">Aktivieren</a>
-                                                        <a class="delete-link" href="<?php echo esc_url($delete_user_url); ?>" onclick="return confirm('Benutzer wirklich löschen?');">Löschen</a>
+                                                        <a class="delete-link" href="<?php echo esc_url($delete_user_url); ?>" onclick="return confirm('Benutzer wirklich löschen?');"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></a>
                                                     <?php else : ?>
                                                         <a href="<?php echo esc_url($deactivate_url); ?>" onclick="return confirm('Benutzer wirklich deaktivieren?');">Deaktivieren</a>
                                                     <?php endif; ?>
@@ -1651,16 +1651,16 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1>Alpenia Travel Dashboard</h1>
-                            <p><?php echo esc_html($current_user->display_name); ?>, willkommen im Dashboard</p>
+                            <h1><?php echo esc_html(alpenia_travel_t("Alpenia Travel Dashboard")); ?></h1>
+                            <p><?php echo esc_html($current_user->display_name); ?>, <?php echo esc_html(alpenia_travel_t('willkommen im Dashboard')); ?></p>
                         </div>
                     </div>
 
                     <div class="actions">
-                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['create_trip' => 1])); ?>">Neue Reise erstellen</a>
-                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['add_participant' => 1])); ?>">Teilnehmer hinzufügen</a>
+                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['create_trip' => 1])); ?>"><?php echo esc_html(alpenia_travel_t("Neue Reise erstellen")); ?></a>
+                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['add_participant' => 1])); ?>"><?php echo esc_html(alpenia_travel_t("Teilnehmer hinzufügen")); ?></a>
                         <?php if (alpenia_user_can_manage_users()) : ?>
-                            <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1])); ?>">Benutzerverwaltung</a>
+                            <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1])); ?>"><?php echo esc_html(alpenia_travel_t("Benutzerverwaltung")); ?></a>
                         <?php endif; ?>
                         <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
@@ -1684,7 +1684,7 @@ function alpenia_dashboard_shortcode() {
                     </div>
 
                     <div class="card">
-                        <h3>Offene Zahlungen</h3>
+                        <h3><?php echo esc_html(alpenia_travel_t("Offene Zahlungen")); ?></h3>
                         <span><?php echo esc_html($open_payments_count); ?></span>
                     </div>
                 </div>
@@ -1705,7 +1705,7 @@ function alpenia_dashboard_shortcode() {
                         <select name="trip_status_filter">
                             <option value=""><?php echo esc_html(alpenia_travel_t('Alle Status')); ?></option>
                             <option value="draft" <?php selected($trip_status_filter, 'draft'); ?>>Entwurf</option>
-                            <option value="open" <?php selected($trip_status_filter, 'open'); ?>>Offen</option>
+                            <option value="open" <?php selected($trip_status_filter, 'open'); ?>><?php echo esc_html(alpenia_travel_t("Offen")); ?></option>
                             <option value="full" <?php selected($trip_status_filter, 'full'); ?>>Voll</option>
                             <option value="closed" <?php selected($trip_status_filter, 'closed'); ?>>Abgeschlossen</option>
                         </select>
@@ -1775,7 +1775,7 @@ function alpenia_dashboard_shortcode() {
                                         <span class="badge"><?php echo count($trip_participants); ?> <?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></span>
                                         <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer ansehen')); ?></a>
                                         <?php if (alpenia_user_can_delete_trip($trip->ID)) : ?>
-                                            <a class="table-btn table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $trip->ID, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');">Löschen</a>
+                                            <a class="table-btn table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $trip->ID, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></a>
                                         <?php endif; ?>
                                     </div>
                                 </li>
