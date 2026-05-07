@@ -44,7 +44,7 @@ function alpenia_dashboard_shortcode() {
     $debug_mode = isset($_GET['alpenia_debug_auth']) && $_GET['alpenia_debug_auth'] == '1';
 
     if (!is_user_logged_in()) {
-        return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte zuerst einloggen.')) . ' <a href="' . esc_url(alpenia_get_login_url()) . '" style="color:#8ee0b8;font-weight:bold;">' . esc_html(alpenia_travel_t('Zum Login')) . '</a></div>'; 
+        return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte zuerst einloggen.')) . ' <a href="' . esc_url(alpenia_get_login_url()) . '" style="color:#8ee0b8;font-weight:bold;">' . esc_html(alpenia_travel_t('Zum Login')) . '</a></div>';
     }
 
     if (!alpenia_user_can_access_dashboard()) {
@@ -417,7 +417,7 @@ function alpenia_dashboard_shortcode() {
 
     if (isset($_POST['create_reiseleiter']) && alpenia_user_can_manage_users()) {
         if (!isset($_POST['alpenia_create_user_nonce']) || !wp_verify_nonce($_POST['alpenia_create_user_nonce'], 'alpenia_create_user')) {
-            $message = '<div class="alpenia-message">Sicherheitsfehler beim Anlegen des Benutzers.</div>';
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Anlegen des Benutzers.')) . '</div>';
         } else {
             $display_name = sanitize_text_field($_POST['display_name'] ?? '');
             $email        = sanitize_email($_POST['email'] ?? '');
@@ -425,9 +425,9 @@ function alpenia_dashboard_shortcode() {
             $role         = sanitize_text_field($_POST['role'] ?? 'reiseleiter');
 
             if (empty($display_name) || empty($email) || empty($password)) {
-                $message = '<div class="alpenia-message">Bitte Name, E-Mail und Passwort ausfüllen.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte Name, E-Mail und Passwort ausfüllen.')) . '</div>';
             } elseif (email_exists($email)) {
-                $message = '<div class="alpenia-message">Diese E-Mail existiert bereits.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Diese E-Mail existiert bereits.')) . '</div>';
             } else {
                 $allowed_roles = ['reiseleiter', 'backoffice', 'administrator'];
                 if (!in_array($role, $allowed_roles, true)) {
@@ -534,7 +534,7 @@ function alpenia_dashboard_shortcode() {
                 if (!$edit_user_id || empty($edit_display_name) || empty($edit_email)) {
                     $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
                 } elseif ($existing_email_owner && (int) $existing_email_owner !== $edit_user_id) {
-                    $message = '<div class="alpenia-message">Diese E-Mail wird bereits verwendet.</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Diese E-Mail wird bereits verwendet.')) . '</div>';
                 } else {
                     $updated = wp_update_user([
                         'ID'           => $edit_user_id,
@@ -729,7 +729,7 @@ function alpenia_dashboard_shortcode() {
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
                             <h1><?php echo esc_html(alpenia_travel_t("Neue Reise erstellen")); ?></h1>
-                            <p>Erstelle hier eine neue Kultur- oder Pilgerreise.</p>
+                            <p><?php echo esc_html(alpenia_travel_t('Erstelle hier eine neue Kultur- oder Pilgerreise.')); ?></p>
                         </div>
                     </div>
                     <div class="actions">
@@ -745,67 +745,67 @@ function alpenia_dashboard_shortcode() {
 
                         <div class="form-grid">
                             <div class="form-group full">
-                                <label for="trip_title">Reisetitel</label>
-                                <input type="text" id="trip_title" name="trip_title" placeholder="z. B. Frankfurt – Umrah" required>
+                                <label for="trip_title"><?php echo esc_html(alpenia_travel_t('Reisetitel')); ?></label>
+                                <input type="text" id="trip_title" name="trip_title" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt – Umrah')); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="trip_type">Reisetyp</label>
+                                <label for="trip_type"><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></label>
                                 <select id="trip_type" name="trip_type" required>
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
-                                    <option value="kultur">Kulturreise</option>
+                                    <option value="kultur"><?php echo esc_html(alpenia_travel_t('Kulturreise')); ?></option>
                                     <option value="umrah">Umrah</option>
                                     <option value="hajj">Hajj</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="trip_status">Reisestatus</label>
+                                <label for="trip_status"><?php echo esc_html(alpenia_travel_t('Reisestatus')); ?></label>
                                 <select id="trip_status" name="trip_status" required>
-                                    <option value="draft">Entwurf</option>
+                                    <option value="draft"><?php echo esc_html(alpenia_travel_t('Entwurf')); ?></option>
                                     <option value="open" selected><?php echo esc_html(alpenia_travel_t("Offen")); ?></option>
-                                    <option value="full">Voll</option>
-                                    <option value="closed">Abgeschlossen</option>
+                                    <option value="full"><?php echo esc_html(alpenia_travel_t('Voll')); ?></option>
+                                    <option value="closed"><?php echo esc_html(alpenia_travel_t('Abgeschlossen')); ?></option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="destination">Reiseziel</label>
-                                <input type="text" id="destination" name="destination" placeholder="z. B. Mekka & Medina" required>
+                                <label for="destination"><?php echo esc_html(alpenia_travel_t('Reiseziel')); ?></label>
+                                <input type="text" id="destination" name="destination" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Mekka & Medina')); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="country">Land</label>
-                                <input type="text" id="country" name="country" placeholder="z. B. Deutschland" required>
+                                <label for="country"><?php echo esc_html(alpenia_travel_t('Land')); ?></label>
+                                <input type="text" id="country" name="country" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="city">Stadt</label>
-                                <input type="text" id="city" name="city" placeholder="z. B. Frankfurt" required>
+                                <label for="city"><?php echo esc_html(alpenia_travel_t('Stadt')); ?></label>
+                                <input type="text" id="city" name="city" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt')); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="start_date">Startdatum</label>
+                                <label for="start_date"><?php echo esc_html(alpenia_travel_t('Startdatum')); ?></label>
                                 <input type="date" id="start_date" name="start_date" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="end_date">Enddatum</label>
+                                <label for="end_date"><?php echo esc_html(alpenia_travel_t('Enddatum')); ?></label>
                                 <input type="date" id="end_date" name="end_date" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="max_people">Max. Teilnehmer</label>
-                                <input type="number" id="max_people" name="max_people" min="1" placeholder="z. B. 40" required>
+                                <label for="max_people"><?php echo esc_html(alpenia_travel_t('Max. Teilnehmer')); ?></label>
+                                <input type="number" id="max_people" name="max_people" min="1" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. 40')); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="price">Standardpreis (€)</label>
-                                <input type="number" id="price" name="price" min="0" step="0.01" placeholder="z. B. 1499" required>
+                                <label for="price"><?php echo esc_html(alpenia_travel_t('Standardpreis (€)')); ?></label>
+                                <input type="number" id="price" name="price" min="0" step="0.01" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. 1499')); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="assigned_guide">Reiseleiter</label>
+                                <label for="assigned_guide"><?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?></label>
                                 <select id="assigned_guide" name="assigned_guide">
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <?php foreach ($guides as $guide) : ?>
@@ -815,18 +815,18 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group full">
-                                <label for="whatsapp_link">WhatsApp Gruppenlink</label>
+                                <label for="whatsapp_link"><?php echo esc_html(alpenia_travel_t('WhatsApp Gruppenlink')); ?></label>
                                 <input type="url" id="whatsapp_link" name="whatsapp_link" placeholder="https://chat.whatsapp.com/...">
                             </div>
 
                             <div class="form-group full">
-                                <label for="zoom_link">Zoom Meeting Link</label>
+                                <label for="zoom_link"><?php echo esc_html(alpenia_travel_t('Zoom Meeting Link')); ?></label>
                                 <input type="url" id="zoom_link" name="zoom_link" placeholder="https://zoom.us/j/...">
                             </div>
 
                             <div class="form-group full">
-                                <label for="internal_notes">Interne Notizen</label>
-                                <input type="text" id="internal_notes" name="internal_notes" placeholder="Interne Hinweise zur Reise">
+                                <label for="internal_notes"><?php echo esc_html(alpenia_travel_t('Interne Notizen')); ?></label>
+                                <input type="text" id="internal_notes" name="internal_notes" placeholder="<?php echo esc_attr(alpenia_travel_t('Interne Hinweise zur Reise')); ?>">
                             </div>
                         </div>
 
@@ -885,7 +885,7 @@ function alpenia_dashboard_shortcode() {
                 $participant_count = max(1, (int) ($_POST['participant_count'] ?? 1));
 
                 if (!$selected_trip_id || !alpenia_user_can_access_trip($selected_trip_id)) {
-                    return '<div class="alpenia-message">Kein Zugriff auf diese Reise.</div>';
+                    return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff auf diese Reise.')) . '</div>';
                 }
 
                 $all_countries_list = alpenia_get_all_countries();
@@ -922,41 +922,41 @@ function alpenia_dashboard_shortcode() {
 
                         <?php for ($i = 1; $i <= $participant_count; $i++) : ?>
                             <div class="participant-box">
-                                <h3>Teilnehmer <?php echo $i; ?></h3>
+                                <h3><?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?> <?php echo $i; ?></h3>
 
                                 <div class="form-grid">
                                     <div class="form-group">
-                                        <label for="gender_<?php echo $i; ?>">Anrede <span class="required-mark">*</span></label>
+                                        <label for="gender_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Anrede')); ?> <span class="required-mark">*</span></label>
                                         <select id="gender_<?php echo $i; ?>" name="gender_<?php echo $i; ?>" required>
                                             <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
-                                            <option value="Herr">Herr</option>
-                                            <option value="Frau">Frau</option>
+                                            <option value="Herr"><?php echo esc_html(alpenia_travel_t('Herr')); ?></option>
+                                            <option value="Frau"><?php echo esc_html(alpenia_travel_t('Frau')); ?></option>
                                         </select>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="first_name_<?php echo $i; ?>">Vorname <span class="required-mark">*</span></label>
+                                        <label for="first_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Vorname')); ?> <span class="required-mark">*</span></label>
                                         <input type="text" id="first_name_<?php echo $i; ?>" name="first_name_<?php echo $i; ?>" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="second_first_name_<?php echo $i; ?>">2. Vorname</label>
+                                        <label for="second_first_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('2. Vorname')); ?></label>
                                         <input type="text" id="second_first_name_<?php echo $i; ?>" name="second_first_name_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="last_name_<?php echo $i; ?>">Nachname <span class="required-mark">*</span></label>
+                                        <label for="last_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Nachname')); ?> <span class="required-mark">*</span></label>
                                         <input type="text" id="last_name_<?php echo $i; ?>" name="last_name_<?php echo $i; ?>" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="birth_date_<?php echo $i; ?>">Geburtsdatum</label>
+                                        <label for="birth_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Geburtsdatum')); ?></label>
                                         <input type="date" id="birth_date_<?php echo $i; ?>" name="birth_date_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="nationality_<?php echo $i; ?>">Staatsbürgerschaft <span class="required-mark">*</span></label>
-                                        <input type="text" id="nationality_<?php echo $i; ?>" name="nationality_<?php echo $i; ?>" list="alpenia-country-list" placeholder="z. B. Deutschland" required>
+                                        <label for="nationality_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
+                                        <input type="text" id="nationality_<?php echo $i; ?>" name="nationality_<?php echo $i; ?>" list="alpenia-country-list" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
                                     </div>
 
                                     <div class="form-group">
@@ -964,118 +964,118 @@ function alpenia_dashboard_shortcode() {
                                         <input type="text" id="passport_no_<?php echo $i; ?>" name="passport_no_<?php echo $i; ?>">
                                     </div>
                                     <div class="form-group">
-                                        <label for="phone_number_<?php echo $i; ?>">Telefonnummer</label>
+                                        <label for="phone_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
                                         <input type="text" id="phone_number_<?php echo $i; ?>" name="phone_number_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="email_address_<?php echo $i; ?>">E-Mail Adresse</label>
+                                        <label for="email_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
                                         <input type="email" id="email_address_<?php echo $i; ?>" name="email_address_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="emergency_contact_name_<?php echo $i; ?>">Notfallkontakt Name</label>
+                                        <label for="emergency_contact_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
                                         <input type="text" id="emergency_contact_name_<?php echo $i; ?>" name="emergency_contact_name_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="emergency_contact_phone_<?php echo $i; ?>">Notfallkontakt Telefonnummer</label>
+                                        <label for="emergency_contact_phone_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
                                         <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="passport_valid_from_<?php echo $i; ?>">Reisepass gültig von <span class="required-mark">*</span></label>
+                                        <label for="passport_valid_from_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Reisepass gültig von')); ?> <span class="required-mark">*</span></label>
                                         <input type="date" id="passport_valid_from_<?php echo $i; ?>" name="passport_valid_from_<?php echo $i; ?>" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="passport_expiry_date_<?php echo $i; ?>">Reisepass gültig bis <span class="required-mark">*</span></label>
+                                        <label for="passport_expiry_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Reisepass gültig bis')); ?> <span class="required-mark">*</span></label>
                                         <input type="date" id="passport_expiry_date_<?php echo $i; ?>" name="passport_expiry_date_<?php echo $i; ?>" required>
                                     </div>
 
                                     <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_number_<?php echo $i; ?>">Aufenthaltstitel Nummer</label>
-                                        <input type="text" id="visa_number_<?php echo $i; ?>" name="visa_number_<?php echo $i; ?>" placeholder="Nummer des Visums">
+                                        <label for="visa_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel Nummer')); ?></label>
+                                        <input type="text" id="visa_number_<?php echo $i; ?>" name="visa_number_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('Nummer des Visums')); ?>">
                                     </div>
 
                                     <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_valid_from_date_<?php echo $i; ?>">Aufenthaltstitel gültig von</label>
+                                        <label for="visa_valid_from_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig von')); ?></label>
                                         <input type="date" id="visa_valid_from_date_<?php echo $i; ?>" name="visa_valid_from_date_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_expiry_date_<?php echo $i; ?>">Aufenthaltstitel gültig bis</label>
+                                        <label for="visa_expiry_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig bis')); ?></label>
                                         <input type="date" id="visa_expiry_date_<?php echo $i; ?>" name="visa_expiry_date_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group full visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_note_<?php echo $i; ?>">Aufenthaltstitel Bemerkung</label>
-                                        <input type="text" id="visa_note_<?php echo $i; ?>" name="visa_note_<?php echo $i; ?>" placeholder="z. B. Einreise-Visum für Saudi-Arabien">
+                                        <label for="visa_note_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel Bemerkung')); ?></label>
+                                        <input type="text" id="visa_note_<?php echo $i; ?>" name="visa_note_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Einreise-Visum für Saudi-Arabien')); ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="participant_status_<?php echo $i; ?>">Bearbeitungsstatus</label>
+                                        <label for="participant_status_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Bearbeitungsstatus')); ?></label>
                                         <select id="participant_status_<?php echo $i; ?>" name="participant_status_<?php echo $i; ?>">
-                                            <option value="neu">Neu</option>
-                                            <option value="in_pruefung">In Prüfung</option>
-                                            <option value="vollstaendig">Vollständig</option>
+                                            <option value="neu"><?php echo esc_html(alpenia_travel_t('Neu')); ?></option>
+                                            <option value="in_pruefung"><?php echo esc_html(alpenia_travel_t('In Prüfung')); ?></option>
+                                            <option value="vollstaendig"><?php echo esc_html(alpenia_travel_t('Vollständig')); ?></option>
                                         </select>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="visa_status_<?php echo $i; ?>">Aufenthaltstitelstatus (Einreiseland)</label>
-                                        <input type="text" id="visa_status_<?php echo $i; ?>" name="visa_status_<?php echo $i; ?>" placeholder="z. B. Saudi-Arabien: beantragt">
+                                        <label for="visa_status_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitelstatus (Einreiseland)')); ?></label>
+                                        <input type="text" id="visa_status_<?php echo $i; ?>" name="visa_status_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien: beantragt')); ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="payment_total_<?php echo $i; ?>">Gesamtpreis (€)</label>
+                                        <label for="payment_total_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Gesamtpreis (€)')); ?></label>
                                         <input type="number" step="0.01" min="0" id="payment_total_<?php echo $i; ?>" name="payment_total_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="payment_deposit_<?php echo $i; ?>">Anzahlung (€)</label>
+                                        <label for="payment_deposit_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Anzahlung (€)')); ?></label>
                                         <input type="number" step="0.01" min="0" id="payment_deposit_<?php echo $i; ?>" name="payment_deposit_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group full">
-                                        <label for="payment_paid_<?php echo $i; ?>">Bereits bezahlt (€)</label>
+                                        <label for="payment_paid_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Bereits bezahlt (€)')); ?></label>
                                         <input type="number" step="0.01" min="0" id="payment_paid_<?php echo $i; ?>" name="payment_paid_<?php echo $i; ?>">
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="passport_file_<?php echo $i; ?>">Reisepass hochladen <span class="required-mark">*</span> <small>(max. 5 MB)</small></label>
+                                        <label for="passport_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Reisepass hochladen')); ?> <span class="required-mark">*</span> <small>(max. 5 MB)</small></label>
                                         <input type="file" id="passport_file_<?php echo $i; ?>" name="passport_file_<?php echo $i; ?>" accept=".pdf,.jpg,.jpeg,.png" required>
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="photo_file_<?php echo $i; ?>">Porträt Foto hochladen <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
+                                        <label for="photo_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Porträt Foto hochladen')); ?> <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
                                         <input type="file" id="photo_file_<?php echo $i; ?>" name="photo_file_<?php echo $i; ?>" accept=".jpg,.jpeg,.png" required>
                                     </div>
 
                                     <div class="form-group full visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_photo_file_<?php echo $i; ?>">Aufenthaltstitel hochladen <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
+                                        <label for="visa_photo_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel hochladen')); ?> <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
                                         <input type="file" id="visa_photo_file_<?php echo $i; ?>" name="visa_photo_file_<?php echo $i; ?>" accept=".jpg,.jpeg,.png,.pdf">
                                     </div>
 
                                     <div class="form-group full">
-                                        <label for="meldezettel_file_<?php echo $i; ?>">Meldezettel hochladen <small>(max. 5 MB)</small></label>
+                                        <label for="meldezettel_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Meldezettel hochladen')); ?> <small>(max. 5 MB)</small></label>
                                         <input type="file" id="meldezettel_file_<?php echo $i; ?>" name="meldezettel_file_<?php echo $i; ?>" accept=".pdf,.jpg,.jpeg,.png">
                                     </div>
 
                                     <div class="form-group full">
-                                        <label>Checkliste <span class="required-mark">*</span></label>
+                                        <label><?php echo esc_html(alpenia_travel_t('Checkliste')); ?> <span class="required-mark">*</span></label>
                                         <div class="check-grid">
-                                            <label class="checkbox-line"><input type="checkbox" name="check_passport_<?php echo $i; ?>" value="1" required> Reisepass geprüft</label>
-                                            <label class="checkbox-line"><input type="checkbox" name="check_photo_<?php echo $i; ?>" value="1" required> Foto geprüft</label>
-                                            <label class="checkbox-line"><input type="checkbox" name="check_visa_<?php echo $i; ?>" value="1"> Aufenthaltstitel geprüft</label>
-                                            <label class="checkbox-line"><input type="checkbox" name="check_payment_<?php echo $i; ?>" value="1" required> Zahlung geprüft</label>
+                                            <label class="checkbox-line"><input type="checkbox" name="check_passport_<?php echo $i; ?>" value="1" required> <?php echo esc_html(alpenia_travel_t('Reisepass geprüft')); ?></label>
+                                            <label class="checkbox-line"><input type="checkbox" name="check_photo_<?php echo $i; ?>" value="1" required> <?php echo esc_html(alpenia_travel_t('Foto geprüft')); ?></label>
+                                            <label class="checkbox-line"><input type="checkbox" name="check_visa_<?php echo $i; ?>" value="1"> <?php echo esc_html(alpenia_travel_t('Aufenthaltstitel geprüft')); ?></label>
+                                            <label class="checkbox-line"><input type="checkbox" name="check_payment_<?php echo $i; ?>" value="1" required> <?php echo esc_html(alpenia_travel_t('Zahlung geprüft')); ?></label>
                                         </div>
                                     </div>
                                 </div>
                             </div>
                         <?php endfor; ?>
 
-                        <button type="submit" name="save_participants_batch" class="btn-primary">Alle Teilnehmer speichern</button>
+                        <button type="submit" name="save_participants_batch" class="btn-primary"><?php echo esc_html(alpenia_travel_t('Alle Teilnehmer speichern')); ?></button>
                     </form>
                 </div>
 
@@ -1127,12 +1127,12 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1>Teilnehmer bearbeiten</h1>
+                            <h1><?php echo esc_html(alpenia_travel_t('Teilnehmer bearbeiten')); ?></h1>
                             <p><?php echo esc_html($participant ? $participant->post_title : ''); ?></p>
                         </div>
                     </div>
                     <div class="actions">
-                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip_id])); ?>">Zurück zur Reise</a>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip_id])); ?>"><?php echo esc_html(alpenia_travel_t('Zurück zur Reise')); ?></a>
                         <?php echo alpenia_dashboard_language_switcher(); ?>
                         <?php echo alpenia_dashboard_logout_button(); ?>
                     </div>
@@ -1145,36 +1145,36 @@ function alpenia_dashboard_shortcode() {
 
                         <div class="form-grid">
                             <div class="form-group">
-                                <label for="gender">Anrede <span class="required-mark">*</span></label>
+                                <label for="gender"><?php echo esc_html(alpenia_travel_t('Anrede')); ?> <span class="required-mark">*</span></label>
                                 <select id="gender" name="gender" required>
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
-                                    <option value="Herr" <?php selected($gender, 'Herr'); ?>>Herr</option>
-                                    <option value="Frau" <?php selected($gender, 'Frau'); ?>>Frau</option>
+                                    <option value="Herr" <?php selected($gender, 'Herr'); ?>><?php echo esc_html(alpenia_travel_t('Herr')); ?></option>
+                                    <option value="Frau" <?php selected($gender, 'Frau'); ?>><?php echo esc_html(alpenia_travel_t('Frau')); ?></option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="first_name">Vorname <span class="required-mark">*</span></label>
+                                <label for="first_name"><?php echo esc_html(alpenia_travel_t('Vorname')); ?> <span class="required-mark">*</span></label>
                                 <input type="text" id="first_name" name="first_name" value="<?php echo esc_attr($first_name); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="second_first_name">2. Vorname</label>
+                                <label for="second_first_name"><?php echo esc_html(alpenia_travel_t('2. Vorname')); ?></label>
                                 <input type="text" id="second_first_name" name="second_first_name" value="<?php echo esc_attr($second_first_name); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="last_name">Nachname <span class="required-mark">*</span></label>
+                                <label for="last_name"><?php echo esc_html(alpenia_travel_t('Nachname')); ?> <span class="required-mark">*</span></label>
                                 <input type="text" id="last_name" name="last_name" value="<?php echo esc_attr($last_name); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="birth_date">Geburtsdatum</label>
+                                <label for="birth_date"><?php echo esc_html(alpenia_travel_t('Geburtsdatum')); ?></label>
                                 <input type="date" id="birth_date" name="birth_date" value="<?php echo esc_attr($birth_date); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="nationality">Staatsbürgerschaft <span class="required-mark">*</span></label>
+                                <label for="nationality"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
                                 <input type="text" id="nationality" name="nationality" value="<?php echo esc_attr($nationality); ?>" list="alpenia-country-list-edit" required>
                                 <datalist id="alpenia-country-list-edit">
                                     <?php foreach (alpenia_get_all_countries() as $country_name) : ?>
@@ -1188,126 +1188,126 @@ function alpenia_dashboard_shortcode() {
                                 <input type="text" id="passport_no" name="passport_no" value="<?php echo esc_attr($passport_no); ?>">
                             </div>
                             <div class="form-group">
-                                <label for="phone_number">Telefonnummer</label>
+                                <label for="phone_number"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
                                 <input type="text" id="phone_number" name="phone_number" value="<?php echo esc_attr($phone_number); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="email_address">E-Mail Adresse</label>
+                                <label for="email_address"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
                                 <input type="email" id="email_address" name="email_address" value="<?php echo esc_attr($email_address); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="emergency_contact_name">Notfallkontakt Name</label>
+                                <label for="emergency_contact_name"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
                                 <input type="text" id="emergency_contact_name" name="emergency_contact_name" value="<?php echo esc_attr($emergency_contact_name); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="emergency_contact_phone">Notfallkontakt Telefonnummer</label>
+                                <label for="emergency_contact_phone"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
                                 <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" value="<?php echo esc_attr($emergency_contact_phone); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="passport_valid_from_date">Reisepass gültig von <span class="required-mark">*</span></label>
+                                <label for="passport_valid_from_date"><?php echo esc_html(alpenia_travel_t('Reisepass gültig von')); ?> <span class="required-mark">*</span></label>
                                 <input type="date" id="passport_valid_from_date" name="passport_valid_from_date" value="<?php echo esc_attr($passport_valid_from); ?>" required>
                             </div>
 
                             <div class="form-group">
-                                <label for="passport_expiry_date">Reisepass gültig bis <span class="required-mark">*</span></label>
+                                <label for="passport_expiry_date"><?php echo esc_html(alpenia_travel_t('Reisepass gültig bis')); ?> <span class="required-mark">*</span></label>
                                 <input type="date" id="passport_expiry_date" name="passport_expiry_date" value="<?php echo esc_attr($passport_expiry); ?>" required>
                             </div>
 
                             <div class="form-group edit-visa-field">
-                                <label for="visa_number">Visum Nummer</label>
+                                <label for="visa_number"><?php echo esc_html(alpenia_travel_t('Visum Nummer')); ?></label>
                                 <input type="text" id="visa_number" name="visa_number" value="<?php echo esc_attr($visa_number); ?>">
                             </div>
 
                             <div class="form-group edit-visa-field">
-                                <label for="visa_valid_from_date">Visum gültig von</label>
+                                <label for="visa_valid_from_date"><?php echo esc_html(alpenia_travel_t('Visum gültig von')); ?></label>
                                 <input type="date" id="visa_valid_from_date" name="visa_valid_from_date" value="<?php echo esc_attr($visa_valid_from); ?>">
                             </div>
 
                             <div class="form-group edit-visa-field">
-                                <label for="visa_expiry_date">Visum gültig bis</label>
+                                <label for="visa_expiry_date"><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></label>
                                 <input type="date" id="visa_expiry_date" name="visa_expiry_date" value="<?php echo esc_attr($visa_expiry_date); ?>">
                             </div>
 
                             <div class="form-group full edit-visa-field">
-                                <label for="visa_note">Visum Bemerkung</label>
-                                <input type="text" id="visa_note" name="visa_note" value="<?php echo esc_attr($visa_note); ?>" placeholder="z. B. Einreise-Visum für Saudi-Arabien">
+                                <label for="visa_note"><?php echo esc_html(alpenia_travel_t('Visum Bemerkung')); ?></label>
+                                <input type="text" id="visa_note" name="visa_note" value="<?php echo esc_attr($visa_note); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Einreise-Visum für Saudi-Arabien')); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="participant_status">Bearbeitungsstatus</label>
+                                <label for="participant_status"><?php echo esc_html(alpenia_travel_t('Bearbeitungsstatus')); ?></label>
                                 <select id="participant_status" name="participant_status">
-                                    <option value="neu" <?php selected($participant_status, 'neu'); ?>>Neu</option>
-                                    <option value="in_pruefung" <?php selected($participant_status, 'in_pruefung'); ?>>In Prüfung</option>
-                                    <option value="vollstaendig" <?php selected($participant_status, 'vollstaendig'); ?>>Vollständig</option>
+                                    <option value="neu" <?php selected($participant_status, 'neu'); ?>><?php echo esc_html(alpenia_travel_t('Neu')); ?></option>
+                                    <option value="in_pruefung" <?php selected($participant_status, 'in_pruefung'); ?>><?php echo esc_html(alpenia_travel_t('In Prüfung')); ?></option>
+                                    <option value="vollstaendig" <?php selected($participant_status, 'vollstaendig'); ?>><?php echo esc_html(alpenia_travel_t('Vollständig')); ?></option>
                                 </select>
                             </div>
 
                             <div class="form-group">
-                                <label for="visa_status">Visumstatus (Einreiseland)</label>
-                                <input type="text" id="visa_status" name="visa_status" value="<?php echo esc_attr($visa_status); ?>" placeholder="z. B. Saudi-Arabien: beantragt">
+                                <label for="visa_status"><?php echo esc_html(alpenia_travel_t('Visumstatus (Einreiseland)')); ?></label>
+                                <input type="text" id="visa_status" name="visa_status" value="<?php echo esc_attr($visa_status); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien: beantragt')); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="room_assignment">Zimmer</label>
+                                <label for="room_assignment"><?php echo esc_html(alpenia_travel_t('Zimmer')); ?></label>
                                 <input type="text" id="room_assignment" name="room_assignment" value="<?php echo esc_attr($room_assignment); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="subgroup">Untergruppe / Busgruppe</label>
+                                <label for="subgroup"><?php echo esc_html(alpenia_travel_t('Untergruppe / Busgruppe')); ?></label>
                                 <input type="text" id="subgroup" name="subgroup" value="<?php echo esc_attr($subgroup); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="payment_total">Gesamtpreis (€)</label>
+                                <label for="payment_total"><?php echo esc_html(alpenia_travel_t('Gesamtpreis (€)')); ?></label>
                                 <input type="number" step="0.01" min="0" id="payment_total" name="payment_total" value="<?php echo esc_attr($payment_total); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="payment_deposit">Anzahlung (€)</label>
+                                <label for="payment_deposit"><?php echo esc_html(alpenia_travel_t('Anzahlung (€)')); ?></label>
                                 <input type="number" step="0.01" min="0" id="payment_deposit" name="payment_deposit" value="<?php echo esc_attr($payment_deposit); ?>">
                             </div>
 
                             <div class="form-group full">
-                                <label for="payment_paid">Bereits bezahlt (€)</label>
+                                <label for="payment_paid"><?php echo esc_html(alpenia_travel_t('Bereits bezahlt (€)')); ?></label>
                                 <input type="number" step="0.01" min="0" id="payment_paid" name="payment_paid" value="<?php echo esc_attr($payment_paid); ?>">
                             </div>
 
                             <div class="form-group">
-                                <label for="passport_file">Neuen Reisepass hochladen <small>(max. 5 MB)</small></label>
+                                <label for="passport_file"><?php echo esc_html(alpenia_travel_t('Neuen Reisepass hochladen')); ?> <small>(max. 5 MB)</small></label>
                                 <input type="file" id="passport_file" name="passport_file" accept=".pdf,.jpg,.jpeg,.png">
                             </div>
 
                             <div class="form-group">
-                                <label for="photo_file">Neues Porträt Foto hochladen <small>(max. 2 MB)</small></label>
+                                <label for="photo_file"><?php echo esc_html(alpenia_travel_t('Neues Porträt Foto hochladen')); ?> <small>(max. 2 MB)</small></label>
                                 <input type="file" id="photo_file" name="photo_file" accept=".jpg,.jpeg,.png">
                             </div>
 
                             <div class="form-group full edit-visa-field">
-                                <label for="visa_photo_file">Neuen Aufenthaltstitel hochladen <small>(max. 2 MB)</small></label>
+                                <label for="visa_photo_file"><?php echo esc_html(alpenia_travel_t('Neuen Aufenthaltstitel hochladen')); ?> <small>(max. 2 MB)</small></label>
                                 <input type="file" id="visa_photo_file" name="visa_photo_file" accept=".jpg,.jpeg,.png,.pdf">
                             </div>
 
                             <div class="form-group full">
-                                <label for="meldezettel_file">Neuen Meldezettel hochladen <small>(max. 5 MB)</small></label>
+                                <label for="meldezettel_file"><?php echo esc_html(alpenia_travel_t('Neuen Meldezettel hochladen')); ?> <small>(max. 5 MB)</small></label>
                                 <input type="file" id="meldezettel_file" name="meldezettel_file" accept=".pdf,.jpg,.jpeg,.png">
                             </div>
 
                             <div class="form-group full">
-                                <label>Checkliste</label>
+                                <label><?php echo esc_html(alpenia_travel_t('Checkliste')); ?></label>
                                 <div class="check-grid">
-                                    <label class="checkbox-line"><input type="checkbox" name="check_passport" value="1" <?php checked($check_passport, 1); ?>> Reisepass geprüft</label>
-                                    <label class="checkbox-line"><input type="checkbox" name="check_photo" value="1" <?php checked($check_photo, 1); ?>> Foto geprüft</label>
-                                    <label class="checkbox-line"><input type="checkbox" name="check_visa" value="1" <?php checked($check_visa, 1); ?>> Aufenthaltstitel geprüft</label>
-                                    <label class="checkbox-line"><input type="checkbox" name="check_payment" value="1" <?php checked($check_payment, 1); ?>> Zahlung geprüft</label>
+                                    <label class="checkbox-line"><input type="checkbox" name="check_passport" value="1" <?php checked($check_passport, 1); ?>> <?php echo esc_html(alpenia_travel_t('Reisepass geprüft')); ?></label>
+                                    <label class="checkbox-line"><input type="checkbox" name="check_photo" value="1" <?php checked($check_photo, 1); ?>> <?php echo esc_html(alpenia_travel_t('Foto geprüft')); ?></label>
+                                    <label class="checkbox-line"><input type="checkbox" name="check_visa" value="1" <?php checked($check_visa, 1); ?>> <?php echo esc_html(alpenia_travel_t('Aufenthaltstitel geprüft')); ?></label>
+                                    <label class="checkbox-line"><input type="checkbox" name="check_payment" value="1" <?php checked($check_payment, 1); ?>> <?php echo esc_html(alpenia_travel_t('Zahlung geprüft')); ?></label>
                                 </div>
                             </div>
                         </div>
 
-                        <button type="submit" name="update_participant" class="btn-primary">Änderungen speichern</button>
+                        <button type="submit" name="update_participant" class="btn-primary"><?php echo esc_html(alpenia_travel_t('Änderungen speichern')); ?></button>
                     </form>
                 </div>
 
@@ -1351,22 +1351,22 @@ function alpenia_dashboard_shortcode() {
 
                 <div class="panel">
                     <div class="trip-meta-grid">
-                        <div class="trip-meta-box"><strong>Reisetyp</strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'trip_type', true)); ?></span></div>
-                        <div class="trip-meta-box"><strong>Status</strong><span><?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($view_trip_id, 'trip_status', true))); ?></span></div>
-                        <div class="trip-meta-box"><strong>Ziel</strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'destination', true)); ?></span></div>
-                        <div class="trip-meta-box"><strong>Land</strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'country', true)); ?></span></div>
-                        <div class="trip-meta-box"><strong>Stadt</strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'city', true)); ?></span></div>
-                        <div class="trip-meta-box"><strong>Zeitraum</strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'start_date', true)); ?> – <?php echo esc_html(get_post_meta($view_trip_id, 'end_date', true)); ?></span></div>
-                        <div class="trip-meta-box"><strong>Freie Plätze</strong><span><?php echo esc_html(alpenia_get_trip_capacity_left($view_trip_id)); ?></span></div>
-                        <div class="trip-meta-box"><strong>Reiseleiter</strong><span><?php echo esc_html($assigned_guide_name); ?></span></div>
-                        <div class="trip-meta-box"><strong>WhatsApp</strong><span><?php $wa = get_post_meta($view_trip_id, 'whatsapp_link', true); echo $wa ? '<a href="'.esc_url($wa).'" target="_blank">Öffnen</a>' : '—'; ?></span></div>
-                        <div class="trip-meta-box"><strong>Zoom</strong><span><?php $zoom = get_post_meta($view_trip_id, 'zoom_link', true); echo $zoom ? '<a href="'.esc_url($zoom).'" target="_blank">Öffnen</a>' : '—'; ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'trip_type', true)); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Status')); ?></strong><span><?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($view_trip_id, 'trip_status', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'destination', true)); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'country', true)); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'city', true)); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Zeitraum')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'start_date', true)); ?> – <?php echo esc_html(get_post_meta($view_trip_id, 'end_date', true)); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Freie Plätze')); ?></strong><span><?php echo esc_html(alpenia_get_trip_capacity_left($view_trip_id)); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?></strong><span><?php echo esc_html($assigned_guide_name); ?></span></div>
+                        <div class="trip-meta-box"><strong>WhatsApp</strong><span><?php $wa = get_post_meta($view_trip_id, 'whatsapp_link', true); echo $wa ? '<a href="'.esc_url($wa).'" target="_blank">'.esc_html(alpenia_travel_t('Öffnen')).'</a>' : '—'; ?></span></div>
+                        <div class="trip-meta-box"><strong>Zoom</strong><span><?php $zoom = get_post_meta($view_trip_id, 'zoom_link', true); echo $zoom ? '<a href="'.esc_url($zoom).'" target="_blank">'.esc_html(alpenia_travel_t('Öffnen')).'</a>' : '—'; ?></span></div>
                     </div>
 
                     <?php $notes = alpenia_get_secure_meta($view_trip_id, 'internal_notes', true); ?>
                     <?php if (!empty($notes)) : ?>
                         <div style="margin-top:20px;">
-                            <strong>Interne Notizen</strong>
+                            <strong><?php echo esc_html(alpenia_travel_t('Interne Notizen')); ?></strong>
                             <div class="notes-box"><?php echo esc_html($notes); ?></div>
                         </div>
                     <?php endif; ?>
@@ -1561,7 +1561,7 @@ function alpenia_dashboard_shortcode() {
                                 <div class="form-group">
                                     <label for="role"><?php echo esc_html(alpenia_travel_t("Rolle")); ?></label>
                                     <select id="role" name="role" required>
-                                        <option value="reiseleiter">Reiseleiter</option>
+                                        <option value="reiseleiter"><?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?></option>
                                         <option value="backoffice">Backoffice</option>
                                         <option value="administrator">Administrator</option>
                                     </select>
@@ -1610,9 +1610,9 @@ function alpenia_dashboard_shortcode() {
                                     if (in_array('administrator', (array) $user->roles, true)) {
                                         $role_label = 'Admin';
                                     } elseif (in_array('reiseleiter', (array) $user->roles, true)) {
-                                        $role_label = 'Reiseleiter';
+                                        $role_label = alpenia_travel_t('Reiseleiter');
                                     } elseif (in_array('backoffice', (array) $user->roles, true)) {
-                                        $role_label = 'Backoffice';
+                                        $role_label = alpenia_travel_t('Backoffice');
                                     }
                                 ?>
                                     <tr>
@@ -1767,8 +1767,8 @@ function alpenia_dashboard_shortcode() {
                                         <span>
                                             <?php echo esc_html(alpenia_travel_t('Freie Plätze')); ?>: <?php echo esc_html(alpenia_get_trip_capacity_left($trip->ID)); ?>
                                             · <?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?>: <?php echo esc_html($guide_name); ?>
-                                            · Start: <?php echo esc_html(get_post_meta($trip->ID, 'start_date', true)); ?>
-                                            · Ende: <?php echo esc_html(get_post_meta($trip->ID, 'end_date', true)); ?>
+                                            · <?php echo esc_html(alpenia_travel_t('Start')); ?>: <?php echo esc_html(get_post_meta($trip->ID, 'start_date', true)); ?>
+                                            · <?php echo esc_html(alpenia_travel_t('Ende')); ?>: <?php echo esc_html(get_post_meta($trip->ID, 'end_date', true)); ?>
                                         </span>
                                     </div>
                                     <div class="list-actions">
@@ -1805,7 +1805,7 @@ function alpenia_dashboard_shortcode() {
                                         <tr>
                                             <td><?php echo esc_html($item['trip_title']); ?></td>
                                             <td><?php echo esc_html($item['participant_name']); ?></td>
-                                            <td><?php echo esc_html(!empty($item['missing_docs']) ? implode(', ', $item['missing_docs']) : '—'); ?></td>
+                                            <td><?php echo esc_html(!empty($item['missing_docs']) ? implode(', ', array_map('alpenia_travel_t', $item['missing_docs'])) : '—'); ?></td>
                                             <td>
                                                 <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
                                                 <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
@@ -2636,7 +2636,7 @@ function alpenia_dashboard_shortcode() {
             if (!input.files || !input.files[0]) return true;
 
             if (input.files[0].size > maxBytes) {
-                alert(labelText + ' ist zu groß. Erlaubt sind maximal ' + Math.round(maxBytes / 1024 / 1024) + ' MB.');
+                alert(labelText + ' <?php echo esc_js(alpenia_travel_t('ist zu groß. Erlaubt sind maximal')); ?> ' + Math.round(maxBytes / 1024 / 1024) + ' MB.');
                 input.value = '';
                 return false;
             }
@@ -2708,25 +2708,25 @@ function alpenia_dashboard_shortcode() {
 
         document.querySelectorAll('input[id^="passport_file_"], #passport_file').forEach(function(input) {
             input.addEventListener('change', function() {
-                validateFileInput(input, uploadLimits.passport, 'Reisepass-Datei');
+                validateFileInput(input, uploadLimits.passport, '<?php echo esc_js(alpenia_travel_t('Reisepass-Datei')); ?>');
             });
         });
 
         document.querySelectorAll('input[id^="photo_file_"], #photo_file').forEach(function(input) {
             input.addEventListener('change', function() {
-                validateFileInput(input, uploadLimits.photo, 'Foto');
+                validateFileInput(input, uploadLimits.photo, '<?php echo esc_js(alpenia_travel_t('Foto')); ?>');
             });
         });
 
         document.querySelectorAll('input[id^="visa_photo_file_"], #visa_photo_file').forEach(function(input) {
             input.addEventListener('change', function() {
-                validateFileInput(input, uploadLimits.visaPhoto, 'Aufenthaltstitel');
+                validateFileInput(input, uploadLimits.visaPhoto, '<?php echo esc_js(alpenia_travel_t('Aufenthaltstitel')); ?>');
             });
         });
 
         document.querySelectorAll('input[id^="meldezettel_file_"], #meldezettel_file').forEach(function(input) {
             input.addEventListener('change', function() {
-                validateFileInput(input, uploadLimits.meldezettel, 'Meldezettel');
+                validateFileInput(input, uploadLimits.meldezettel, '<?php echo esc_js(alpenia_travel_t('Meldezettel')); ?>');
             });
         });
 
