@@ -168,6 +168,7 @@ function alpenia_dashboard_shortcode() {
             } else {
                 $all_ok = true;
                 $saved_count = 0;
+                $is_pilgrimage_trip = alpenia_is_pilgrimage_trip($trip_id);
 
                 for ($i = 1; $i <= $participant_count; $i++) {
                     $gender             = sanitize_text_field($_POST["gender_$i"] ?? '');
@@ -183,12 +184,13 @@ function alpenia_dashboard_shortcode() {
                     $emergency_contact_phone = sanitize_text_field($_POST["emergency_contact_phone_$i"] ?? '');
                     $passport_valid_from = sanitize_text_field($_POST["passport_valid_from_$i"] ?? '');
                     $passport_expiry     = sanitize_text_field($_POST["passport_expiry_date_$i"] ?? '');
+                    $residence_permit_start_date = sanitize_text_field($_POST["residence_permit_start_date_$i"] ?? '');
+                    $residence_permit_number = sanitize_text_field($_POST["residence_permit_number_$i"] ?? '');
+                    $residence_permit_valid_until = sanitize_text_field($_POST["residence_permit_valid_until_$i"] ?? '');
+                    $visa_entry_country = sanitize_text_field($_POST["visa_entry_country_$i"] ?? '');
                     $visa_number        = sanitize_text_field($_POST["visa_number_$i"] ?? '');
-                    $visa_valid_from    = sanitize_text_field($_POST["visa_valid_from_date_$i"] ?? '');
                     $visa_expiry_date   = sanitize_text_field($_POST["visa_expiry_date_$i"] ?? '');
-                    $visa_note          = sanitize_text_field($_POST["visa_note_$i"] ?? '');
                     $participant_status = sanitize_text_field($_POST["participant_status_$i"] ?? 'neu');
-                    $visa_status        = sanitize_text_field($_POST["visa_status_$i"] ?? '');
                     $room_assignment    = sanitize_text_field($_POST["room_assignment_$i"] ?? '');
                     $subgroup           = sanitize_text_field($_POST["subgroup_$i"] ?? '');
                     $payment_total      = (float) ($_POST["payment_total_$i"] ?? 0);
@@ -219,10 +221,15 @@ function alpenia_dashboard_shortcode() {
                     }
 
                     if (!$is_eu_or_schengen_citizen) {
-                        if (empty($visa_number) || empty($visa_valid_from) || empty($visa_expiry_date) || $visa_photo_missing) {
+                        if (empty($residence_permit_start_date) || empty($residence_permit_number) || empty($residence_permit_valid_until) || $visa_photo_missing) {
                             $all_ok = false;
                             break;
                         }
+                    }
+
+                    if ($is_pilgrimage_trip && (empty($visa_entry_country) || empty($visa_number) || empty($visa_expiry_date))) {
+                        $all_ok = false;
+                        break;
                     }
 
                     if ($check_passport !== 1 || $check_photo !== 1 || $check_payment !== 1 || (!$is_eu_or_schengen_citizen && $check_visa !== 1)) {
@@ -256,12 +263,13 @@ function alpenia_dashboard_shortcode() {
                     alpenia_update_secure_meta($participant_id, 'emergency_contact_phone', $emergency_contact_phone);
                     alpenia_update_secure_meta($participant_id, 'passport_valid_from_date', $passport_valid_from);
                     alpenia_update_secure_meta($participant_id, 'passport_expiry_date', $passport_expiry);
+                    alpenia_update_secure_meta($participant_id, 'residence_permit_start_date', $residence_permit_start_date);
+                    alpenia_update_secure_meta($participant_id, 'residence_permit_number', $residence_permit_number);
+                    alpenia_update_secure_meta($participant_id, 'residence_permit_valid_until', $residence_permit_valid_until);
+                    alpenia_update_secure_meta($participant_id, 'visa_entry_country', $visa_entry_country);
                     alpenia_update_secure_meta($participant_id, 'visa_number', $visa_number);
-                    alpenia_update_secure_meta($participant_id, 'visa_valid_from_date', $visa_valid_from);
                     alpenia_update_secure_meta($participant_id, 'visa_expiry_date', $visa_expiry_date);
-                    alpenia_update_secure_meta($participant_id, 'visa_note', $visa_note);
                     update_post_meta($participant_id, 'participant_status', $participant_status);
-                    update_post_meta($participant_id, 'visa_status', $visa_status);
                     alpenia_update_secure_meta($participant_id, 'room_assignment', $room_assignment);
                     alpenia_update_secure_meta($participant_id, 'subgroup', $subgroup);
                     update_post_meta($participant_id, 'payment_total', $payment_total);
@@ -304,7 +312,7 @@ function alpenia_dashboard_shortcode() {
                     alpenia_send_notification('Neue Teilnehmer erfasst', $saved_count . ' Teilnehmer wurden für eine Reise gespeichert.');
                     $message = '<div class="alpenia-success">' . (int) $saved_count . ' ' . esc_html(alpenia_travel_t('Teilnehmer erfolgreich gespeichert.')) . '</div>';
                 } elseif ($message === '') {
-                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' ' . esc_html(alpenia_travel_t('Pflicht sind Geschlecht, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von, Aufenthaltstitel gültig bis und Aufenthaltstitel Pflicht.')) . '</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' ' . esc_html(alpenia_travel_t('Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.')) . '</div>';
                 }
             }
         }
@@ -344,12 +352,13 @@ function alpenia_dashboard_shortcode() {
             $emergency_contact_phone = sanitize_text_field($_POST['emergency_contact_phone'] ?? '');
             $passport_valid_from = sanitize_text_field($_POST['passport_valid_from_date'] ?? '');
             $passport_expiry     = sanitize_text_field($_POST['passport_expiry_date'] ?? '');
+            $residence_permit_start_date = sanitize_text_field($_POST['residence_permit_start_date'] ?? '');
+            $residence_permit_number = sanitize_text_field($_POST['residence_permit_number'] ?? '');
+            $residence_permit_valid_until = sanitize_text_field($_POST['residence_permit_valid_until'] ?? '');
+            $visa_entry_country = sanitize_text_field($_POST['visa_entry_country'] ?? '');
             $visa_number        = sanitize_text_field($_POST['visa_number'] ?? '');
-            $visa_valid_from    = sanitize_text_field($_POST['visa_valid_from_date'] ?? '');
             $visa_expiry_date   = sanitize_text_field($_POST['visa_expiry_date'] ?? '');
-            $visa_note          = sanitize_text_field($_POST['visa_note'] ?? '');
             $participant_status = sanitize_text_field($_POST['participant_status'] ?? '');
-            $visa_status        = sanitize_text_field($_POST['visa_status'] ?? '');
             $room_assignment    = sanitize_text_field($_POST['room_assignment'] ?? '');
             $subgroup           = sanitize_text_field($_POST['subgroup'] ?? '');
             $payment_total      = (float) ($_POST['payment_total'] ?? 0);
@@ -360,11 +369,15 @@ function alpenia_dashboard_shortcode() {
             $check_visa         = !empty($_POST['check_visa']) ? 1 : 0;
             $check_payment      = !empty($_POST['check_payment']) ? 1 : 0;
             $is_eu_or_schengen_citizen = alpenia_is_eu_or_schengen_nationality($nationality);
+            $trip_id_for_validation = (int) get_post_meta($participant_id, 'trip_id', true);
+            $is_pilgrimage_trip = alpenia_is_pilgrimage_trip($trip_id_for_validation);
 
             if (empty($gender) || empty($first_name) || empty($last_name) || empty($nationality) || empty($passport_valid_from) || empty($passport_expiry)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von und Reisepass gültig bis ausfüllen.')) . '</div>';
-            } elseif (!$is_eu_or_schengen_citizen && (empty($visa_number) || empty($visa_valid_from) || empty($visa_expiry_date))) {
+            } elseif (!$is_eu_or_schengen_citizen && (empty($residence_permit_start_date) || empty($residence_permit_number) || empty($residence_permit_valid_until))) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.')) . '</div>';
+            } elseif ($is_pilgrimage_trip && (empty($visa_entry_country) || empty($visa_number) || empty($visa_expiry_date))) {
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bei Umrah-/Hajj-Reisen sind Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.')) . '</div>';
             } else {
                 wp_update_post([
                     'ID'         => $participant_id,
@@ -384,12 +397,13 @@ function alpenia_dashboard_shortcode() {
                 alpenia_update_secure_meta($participant_id, 'emergency_contact_phone', $emergency_contact_phone);
                 alpenia_update_secure_meta($participant_id, 'passport_valid_from_date', $passport_valid_from);
                 alpenia_update_secure_meta($participant_id, 'passport_expiry_date', $passport_expiry);
+                alpenia_update_secure_meta($participant_id, 'residence_permit_start_date', $residence_permit_start_date);
+                alpenia_update_secure_meta($participant_id, 'residence_permit_number', $residence_permit_number);
+                alpenia_update_secure_meta($participant_id, 'residence_permit_valid_until', $residence_permit_valid_until);
+                alpenia_update_secure_meta($participant_id, 'visa_entry_country', $visa_entry_country);
                 alpenia_update_secure_meta($participant_id, 'visa_number', $visa_number);
-                alpenia_update_secure_meta($participant_id, 'visa_valid_from_date', $visa_valid_from);
                 alpenia_update_secure_meta($participant_id, 'visa_expiry_date', $visa_expiry_date);
-                alpenia_update_secure_meta($participant_id, 'visa_note', $visa_note);
                 update_post_meta($participant_id, 'participant_status', $participant_status);
-                update_post_meta($participant_id, 'visa_status', $visa_status);
                 alpenia_update_secure_meta($participant_id, 'room_assignment', $room_assignment);
                 alpenia_update_secure_meta($participant_id, 'subgroup', $subgroup);
                 update_post_meta($participant_id, 'payment_total', $payment_total);
@@ -896,6 +910,7 @@ function alpenia_dashboard_shortcode() {
                 }
 
                 $all_countries_list = alpenia_get_all_countries();
+                $selected_is_pilgrimage_trip = alpenia_is_pilgrimage_trip($selected_trip_id);
                 ?>
 
                 <div class="dashboard-top">
@@ -922,7 +937,7 @@ function alpenia_dashboard_shortcode() {
                         <?php endforeach; ?>
                     </datalist>
 
-                    <form method="post" enctype="multipart/form-data" class="alpenia-form">
+                    <form method="post" enctype="multipart/form-data" class="alpenia-form" data-pilgrimage-trip="<?php echo $selected_is_pilgrimage_trip ? '1' : '0'; ?>">
                         <?php wp_nonce_field('alpenia_save_participants_batch', 'alpenia_participant_batch_nonce'); ?>
                         <input type="hidden" name="trip_id" value="<?php echo esc_attr($selected_trip_id); ?>">
                         <input type="hidden" name="participant_count" value="<?php echo esc_attr($participant_count); ?>">
@@ -970,25 +985,6 @@ function alpenia_dashboard_shortcode() {
                                         <label for="passport_no_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Reisepassnummer')); ?></label>
                                         <input type="text" id="passport_no_<?php echo $i; ?>" name="passport_no_<?php echo $i; ?>">
                                     </div>
-                                    <div class="form-group">
-                                        <label for="phone_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
-                                        <input type="text" id="phone_number_<?php echo $i; ?>" name="phone_number_<?php echo $i; ?>">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="email_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
-                                        <input type="email" id="email_address_<?php echo $i; ?>" name="email_address_<?php echo $i; ?>">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="emergency_contact_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
-                                        <input type="text" id="emergency_contact_name_<?php echo $i; ?>" name="emergency_contact_name_<?php echo $i; ?>">
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="emergency_contact_phone_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
-                                        <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>">
-                                    </div>
 
                                     <div class="form-group">
                                         <label for="passport_valid_from_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Reisepass gültig von')); ?> <span class="required-mark">*</span></label>
@@ -1000,24 +996,34 @@ function alpenia_dashboard_shortcode() {
                                         <input type="date" id="passport_expiry_date_<?php echo $i; ?>" name="passport_expiry_date_<?php echo $i; ?>" required>
                                     </div>
 
-                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel Nummer')); ?></label>
-                                        <input type="text" id="visa_number_<?php echo $i; ?>" name="visa_number_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('Nummer des Visums')); ?>">
+                                    <div class="form-group residence-field residence-field-<?php echo $i; ?>">
+                                        <label for="residence_permit_start_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig von')); ?></label>
+                                        <input type="date" id="residence_permit_start_date_<?php echo $i; ?>" name="residence_permit_start_date_<?php echo $i; ?>">
                                     </div>
 
-                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_valid_from_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig von')); ?></label>
-                                        <input type="date" id="visa_valid_from_date_<?php echo $i; ?>" name="visa_valid_from_date_<?php echo $i; ?>">
+                                    <div class="form-group residence-field residence-field-<?php echo $i; ?>">
+                                        <label for="residence_permit_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel Nummer')); ?></label>
+                                        <input type="text" id="residence_permit_number_<?php echo $i; ?>" name="residence_permit_number_<?php echo $i; ?>">
                                     </div>
 
-                                    <div class="form-group visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_expiry_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig bis')); ?></label>
+                                    <div class="form-group residence-field residence-field-<?php echo $i; ?>">
+                                        <label for="residence_permit_valid_until_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig bis')); ?></label>
+                                        <input type="date" id="residence_permit_valid_until_<?php echo $i; ?>" name="residence_permit_valid_until_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group pilgrimage-visa-field pilgrimage-visa-field-<?php echo $i; ?>">
+                                        <label for="visa_entry_country_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></label>
+                                        <input type="text" id="visa_entry_country_<?php echo $i; ?>" name="visa_entry_country_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien')); ?>">
+                                    </div>
+
+                                    <div class="form-group pilgrimage-visa-field pilgrimage-visa-field-<?php echo $i; ?>">
+                                        <label for="visa_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Visum Nummer')); ?></label>
+                                        <input type="text" id="visa_number_<?php echo $i; ?>" name="visa_number_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group pilgrimage-visa-field pilgrimage-visa-field-<?php echo $i; ?>">
+                                        <label for="visa_expiry_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></label>
                                         <input type="date" id="visa_expiry_date_<?php echo $i; ?>" name="visa_expiry_date_<?php echo $i; ?>">
-                                    </div>
-
-                                    <div class="form-group full visa-field visa-field-<?php echo $i; ?>">
-                                        <label for="visa_note_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel Bemerkung')); ?></label>
-                                        <input type="text" id="visa_note_<?php echo $i; ?>" name="visa_note_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Einreise-Visum für Saudi-Arabien')); ?>">
                                     </div>
 
                                     <div class="form-group">
@@ -1029,10 +1035,6 @@ function alpenia_dashboard_shortcode() {
                                         </select>
                                     </div>
 
-                                    <div class="form-group">
-                                        <label for="visa_status_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitelstatus (Einreiseland)')); ?></label>
-                                        <input type="text" id="visa_status_<?php echo $i; ?>" name="visa_status_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien: beantragt')); ?>">
-                                    </div>
 
                                     <div class="form-group">
                                         <label for="payment_total_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Gesamtpreis (€)')); ?></label>
@@ -1059,7 +1061,7 @@ function alpenia_dashboard_shortcode() {
                                         <input type="file" id="photo_file_<?php echo $i; ?>" name="photo_file_<?php echo $i; ?>" accept=".jpg,.jpeg,.png" required>
                                     </div>
 
-                                    <div class="form-group full visa-field visa-field-<?php echo $i; ?>">
+                                    <div class="form-group full residence-field residence-field-<?php echo $i; ?>">
                                         <label for="visa_photo_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel hochladen')); ?> <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
                                         <input type="file" id="visa_photo_file_<?php echo $i; ?>" name="visa_photo_file_<?php echo $i; ?>" accept=".jpg,.jpeg,.png,.pdf">
                                     </div>
@@ -1068,6 +1070,7 @@ function alpenia_dashboard_shortcode() {
                                         <label for="meldezettel_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Meldezettel hochladen')); ?> <small>(max. 5 MB)</small></label>
                                         <input type="file" id="meldezettel_file_<?php echo $i; ?>" name="meldezettel_file_<?php echo $i; ?>" accept=".pdf,.jpg,.jpeg,.png">
                                     </div>
+
 
                                     <div class="form-group full">
                                         <label><?php echo esc_html(alpenia_travel_t('Checkliste')); ?> <span class="required-mark">*</span></label>
@@ -1078,6 +1081,28 @@ function alpenia_dashboard_shortcode() {
                                             <label class="checkbox-line"><input type="checkbox" name="check_payment_<?php echo $i; ?>" value="1" required> <?php echo esc_html(alpenia_travel_t('Zahlung geprüft')); ?></label>
                                         </div>
                                     </div>
+
+                                    <div class="form-group">
+                                        <label for="phone_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
+                                        <input type="text" id="phone_number_<?php echo $i; ?>" name="phone_number_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
+                                        <input type="email" id="email_address_<?php echo $i; ?>" name="email_address_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="emergency_contact_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
+                                        <input type="text" id="emergency_contact_name_<?php echo $i; ?>" name="emergency_contact_name_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="emergency_contact_phone_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
+                                        <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>">
+                                    </div>
+
+
                                 </div>
                             </div>
                         <?php endfor; ?>
@@ -1111,12 +1136,14 @@ function alpenia_dashboard_shortcode() {
                 $emergency_contact_phone = alpenia_get_secure_meta($participant_id, 'emergency_contact_phone', true);
                 $passport_valid_from = alpenia_get_secure_meta($participant_id, 'passport_valid_from_date', true);
                 $passport_expiry     = alpenia_get_secure_meta($participant_id, 'passport_expiry_date', true);
+                $residence_permit_start_date = alpenia_get_secure_meta($participant_id, 'residence_permit_start_date', true);
+                $residence_permit_number = alpenia_get_secure_meta($participant_id, 'residence_permit_number', true);
+                $residence_permit_valid_until = alpenia_get_secure_meta($participant_id, 'residence_permit_valid_until', true);
+                $visa_entry_country = alpenia_get_visa_entry_country($participant_id);
                 $visa_number        = alpenia_get_secure_meta($participant_id, 'visa_number', true);
-                $visa_valid_from    = alpenia_get_secure_meta($participant_id, 'visa_valid_from_date', true);
                 $visa_expiry_date   = alpenia_get_secure_meta($participant_id, 'visa_expiry_date', true);
-                $visa_note          = alpenia_get_secure_meta($participant_id, 'visa_note', true);
                 $participant_status = get_post_meta($participant_id, 'participant_status', true);
-                $visa_status        = get_post_meta($participant_id, 'visa_status', true);
+                $edit_is_pilgrimage_trip = alpenia_is_pilgrimage_trip($trip_id);
                 $room_assignment    = alpenia_get_secure_meta($participant_id, 'room_assignment', true);
                 $subgroup           = alpenia_get_secure_meta($participant_id, 'subgroup', true);
                 $payment_total      = get_post_meta($participant_id, 'payment_total', true);
@@ -1146,7 +1173,7 @@ function alpenia_dashboard_shortcode() {
                 </div>
 
                 <div class="panel">
-                    <form method="post" enctype="multipart/form-data" class="alpenia-form">
+                    <form method="post" enctype="multipart/form-data" class="alpenia-form" data-pilgrimage-trip="<?php echo $edit_is_pilgrimage_trip ? '1' : '0'; ?>">
                         <?php wp_nonce_field('alpenia_edit_participant_' . $participant_id, 'alpenia_edit_participant_nonce'); ?>
                         <input type="hidden" name="participant_id" value="<?php echo esc_attr($participant_id); ?>">
 
@@ -1194,25 +1221,6 @@ function alpenia_dashboard_shortcode() {
                                 <label for="passport_no"><?php echo esc_html(alpenia_travel_t('Reisepassnummer')); ?></label>
                                 <input type="text" id="passport_no" name="passport_no" value="<?php echo esc_attr($passport_no); ?>">
                             </div>
-                            <div class="form-group">
-                                <label for="phone_number"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
-                                <input type="text" id="phone_number" name="phone_number" value="<?php echo esc_attr($phone_number); ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="email_address"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
-                                <input type="email" id="email_address" name="email_address" value="<?php echo esc_attr($email_address); ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="emergency_contact_name"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
-                                <input type="text" id="emergency_contact_name" name="emergency_contact_name" value="<?php echo esc_attr($emergency_contact_name); ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="emergency_contact_phone"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
-                                <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" value="<?php echo esc_attr($emergency_contact_phone); ?>">
-                            </div>
 
                             <div class="form-group">
                                 <label for="passport_valid_from_date"><?php echo esc_html(alpenia_travel_t('Reisepass gültig von')); ?> <span class="required-mark">*</span></label>
@@ -1224,24 +1232,34 @@ function alpenia_dashboard_shortcode() {
                                 <input type="date" id="passport_expiry_date" name="passport_expiry_date" value="<?php echo esc_attr($passport_expiry); ?>" required>
                             </div>
 
+                            <div class="form-group edit-residence-field">
+                                <label for="residence_permit_start_date"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig von')); ?></label>
+                                <input type="date" id="residence_permit_start_date" name="residence_permit_start_date" value="<?php echo esc_attr($residence_permit_start_date); ?>">
+                            </div>
+
+                            <div class="form-group edit-residence-field">
+                                <label for="residence_permit_number"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel Nummer')); ?></label>
+                                <input type="text" id="residence_permit_number" name="residence_permit_number" value="<?php echo esc_attr($residence_permit_number); ?>">
+                            </div>
+
+                            <div class="form-group edit-residence-field">
+                                <label for="residence_permit_valid_until"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig bis')); ?></label>
+                                <input type="date" id="residence_permit_valid_until" name="residence_permit_valid_until" value="<?php echo esc_attr($residence_permit_valid_until); ?>">
+                            </div>
+
+                            <div class="form-group edit-visa-field">
+                                <label for="visa_entry_country"><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></label>
+                                <input type="text" id="visa_entry_country" name="visa_entry_country" value="<?php echo esc_attr($visa_entry_country); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien')); ?>">
+                            </div>
+
                             <div class="form-group edit-visa-field">
                                 <label for="visa_number"><?php echo esc_html(alpenia_travel_t('Visum Nummer')); ?></label>
                                 <input type="text" id="visa_number" name="visa_number" value="<?php echo esc_attr($visa_number); ?>">
                             </div>
 
                             <div class="form-group edit-visa-field">
-                                <label for="visa_valid_from_date"><?php echo esc_html(alpenia_travel_t('Visum gültig von')); ?></label>
-                                <input type="date" id="visa_valid_from_date" name="visa_valid_from_date" value="<?php echo esc_attr($visa_valid_from); ?>">
-                            </div>
-
-                            <div class="form-group edit-visa-field">
                                 <label for="visa_expiry_date"><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></label>
                                 <input type="date" id="visa_expiry_date" name="visa_expiry_date" value="<?php echo esc_attr($visa_expiry_date); ?>">
-                            </div>
-
-                            <div class="form-group full edit-visa-field">
-                                <label for="visa_note"><?php echo esc_html(alpenia_travel_t('Visum Bemerkung')); ?></label>
-                                <input type="text" id="visa_note" name="visa_note" value="<?php echo esc_attr($visa_note); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Einreise-Visum für Saudi-Arabien')); ?>">
                             </div>
 
                             <div class="form-group">
@@ -1253,10 +1271,6 @@ function alpenia_dashboard_shortcode() {
                                 </select>
                             </div>
 
-                            <div class="form-group">
-                                <label for="visa_status"><?php echo esc_html(alpenia_travel_t('Visumstatus (Einreiseland)')); ?></label>
-                                <input type="text" id="visa_status" name="visa_status" value="<?php echo esc_attr($visa_status); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien: beantragt')); ?>">
-                            </div>
 
                             <div class="form-group">
                                 <label for="room_assignment"><?php echo esc_html(alpenia_travel_t('Zimmer')); ?></label>
@@ -1293,7 +1307,7 @@ function alpenia_dashboard_shortcode() {
                                 <input type="file" id="photo_file" name="photo_file" accept=".jpg,.jpeg,.png">
                             </div>
 
-                            <div class="form-group full edit-visa-field">
+                            <div class="form-group full edit-residence-field">
                                 <label for="visa_photo_file"><?php echo esc_html(alpenia_travel_t('Neuen Aufenthaltstitel hochladen')); ?> <small>(max. 2 MB)</small></label>
                                 <input type="file" id="visa_photo_file" name="visa_photo_file" accept=".jpg,.jpeg,.png,.pdf">
                             </div>
@@ -1302,6 +1316,7 @@ function alpenia_dashboard_shortcode() {
                                 <label for="meldezettel_file"><?php echo esc_html(alpenia_travel_t('Neuen Meldezettel hochladen')); ?> <small>(max. 5 MB)</small></label>
                                 <input type="file" id="meldezettel_file" name="meldezettel_file" accept=".pdf,.jpg,.jpeg,.png">
                             </div>
+
 
                             <div class="form-group full">
                                 <label><?php echo esc_html(alpenia_travel_t('Checkliste')); ?></label>
@@ -1312,6 +1327,28 @@ function alpenia_dashboard_shortcode() {
                                     <label class="checkbox-line"><input type="checkbox" name="check_payment" value="1" <?php checked($check_payment, 1); ?>> <?php echo esc_html(alpenia_travel_t('Zahlung geprüft')); ?></label>
                                 </div>
                             </div>
+
+                            <div class="form-group">
+                                <label for="phone_number"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
+                                <input type="text" id="phone_number" name="phone_number" value="<?php echo esc_attr($phone_number); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email_address"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
+                                <input type="email" id="email_address" name="email_address" value="<?php echo esc_attr($email_address); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergency_contact_name"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
+                                <input type="text" id="emergency_contact_name" name="emergency_contact_name" value="<?php echo esc_attr($emergency_contact_name); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergency_contact_phone"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
+                                <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" value="<?php echo esc_attr($emergency_contact_phone); ?>">
+                            </div>
+
+
                         </div>
 
                         <button type="submit" name="update_participant" class="btn-primary"><?php echo esc_html(alpenia_travel_t('Änderungen speichern')); ?></button>
@@ -1390,13 +1427,12 @@ function alpenia_dashboard_shortcode() {
                                         <th><?php echo esc_html(alpenia_travel_t('Anrede')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Name')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Dokumente')); ?></th>
-                                        <th><?php echo esc_html(alpenia_travel_t('Einreiseland-Visumstatus')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Reisepass Nr.')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Reisepass gültig von')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Reisepass gültig bis')); ?></th>
-                                        <th><?php echo esc_html__('Visum Nr.', 'alpenia-travel'); ?></th>
-                                        <th><?php echo esc_html(alpenia_travel_t('Visum gültig von')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Visum Nummer')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Visum')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Status')); ?></th>
@@ -1426,13 +1462,12 @@ function alpenia_dashboard_shortcode() {
                                                 <small><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_no', true)); ?></small>
                                             </td>
                                             <td><?php echo wp_kses_post(alpenia_get_participant_doc_badge($participant->ID)); ?></td>
-                                            <td><?php echo esc_html(get_post_meta($participant->ID, 'visa_status', true)); ?></td>
+                                            <td><?php echo esc_html(alpenia_get_visa_entry_country($participant->ID) ?: '—'); ?></td>
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'nationality', true)); ?></td>
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_no', true) ?: '—'); ?></td>
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true) ?: '—'); ?></td>
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true) ?: '—'); ?></td>
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_number', true) ?: '—'); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_valid_from_date', true) ?: '—'); ?></td>
                                             <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true) ?: '—'); ?></td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($visa_photo_file_id, true)); ?>
@@ -2659,68 +2694,127 @@ function alpenia_dashboard_shortcode() {
             return true;
         }
 
+        const formPilgrimageFlag = document.querySelector('.alpenia-form[data-pilgrimage-trip]');
+        const isPilgrimageTrip = formPilgrimageFlag && formPilgrimageFlag.dataset.pilgrimageTrip === '1';
+
         document.querySelectorAll('input[id^="nationality_"]').forEach(function (input) {
             const index = input.id.replace('nationality_', '');
-            const visaFields = document.querySelectorAll('.visa-field-' + index);
+            const residenceFields = document.querySelectorAll('.residence-field-' + index);
+            const residenceStart = document.getElementById('residence_permit_start_date_' + index);
+            const residenceNumber = document.getElementById('residence_permit_number_' + index);
+            const residenceUntil = document.getElementById('residence_permit_valid_until_' + index);
+            const residencePhoto = document.getElementById('visa_photo_file_' + index);
+            const residenceCheck = document.querySelector('input[name="check_visa_' + index + '"]');
+            const pilgrimageVisaFields = document.querySelectorAll('.pilgrimage-visa-field-' + index);
+            const visaEntryCountry = document.getElementById('visa_entry_country_' + index);
             const visaNumber = document.getElementById('visa_number_' + index);
-            const visaValidFrom = document.getElementById('visa_valid_from_date_' + index);
             const visaExpiry = document.getElementById('visa_expiry_date_' + index);
-            const visaPhoto = document.getElementById('visa_photo_file_' + index);
-            const visaCheck = document.querySelector('input[name="check_visa_' + index + '"]');
 
-            function toggleVisaFields() {
+            function toggleResidenceFields() {
                 const nationality = input.value.trim();
-                const show = nationality !== '' && !isEuOrSchengenCountry(nationality);
+                const showResidence = nationality !== '' && !isEuOrSchengenCountry(nationality);
 
-                visaFields.forEach(function (field) {
-                    field.style.display = show ? '' : 'none';
+                residenceFields.forEach(function (field) {
+                    field.style.display = showResidence ? '' : 'none';
                 });
 
-                if (visaNumber) visaNumber.required = show;
-                if (visaValidFrom) visaValidFrom.required = show;
-                if (visaExpiry) visaExpiry.required = show;
-                if (visaPhoto) visaPhoto.required = show;
-                if (visaCheck) visaCheck.required = show;
+                if (residenceStart) residenceStart.required = showResidence;
+                if (residenceNumber) residenceNumber.required = showResidence;
+                if (residenceUntil) residenceUntil.required = showResidence;
+                if (residencePhoto) residencePhoto.required = showResidence;
+                if (residenceCheck) residenceCheck.required = showResidence;
             }
 
-            input.addEventListener('input', toggleVisaFields);
-            input.addEventListener('change', toggleVisaFields);
-            toggleVisaFields();
+            function togglePilgrimageVisaFields() {
+                pilgrimageVisaFields.forEach(function (field) {
+                    field.style.display = isPilgrimageTrip ? '' : 'none';
+                });
+
+                if (visaEntryCountry) visaEntryCountry.required = isPilgrimageTrip;
+                if (visaNumber) visaNumber.required = isPilgrimageTrip;
+                if (visaExpiry) visaExpiry.required = isPilgrimageTrip;
+            }
+
+            input.addEventListener('input', toggleResidenceFields);
+            input.addEventListener('change', toggleResidenceFields);
+            toggleResidenceFields();
+            togglePilgrimageVisaFields();
         });
 
         const nationalityEdit = document.getElementById('nationality');
-        const visaNumberEdit = document.getElementById('visa_number');
-        const visaValidFromEdit = document.getElementById('visa_valid_from_date');
-        const visaExpiryEdit = document.getElementById('visa_expiry_date');
-        const visaPhotoEdit = document.getElementById('visa_photo_file');
-        const visaNoteEdit = document.getElementById('visa_note');
 
         if (nationalityEdit) {
-            const editVisaFields = [];
+            const editResidenceFields = Array.from(document.querySelectorAll('.edit-residence-field'));
+            const editVisaFields = Array.from(document.querySelectorAll('.edit-visa-field'));
+            const residenceStartEdit = document.getElementById('residence_permit_start_date');
+            const residenceNumberEdit = document.getElementById('residence_permit_number');
+            const residenceUntilEdit = document.getElementById('residence_permit_valid_until');
+            const residencePhotoEdit = document.getElementById('visa_photo_file');
+            const visaEntryCountryEdit = document.getElementById('visa_entry_country');
+            const visaNumberEdit = document.getElementById('visa_number');
+            const visaExpiryEdit = document.getElementById('visa_expiry_date');
 
-            if (visaNumberEdit && visaNumberEdit.closest('.edit-visa-field')) editVisaFields.push(visaNumberEdit.closest('.edit-visa-field'));
-            if (visaValidFromEdit && visaValidFromEdit.closest('.edit-visa-field')) editVisaFields.push(visaValidFromEdit.closest('.edit-visa-field'));
-            if (visaExpiryEdit && visaExpiryEdit.closest('.edit-visa-field')) editVisaFields.push(visaExpiryEdit.closest('.edit-visa-field'));
-            if (visaPhotoEdit && visaPhotoEdit.closest('.edit-visa-field')) editVisaFields.push(visaPhotoEdit.closest('.edit-visa-field'));
-            if (visaNoteEdit && visaNoteEdit.closest('.edit-visa-field')) editVisaFields.push(visaNoteEdit.closest('.edit-visa-field'));
-
-            function toggleEditVisaFields() {
+            function toggleEditResidenceFields() {
                 const nationality = nationalityEdit.value.trim();
-                const show = nationality !== '' && !isEuOrSchengenCountry(nationality);
+                const showResidence = nationality !== '' && !isEuOrSchengenCountry(nationality);
 
-                editVisaFields.forEach(function (field) {
-                    if (field) field.style.display = show ? '' : 'none';
+                editResidenceFields.forEach(function (field) {
+                    if (field) field.style.display = showResidence ? '' : 'none';
                 });
 
-                if (visaNumberEdit) visaNumberEdit.required = show;
-                if (visaValidFromEdit) visaValidFromEdit.required = show;
-                if (visaExpiryEdit) visaExpiryEdit.required = show;
+                if (residenceStartEdit) residenceStartEdit.required = showResidence;
+                if (residenceNumberEdit) residenceNumberEdit.required = showResidence;
+                if (residenceUntilEdit) residenceUntilEdit.required = showResidence;
+                if (residencePhotoEdit) residencePhotoEdit.required = showResidence;
             }
 
-            nationalityEdit.addEventListener('input', toggleEditVisaFields);
-            nationalityEdit.addEventListener('change', toggleEditVisaFields);
-            toggleEditVisaFields();
+            function toggleEditPilgrimageVisaFields() {
+                editVisaFields.forEach(function (field) {
+                    if (field) field.style.display = isPilgrimageTrip ? '' : 'none';
+                });
+
+                if (visaEntryCountryEdit) visaEntryCountryEdit.required = isPilgrimageTrip;
+                if (visaNumberEdit) visaNumberEdit.required = isPilgrimageTrip;
+                if (visaExpiryEdit) visaExpiryEdit.required = isPilgrimageTrip;
+            }
+
+            nationalityEdit.addEventListener('input', toggleEditResidenceFields);
+            nationalityEdit.addEventListener('change', toggleEditResidenceFields);
+            toggleEditResidenceFields();
+            toggleEditPilgrimageVisaFields();
         }
+
+        const validationMessages = {
+            valueMissing: '<?php echo esc_js(alpenia_travel_t('Lütfen bu alanı doldurun.')); ?>',
+            typeMismatchEmail: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir e-posta adresi girin.')); ?>',
+            typeMismatch: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir değer girin.')); ?>',
+            badInputDate: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir tarih girin.')); ?>',
+            patternMismatchTel: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir telefon numarası girin.')); ?>',
+            fileMissing: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir dosya yükleyin.')); ?>'
+        };
+
+        function getValidationMessage(input) {
+            if (input.validity.valueMissing) {
+                return input.type === 'file' ? validationMessages.fileMissing : validationMessages.valueMissing;
+            }
+            if (input.validity.typeMismatch && input.type === 'email') return validationMessages.typeMismatchEmail;
+            if (input.validity.badInput && input.type === 'date') return validationMessages.badInputDate;
+            if (input.validity.patternMismatch && input.type === 'tel') return validationMessages.patternMismatchTel;
+            if (input.validity.typeMismatch) return validationMessages.typeMismatch;
+            return '';
+        }
+
+        document.querySelectorAll('.alpenia-form input, .alpenia-form select, .alpenia-form textarea').forEach(function (input) {
+            input.addEventListener('invalid', function () {
+                input.setCustomValidity(getValidationMessage(input));
+            });
+            input.addEventListener('input', function () {
+                input.setCustomValidity('');
+            });
+            input.addEventListener('change', function () {
+                input.setCustomValidity('');
+            });
+        });
 
         document.querySelectorAll('input[id^="passport_file_"], #passport_file').forEach(function(input) {
             input.addEventListener('change', function() {

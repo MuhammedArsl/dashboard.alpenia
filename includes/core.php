@@ -320,7 +320,6 @@ function alpenia_travel_t($text) {
         'Nummer des Visums' => 'Vize numarası',
         'Aufenthaltstitel gültig von' => 'Oturum izni başlangıç tarihi',
         'Aufenthaltstitel gültig bis' => 'Oturum izni geçerlilik tarihi',
-        'Aufenthaltstitel Bemerkung' => 'Oturum izni notu',
         'z. B. Einreise-Visum für Saudi-Arabien' => 'örn. Suudi Arabistan giriş vizesi',
         'In Prüfung' => 'İncelemede',
         'Vollständig' => 'Tamamlandı',
@@ -329,7 +328,6 @@ function alpenia_travel_t($text) {
         'Teilnehmer bearbeiten' => 'Katılımcıyı düzenle',
         'Zurück zur Reise' => 'Seyahate dön',
         'Visum Nummer' => 'Vize numarası',
-        'Visum Bemerkung' => 'Vize notu',
         'Visumstatus (Einreiseland)' => 'Vize durumu (giriş ülkesi)',
         'Untergruppe / Busgruppe' => 'Alt grup / otobüs grubu',
         'Neuen Reisepass hochladen' => 'Yeni pasaport yükle',
@@ -386,6 +384,25 @@ function alpenia_travel_t($text) {
         'Passwort erfolgreich geändert. Bitte einloggen.' => 'Şifre başarıyla değiştirildi. Lütfen giriş yapın.',
         'Sicherheitsfehler beim Login. Bitte Seite neu laden und erneut versuchen.' => 'Giriş sırasında güvenlik hatası. Lütfen sayfayı yenileyip tekrar deneyin.',
         'Zu viele Fehlversuche. Bitte in %d Minute(n) erneut versuchen.' => 'Çok fazla hatalı deneme. Lütfen %d dakika sonra tekrar deneyin.',
+
+        'Reisepass gültig bis' => 'Pasaport bitiş tarihi',
+        'Aufenthaltstitel gültig bis' => 'Oturum izni bitiş tarihi',
+        'Vize giriş ülkesi' => 'Vize giriş ülkesi',
+        'Visum-Einreiseland' => 'Vize giriş ülkesi',
+        'z. B. Saudi-Arabien' => 'Örn. Suudi Arabistan',
+        'Vize numarası' => 'Vize numarası',
+        'Visum Nummer' => 'Vize numarası',
+        'Vize bitiş tarihi' => 'Vize bitiş tarihi',
+        'Visum gültig bis' => 'Vize bitiş tarihi',
+        'Vize Bilgileri' => 'Vize Bilgileri',
+        'Lütfen bu alanı doldurun.' => 'Lütfen bu alanı doldurun.',
+        'Lütfen geçerli bir tarih girin.' => 'Lütfen geçerli bir tarih girin.',
+        'Lütfen geçerli bir e-posta adresi girin.' => 'Lütfen geçerli bir e-posta adresi girin.',
+        'Lütfen geçerli bir telefon numarası girin.' => 'Lütfen geçerli bir telefon numarası girin.',
+        'Lütfen geçerli bir değer girin.' => 'Lütfen geçerli bir değer girin.',
+        'Lütfen geçerli bir dosya yükleyin.' => 'Lütfen geçerli bir dosya yükleyin.',
+        'Bei Umrah-/Hajj-Reisen sind Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.' => 'Umre/Hac seyahatlerinde vize giriş ülkesi, vize numarası ve vize bitiş tarihi zorunludur.',
+        'Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.' => 'Zorunlu alanlar: hitap, ad, soyad, vatandaşlık, pasaport başlangıç tarihi, pasaport bitiş tarihi, pasaport, portre fotoğrafı ve kontrol listesinin tamamı. AB/Schengen dışı vatandaşlar için ayrıca oturum izni numarası, oturum izni başlangıç tarihi ve oturum izni bitiş tarihi zorunludur. Umre/Hac seyahatlerinde ayrıca vize giriş ülkesi, vize numarası ve vize bitiş tarihi zorunludur.',
     ];
 
     if (isset($translations['tr']) && is_array($translations['tr'])) {
@@ -422,6 +439,21 @@ function alpenia_dashboard_link($args = []) {
 /**
  * Länder / EU / Gender
  */
+
+function alpenia_is_pilgrimage_trip($trip_id) {
+    $trip_type = strtolower((string) get_post_meta((int) $trip_id, 'trip_type', true));
+    return in_array($trip_type, ['umrah', 'hajj'], true);
+}
+
+function alpenia_get_visa_entry_country($participant_id) {
+    $visa_entry_country = trim((string) alpenia_get_secure_meta($participant_id, 'visa_entry_country', true));
+    if ($visa_entry_country !== '') {
+        return $visa_entry_country;
+    }
+
+    return trim((string) get_post_meta($participant_id, 'visa_status', true));
+}
+
 function alpenia_get_all_countries() {
     return [
         'Afghanistan','Ägypten','Albanien','Algerien','Andorra','Angola','Antigua und Barbuda','Äquatorialguinea','Argentinien',
