@@ -107,18 +107,17 @@ function alpenia_user_can_manage_users() {
     return alpenia_is_admin_user() || alpenia_has_role('superadmin') || alpenia_has_role('manager');
 }
 
+function alpenia_user_can_create_trip() {
+    return alpenia_is_admin_user()
+        || alpenia_is_backoffice_user()
+        || alpenia_has_role('superadmin')
+        || alpenia_has_role('manager');
+}
+
 function alpenia_user_can_delete_trip($trip_id) {
     if (!$trip_id) return false;
 
-    if (alpenia_is_admin_user() || alpenia_is_backoffice_user()) {
-        return true;
-    }
-
-    $author_id = (int) get_post_field('post_author', $trip_id);
-    $assigned_guide = (int) get_post_meta($trip_id, 'assigned_guide', true);
-    $current_user_id = get_current_user_id();
-
-    return $current_user_id === $author_id || $current_user_id === $assigned_guide;
+    return alpenia_user_can_create_trip();
 }
 
 /**
@@ -377,6 +376,7 @@ function alpenia_travel_t($text) {
         'Foto nicht geprüft' => 'Fotoğraf kontrol edilmedi',
         'Zahlung nicht geprüft' => 'Ödeme kontrol edilmedi',
         'Aufenthaltstitel nicht geprüft' => 'Oturum izni kontrol edilmedi',
+        'Reiseleiter dürfen keine neuen Reisen erstellen. Bitte füge Teilnehmer zu bestehenden Reisen hinzu.' => 'Seyahat rehberleri yeni seyahat oluşturamaz. Lütfen mevcut seyahatlere katılımcı ekleyin.',
     ];
 
     if (isset($translations['tr']) && is_array($translations['tr'])) {
