@@ -24,9 +24,9 @@ function alpenia_dashboard_language_switcher() {
 
     ob_start();
     ?>
-    <div class="dashboard-language-switch" role="group" aria-label="Language switch">
+    <div class="dashboard-language-switch" role="group" aria-label="<?php echo esc_attr(alpenia_travel_t('Plugin language switch')); ?>">
         <a class="lang-link <?php echo alpenia_travel_get_language() === 'de' ? 'active' : ''; ?>" href="<?php echo esc_url($de_url); ?>" title="DE" aria-label="DE">DE</a>
-        <a class="lang-link <?php echo alpenia_travel_get_language() === 'tr' ? 'active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" title="TUR" aria-label="TUR">TUR</a>
+        <a class="lang-link <?php echo alpenia_travel_get_language() === 'tr' ? 'active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" title="TR" aria-label="TR">TR</a>
     </div>
     <?php
     return ob_get_clean();
@@ -1367,8 +1367,9 @@ function alpenia_dashboard_shortcode() {
                 $trip = get_post($view_trip_id);
                 $trip_participants = alpenia_get_trip_participants($view_trip_id);
                 $assigned_guide_id = (int) get_post_meta($view_trip_id, 'assigned_guide', true);
-                $assigned_guide_name = $assigned_guide_id ? get_the_author_meta('display_name', $assigned_guide_id) : '—';
+                $assigned_guide_name = $assigned_guide_id ? get_the_author_meta('display_name', $assigned_guide_id) : '';
                 $delete_trip_nonce = wp_create_nonce('alpenia_delete_trip_' . $view_trip_id);
+                $view_is_pilgrimage_trip = alpenia_is_pilgrimage_trip($view_trip_id);
                 ?>
 
                 <div class="dashboard-top">
@@ -1377,13 +1378,13 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1><?php echo esc_html($trip ? $trip->post_title : 'Reise'); ?></h1>
+                            <h1><?php echo esc_html($trip ? $trip->post_title : alpenia_travel_t('Reise')); ?></h1>
                             <p><?php echo esc_html(alpenia_travel_t("Teilnehmerliste dieser Reise")); ?></p>
                         </div>
                     </div>
                     <div class="actions">
                         <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['export_trip_csv' => $view_trip_id])); ?>"><?php echo esc_html(alpenia_travel_t("CSV Export")); ?></a>
-                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['print_trip' => $view_trip_id])); ?>" target="_blank">PDF / Drucken</a>
+                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['print_trip' => $view_trip_id])); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t("PDF / Drucken")); ?></a>
                         <?php if (alpenia_user_can_delete_trip($view_trip_id)) : ?>
                             <a class="btn-secondary table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $view_trip_id, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Reise löschen')); ?></a>
                         <?php endif; ?>
@@ -1397,14 +1398,14 @@ function alpenia_dashboard_shortcode() {
                     <div class="trip-meta-grid">
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'trip_type', true)); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Status')); ?></strong><span><?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($view_trip_id, 'trip_status', true))); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'destination', true)); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'country', true)); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'city', true)); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Zeitraum')); ?></strong><span><?php echo esc_html(get_post_meta($view_trip_id, 'start_date', true)); ?> – <?php echo esc_html(get_post_meta($view_trip_id, 'end_date', true)); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'destination', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'country', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'city', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Zeitraum')); ?></strong><span><?php echo esc_html(alpenia_date_range_display(get_post_meta($view_trip_id, 'start_date', true), get_post_meta($view_trip_id, 'end_date', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Freie Plätze')); ?></strong><span><?php echo esc_html(alpenia_get_trip_capacity_left($view_trip_id)); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?></strong><span><?php echo esc_html($assigned_guide_name); ?></span></div>
-                        <div class="trip-meta-box"><strong>WhatsApp</strong><span><?php $wa = get_post_meta($view_trip_id, 'whatsapp_link', true); echo $wa ? '<a href="'.esc_url($wa).'" target="_blank">'.esc_html(alpenia_travel_t('Öffnen')).'</a>' : '—'; ?></span></div>
-                        <div class="trip-meta-box"><strong>Zoom</strong><span><?php $zoom = get_post_meta($view_trip_id, 'zoom_link', true); echo $zoom ? '<a href="'.esc_url($zoom).'" target="_blank">'.esc_html(alpenia_travel_t('Öffnen')).'</a>' : '—'; ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?></strong><span><?php echo esc_html(alpenia_display_value($assigned_guide_name)); ?></span></div>
+                        <div class="trip-meta-box"><strong>WhatsApp</strong><span><?php $wa = get_post_meta($view_trip_id, 'whatsapp_link', true); echo $wa ? '<a href="'.esc_url($wa).'" target="_blank">'.esc_html(alpenia_travel_t('Öffnen')).'</a>' : '-'; ?></span></div>
+                        <div class="trip-meta-box"><strong>Zoom</strong><span><?php $zoom = get_post_meta($view_trip_id, 'zoom_link', true); echo $zoom ? '<a href="'.esc_url($zoom).'" target="_blank">'.esc_html(alpenia_travel_t('Öffnen')).'</a>' : '-'; ?></span></div>
                     </div>
 
                     <?php $notes = alpenia_get_secure_meta($view_trip_id, 'internal_notes', true); ?>
@@ -1427,14 +1428,17 @@ function alpenia_dashboard_shortcode() {
                                         <th><?php echo esc_html(alpenia_travel_t('Anrede')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Name')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Dokumente')); ?></th>
-                                        <th><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></th>
+                                        <?php if ($view_is_pilgrimage_trip) : ?>
+                                            <th><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></th>
+                                        <?php endif; ?>
                                         <th><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Reisepass Nr.')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Reisepass gültig von')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Reisepass gültig bis')); ?></th>
-                                        <th><?php echo esc_html(alpenia_travel_t('Visum Nummer')); ?></th>
-                                        <th><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></th>
-                                        <th><?php echo esc_html(alpenia_travel_t('Visum')); ?></th>
+                                        <?php if ($view_is_pilgrimage_trip) : ?>
+                                            <th><?php echo esc_html(alpenia_travel_t('Visum Nummer')); ?></th>
+                                            <th><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></th>
+                                        <?php endif; ?>
                                         <th><?php echo esc_html(alpenia_travel_t('Status')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Zahlung')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Reisepass')); ?></th>
@@ -1456,25 +1460,23 @@ function alpenia_dashboard_shortcode() {
                                         $payment_open = alpenia_get_participant_payment_open($participant->ID);
                                     ?>
                                         <tr>
-                                            <td><?php echo esc_html($gender); ?></td>
+                                            <td><?php echo esc_html(alpenia_display_value(alpenia_travel_t($gender))); ?></td>
                                             <td>
-                                                <strong><?php echo esc_html(trim($first_name . ' ' . $last_name)); ?></strong><br>
-                                                <small><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_no', true)); ?></small>
+                                                <strong><?php echo esc_html(alpenia_display_value(trim($first_name . ' ' . $last_name))); ?></strong><br>
+                                                <small><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_no', true))); ?></small>
                                             </td>
                                             <td><?php echo wp_kses_post(alpenia_get_participant_doc_badge($participant->ID)); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_visa_entry_country($participant->ID) ?: '—'); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'nationality', true)); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_no', true) ?: '—'); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true) ?: '—'); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true) ?: '—'); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_number', true) ?: '—'); ?></td>
-                                            <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true) ?: '—'); ?></td>
-                                            <td>
-                                                <?php echo wp_kses_post(alpenia_doc_status_label($visa_photo_file_id, true)); ?>
-                                                <?php if ($visa_photo_file_id) : ?>
-                                                    <br><a href="<?php echo alpenia_attachment_link($visa_photo_file_id); ?>" target="_blank"><?php echo esc_html__('Öffnen', 'alpenia-travel'); ?></a>
-                                                <?php endif; ?>
-                                            </td>
+                                            <?php if ($view_is_pilgrimage_trip) : ?>
+                                                <td><?php echo esc_html(alpenia_display_value(alpenia_get_visa_entry_country($participant->ID))); ?></td>
+                                            <?php endif; ?>
+                                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'nationality', true))); ?></td>
+                                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_no', true))); ?></td>
+                                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true))); ?></td>
+                                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true))); ?></td>
+                                            <?php if ($view_is_pilgrimage_trip) : ?>
+                                                <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'visa_number', true))); ?></td>
+                                                <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true))); ?></td>
+                                            <?php endif; ?>
                                             <td><?php echo esc_html(alpenia_travel_translate_label(get_post_meta($participant->ID, 'participant_status', true))); ?></td>
                                             <td>
                                                 <?php echo esc_html(alpenia_travel_translate_label(alpenia_get_payment_status($participant->ID))); ?><br>
@@ -1482,15 +1484,15 @@ function alpenia_dashboard_shortcode() {
                                             </td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($passport_file_id, false)); ?>
-                                                <?php if ($passport_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($passport_file_id); ?>" target="_blank"><?php echo esc_html__('Öffnen', 'alpenia-travel'); ?></a><?php endif; ?>
+                                                <?php if ($passport_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($passport_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($photo_file_id, false)); ?>
-                                                <?php if ($photo_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($photo_file_id); ?>" target="_blank"><?php echo esc_html__('Öffnen', 'alpenia-travel'); ?></a><?php endif; ?>
+                                                <?php if ($photo_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($photo_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($meldezettel_file_id, true)); ?>
-                                                <?php if ($meldezettel_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($meldezettel_file_id); ?>" target="_blank"><?php echo esc_html__('Öffnen', 'alpenia-travel'); ?></a><?php endif; ?>
+                                                <?php if ($meldezettel_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($meldezettel_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
                                                 <div class="row-actions">
@@ -1792,7 +1794,7 @@ function alpenia_dashboard_shortcode() {
                             <?php foreach ($filtered_trips as $trip) :
                                 $trip_participants = alpenia_get_trip_participants($trip->ID);
                                 $guide_id = (int) get_post_meta($trip->ID, 'assigned_guide', true);
-                                $guide_name = $guide_id ? get_the_author_meta('display_name', $guide_id) : '—';
+                                $guide_name = $guide_id ? get_the_author_meta('display_name', $guide_id) : '-';
                                 $delete_trip_nonce = wp_create_nonce('alpenia_delete_trip_' . $trip->ID);
                             ?>
                                 <li>
@@ -1849,7 +1851,7 @@ function alpenia_dashboard_shortcode() {
                                         <tr>
                                             <td><?php echo esc_html($item['trip_title']); ?></td>
                                             <td><?php echo esc_html($item['participant_name']); ?></td>
-                                            <td><?php echo esc_html(!empty($item['missing_docs']) ? implode(', ', array_map('alpenia_travel_t', $item['missing_docs'])) : '—'); ?></td>
+                                            <td><?php echo esc_html(!empty($item['missing_docs']) ? implode(', ', array_map('alpenia_travel_t', $item['missing_docs'])) : '-'); ?></td>
                                             <td>
                                                 <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
                                                 <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
@@ -1885,7 +1887,7 @@ function alpenia_dashboard_shortcode() {
                                             <td><?php echo esc_html($item['trip_title']); ?></td>
                                             <td><?php echo esc_html($item['participant_name']); ?></td>
                                             <td>€ <?php echo esc_html(number_format($item['payment_open'], 2, ',', '.')); ?></td>
-                                            <td><?php echo esc_html($item['payment_status']); ?></td>
+                                            <td><?php echo esc_html(alpenia_travel_translate_label($item['payment_status'])); ?></td>
                                             <td>
                                                 <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
                                                 <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
@@ -2785,12 +2787,12 @@ function alpenia_dashboard_shortcode() {
         }
 
         const validationMessages = {
-            valueMissing: '<?php echo esc_js(alpenia_travel_t('Lütfen bu alanı doldurun.')); ?>',
-            typeMismatchEmail: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir e-posta adresi girin.')); ?>',
-            typeMismatch: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir değer girin.')); ?>',
-            badInputDate: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir tarih girin.')); ?>',
-            patternMismatchTel: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir telefon numarası girin.')); ?>',
-            fileMissing: '<?php echo esc_js(alpenia_travel_t('Lütfen geçerli bir dosya yükleyin.')); ?>'
+            valueMissing: '<?php echo esc_js(alpenia_travel_t('Dieses Feld ist erforderlich.')); ?>',
+            typeMismatchEmail: '<?php echo esc_js(alpenia_travel_t('Bitte eine gültige E-Mail-Adresse eingeben.')); ?>',
+            typeMismatch: '<?php echo esc_js(alpenia_travel_t('Bitte einen gültigen Wert eingeben.')); ?>',
+            badInputDate: '<?php echo esc_js(alpenia_travel_t('Bitte ein gültiges Datum eingeben.')); ?>',
+            patternMismatchTel: '<?php echo esc_js(alpenia_travel_t('Bitte eine gültige Telefonnummer eingeben.')); ?>',
+            fileMissing: '<?php echo esc_js(alpenia_travel_t('Bitte eine gültige Datei hochladen.')); ?>'
         };
 
         function getValidationMessage(input) {
