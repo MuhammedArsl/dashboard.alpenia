@@ -24,9 +24,9 @@ function alpenia_dashboard_language_switcher() {
 
     ob_start();
     ?>
-    <div class="dashboard-language-switch" role="group" aria-label="<?php echo esc_attr(alpenia_travel_t('Plugin language switch')); ?>">
-        <a class="lang-link <?php echo alpenia_travel_get_language() === 'de' ? 'active' : ''; ?>" href="<?php echo esc_url($de_url); ?>" title="<?php echo esc_attr(alpenia_travel_t('Deutsch')); ?>" aria-label="<?php echo esc_attr(alpenia_travel_t('Deutsch')); ?>"><span class="flag-icon flag-de" aria-hidden="true"></span></a>
-        <a class="lang-link <?php echo alpenia_travel_get_language() === 'tr' ? 'active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" title="<?php echo esc_attr(alpenia_travel_t('Türkçe')); ?>" aria-label="<?php echo esc_attr(alpenia_travel_t('Türkçe')); ?>"><span class="flag-icon flag-tr" aria-hidden="true"></span></a>
+    <div class="dashboard-language-switch" role="group" aria-label="Language switch">
+        <a class="lang-link <?php echo alpenia_travel_get_language() === 'de' ? 'active' : ''; ?>" href="<?php echo esc_url($de_url); ?>" title="DE" aria-label="DE">DE</a>
+        <a class="lang-link <?php echo alpenia_travel_get_language() === 'tr' ? 'active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" title="TUR" aria-label="TUR">TUR</a>
     </div>
     <?php
     return ob_get_clean();
@@ -1971,6 +1971,10 @@ function alpenia_dashboard_shortcode() {
             border-radius: 12px;
         }
 
+        .dashboard-brand-text {
+            display: none !important;
+        }
+
         .dashboard-brand-text h1 {
             font-size: 42px;
             margin: 0;
@@ -2042,10 +2046,14 @@ function alpenia_dashboard_shortcode() {
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            width: 36px;
+            min-width: 44px;
             height: 36px;
+            padding: 0 10px;
             border-radius: 999px;
-            font-size: 21px;
+            color: #ffffff !important;
+            font-size: 13px;
+            font-weight: 800;
+            letter-spacing: 0.04em;
             line-height: 1;
             text-decoration: none;
             background: rgba(255,255,255,0.14);
@@ -2064,12 +2072,6 @@ function alpenia_dashboard_shortcode() {
         .lang-link.active {
             box-shadow: 0 0 0 2px rgba(43,212,163,0.7);
         }
-        .flag-icon { display:block; width:22px; height:15px; border-radius:2px; overflow:hidden; box-shadow:0 0 0 1px rgba(0,0,0,0.25); }
-        .flag-de { background: linear-gradient(to bottom, #000 0 33.33%, #dd0000 33.33% 66.66%, #ffce00 66.66% 100%); }
-        .flag-tr { position:relative; background:#e30a17; }
-        .flag-tr::before { content:''; position:absolute; left:5px; top:3px; width:7px; height:7px; border-radius:50%; background:#fff; }
-        .flag-tr::after { content:''; position:absolute; left:7px; top:4px; width:7px; height:7px; border-radius:50%; background:#e30a17; }
-
         .btn-logout {
             background: linear-gradient(135deg, #a12626, #c94a4a) !important;
             color: #fff !important;
@@ -2437,7 +2439,11 @@ function alpenia_dashboard_shortcode() {
         }
         .alpenia-dashboard-shell h1.entry-title,
         .alpenia-dashboard-shell .page-title,
-        .alpenia-dashboard-shell .elementor-heading-title {
+        .alpenia-dashboard-shell .elementor-heading-title,
+        body .entry-header,
+        body h1.entry-title,
+        body .page-title,
+        body .elementor-heading-title {
             display: none !important;
         }
 
