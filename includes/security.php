@@ -102,7 +102,7 @@ function alpenia_block_disabled_users_login($user, $username, $password) {
     $disabled = get_user_meta($user->ID, 'alpenia_disabled', true);
 
     if ($disabled) {
-        return new WP_Error('alpenia_disabled_user', 'Dieser Benutzer wurde deaktiviert.');
+        return new WP_Error('alpenia_disabled_user', alpenia_travel_t('Dieser Benutzer wurde deaktiviert.'));
     }
 
     return $user;

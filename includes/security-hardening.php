@@ -434,7 +434,7 @@ function alpenia_validate_mfa_for_privileged($user) {
     }
 
     if ((int) $mfa_enabled !== 1) {
-        return new WP_Error('alpenia_mfa_required', 'MFA ist für privilegierte Konten erforderlich.');
+        return new WP_Error('alpenia_mfa_required', alpenia_travel_t('MFA ist für privilegierte Konten erforderlich.'));
     }
 
     return $user;

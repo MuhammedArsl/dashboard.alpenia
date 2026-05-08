@@ -7,13 +7,13 @@ if (!defined('ABSPATH')) exit;
 function alpenia_export_trip_csv($trip_id) {
     if (!alpenia_user_can_access_trip($trip_id)) {
         alpenia_security_log('trip_export_denied', ['trip_id' => (int) $trip_id]);
-        wp_die(esc_html__('Kein Zugriff.', 'alpenia-travel'));
+        wp_die(esc_html(alpenia_travel_t('Kein Zugriff.')));
     }
     alpenia_security_log('trip_export_csv', ['trip_id' => (int) $trip_id]);
 
     $trip = get_post($trip_id);
     if (!$trip || $trip->post_type !== 'group_trip') {
-        wp_die(esc_html__('Reise nicht gefunden.', 'alpenia-travel'));
+        wp_die(esc_html(alpenia_travel_t('Reise nicht gefunden.')));
     }
 
     $participants = alpenia_get_trip_participants($trip_id);
@@ -110,13 +110,13 @@ function alpenia_export_trip_csv($trip_id) {
 function alpenia_render_print_view($trip_id, $logo_url = '') {
     if (!alpenia_user_can_access_trip($trip_id)) {
         alpenia_security_log('trip_print_denied', ['trip_id' => (int) $trip_id]);
-        wp_die(esc_html__('Kein Zugriff.', 'alpenia-travel'));
+        wp_die(esc_html(alpenia_travel_t('Kein Zugriff.')));
     }
     alpenia_security_log('trip_print_view', ['trip_id' => (int) $trip_id]);
 
     $trip = get_post($trip_id);
     if (!$trip || $trip->post_type !== 'group_trip') {
-        wp_die(esc_html__('Reise nicht gefunden.', 'alpenia-travel'));
+        wp_die(esc_html(alpenia_travel_t('Reise nicht gefunden.')));
     }
 
     $participants = alpenia_get_trip_participants($trip_id);

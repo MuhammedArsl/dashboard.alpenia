@@ -281,10 +281,10 @@ function alpenia_dashboard_shortcode() {
                         $all_ok = false;
 
                         $error_text = '' . esc_html(alpenia_travel_t('Eine oder mehrere Dateien sind zu groß.')) . '';
-                        if (is_wp_error($passport_file_id)) $error_text = $passport_file_id->get_error_message();
-                        elseif (is_wp_error($photo_file_id)) $error_text = $photo_file_id->get_error_message();
-                        elseif (is_wp_error($visa_photo_file_id)) $error_text = $visa_photo_file_id->get_error_message();
-                        elseif (is_wp_error($meldezettel_file_id)) $error_text = $meldezettel_file_id->get_error_message();
+                        if (is_wp_error($passport_file_id)) $error_text = alpenia_travel_t($passport_file_id->get_error_message());
+                        elseif (is_wp_error($photo_file_id)) $error_text = alpenia_travel_t($photo_file_id->get_error_message());
+                        elseif (is_wp_error($visa_photo_file_id)) $error_text = alpenia_travel_t($visa_photo_file_id->get_error_message());
+                        elseif (is_wp_error($meldezettel_file_id)) $error_text = alpenia_travel_t($meldezettel_file_id->get_error_message());
 
                         wp_delete_post($participant_id, true);
                         $message = '<div class="alpenia-message">' . esc_html($error_text) . '</div>';
@@ -406,10 +406,10 @@ function alpenia_dashboard_shortcode() {
                 $meldezettel_file_id = alpenia_handle_file_upload('meldezettel_file');
 
                 if (is_wp_error($passport_file_id) || is_wp_error($photo_file_id) || is_wp_error($visa_photo_file_id) || is_wp_error($meldezettel_file_id)) {
-                    if (is_wp_error($passport_file_id)) $message = '<div class="alpenia-message">' . esc_html($passport_file_id->get_error_message()) . '</div>';
-                    elseif (is_wp_error($photo_file_id)) $message = '<div class="alpenia-message">' . esc_html($photo_file_id->get_error_message()) . '</div>';
-                    elseif (is_wp_error($visa_photo_file_id)) $message = '<div class="alpenia-message">' . esc_html($visa_photo_file_id->get_error_message()) . '</div>';
-                    elseif (is_wp_error($meldezettel_file_id)) $message = '<div class="alpenia-message">' . esc_html($meldezettel_file_id->get_error_message()) . '</div>';
+                    if (is_wp_error($passport_file_id)) $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t($passport_file_id->get_error_message())) . '</div>';
+                    elseif (is_wp_error($photo_file_id)) $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t($photo_file_id->get_error_message())) . '</div>';
+                    elseif (is_wp_error($visa_photo_file_id)) $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t($visa_photo_file_id->get_error_message())) . '</div>';
+                    elseif (is_wp_error($meldezettel_file_id)) $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t($meldezettel_file_id->get_error_message())) . '</div>';
                 } else {
                     if ($passport_file_id) update_post_meta($participant_id, 'passport_file_id', $passport_file_id);
                     if ($photo_file_id) update_post_meta($participant_id, 'photo_file_id', $photo_file_id);
@@ -454,7 +454,7 @@ function alpenia_dashboard_shortcode() {
                 $user_id = wp_create_user($username, $password, $email);
 
                 if (is_wp_error($user_id)) {
-                    $message = '<div class="alpenia-message">Benutzer konnte nicht erstellt werden.</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Benutzer konnte nicht erstellt werden.')) . '</div>';
                 } else {
                     wp_update_user([
                         'ID'           => $user_id,
@@ -468,7 +468,7 @@ function alpenia_dashboard_shortcode() {
                     if ($reloaded_user && in_array($role, (array) $reloaded_user->roles, true)) {
                         $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer erfolgreich erstellt.')) . '</div>';
                     } else {
-                        $message = '<div class="alpenia-message">Benutzer wurde erstellt, aber die Rolle konnte nicht korrekt gesetzt werden.</div>';
+                        $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Benutzer wurde erstellt, aber die Rolle konnte nicht korrekt gesetzt werden.')) . '</div>';
                     }
                 }
             }
@@ -482,10 +482,10 @@ function alpenia_dashboard_shortcode() {
             $nonce = sanitize_text_field(wp_unslash($_GET['_dashboard_user_nonce'] ?? ''));
 
             if (!wp_verify_nonce($nonce, 'alpenia_dashboard_deactivate_user_' . $target_id)) {
-                $message = '<div class="alpenia-message">Sicherheitsfehler beim Deaktivieren des Benutzers.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Deaktivieren des Benutzers.')) . '</div>';
             } elseif ($target_id > 0 && $target_id !== get_current_user_id()) {
                 update_user_meta($target_id, 'alpenia_disabled', 1);
-                $message = '<div class="alpenia-success">Benutzer deaktiviert.</div>';
+                $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer deaktiviert.')) . '</div>';
             }
         }
 
@@ -494,10 +494,10 @@ function alpenia_dashboard_shortcode() {
             $nonce = sanitize_text_field(wp_unslash($_GET['_dashboard_user_nonce'] ?? ''));
 
             if (!wp_verify_nonce($nonce, 'alpenia_dashboard_activate_user_' . $target_id)) {
-                $message = '<div class="alpenia-message">Sicherheitsfehler beim Aktivieren des Benutzers.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Aktivieren des Benutzers.')) . '</div>';
             } elseif ($target_id > 0) {
                 delete_user_meta($target_id, 'alpenia_disabled');
-                $message = '<div class="alpenia-success">Benutzer aktiviert.</div>';
+                $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer aktiviert.')) . '</div>';
             }
         }
 
@@ -506,7 +506,7 @@ function alpenia_dashboard_shortcode() {
             $nonce = sanitize_text_field(wp_unslash($_GET['_dashboard_user_nonce'] ?? ''));
 
             if (!wp_verify_nonce($nonce, 'alpenia_dashboard_delete_user_' . $target_id)) {
-                $message = '<div class="alpenia-message">Sicherheitsfehler beim Löschen des Benutzers.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Löschen des Benutzers.')) . '</div>';
             } elseif (
                 $target_id > 0 &&
                 $target_id !== get_current_user_id() &&
@@ -523,7 +523,7 @@ function alpenia_dashboard_shortcode() {
                 !isset($_POST['alpenia_dashboard_edit_user_nonce']) ||
                 !wp_verify_nonce($_POST['alpenia_dashboard_edit_user_nonce'], 'alpenia_dashboard_edit_user')
             ) {
-                $message = '<div class="alpenia-message">Sicherheitsfehler beim Bearbeiten des Benutzers.</div>';
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Bearbeiten des Benutzers.')) . '</div>';
             } else {
                 $edit_user_id = (int) ($_POST['edit_user_id'] ?? 0);
                 $edit_display_name = sanitize_text_field($_POST['edit_display_name'] ?? '');
@@ -2245,9 +2245,13 @@ function alpenia_dashboard_shortcode() {
             background-repeat: no-repeat;
         }
 
+        ::placeholder,
+        .form-control::placeholder,
+        input::placeholder,
+        textarea::placeholder,
         .filter-bar input::placeholder,
         .form-group input::placeholder {
-            color: #f2f2f2;
+            color: #555;
             opacity: 1;
         }
 
