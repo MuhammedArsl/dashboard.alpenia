@@ -139,7 +139,7 @@ function alpenia_get_trip_capacity_left($trip_id) {
     $participants = alpenia_get_trip_participants($trip_id);
     $count = count($participants);
 
-    if ($max_people <= 0) return '—';
+    if ($max_people <= 0) return '-';
     return max(0, $max_people - $count);
 }
 
@@ -182,7 +182,7 @@ function alpenia_trip_status_badge($status) {
         case 'closed':
             return '<span class="status-badge status-red">' . esc_html(alpenia_travel_t('Abgeschlossen')) . '</span>';
         default:
-            return '<span class="status-badge status-gray">—</span>';
+            return '<span class="status-badge status-gray">-</span>';
     }
 }
 
@@ -271,7 +271,7 @@ function alpenia_get_participant_doc_badge($participant_id) {
     }
 
     if ($score === 'partial') {
-        return '<span class="status-badge status-yellow"></span>';
+        return '<span class="status-badge status-yellow">' . esc_html(alpenia_travel_t('Unterlagen teilweise')) . '</span>';
     }
 
     return '<span class="status-badge status-red">' . esc_html(alpenia_travel_t('Unterlagen fehlen')) . '</span>';

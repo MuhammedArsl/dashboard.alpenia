@@ -402,6 +402,16 @@ function alpenia_travel_t($text) {
         'Lütfen geçerli bir değer girin.' => 'Lütfen geçerli bir değer girin.',
         'Lütfen geçerli bir dosya yükleyin.' => 'Lütfen geçerli bir dosya yükleyin.',
         'Bei Umrah-/Hajj-Reisen sind Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.' => 'Umre/Hac seyahatlerinde vize giriş ülkesi, vize numarası ve vize bitiş tarihi zorunludur.',
+        'Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.' => 'AB/Schengen dışı vatandaşlar için oturum izni numarası, oturum izni başlangıç tarihi ve oturum izni bitiş tarihi zorunludur.',
+        'Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von und Reisepass gültig bis ausfüllen.' => 'Lütfen hitap, ad, soyad, vatandaşlık, pasaport başlangıç tarihi ve pasaport bitiş tarihi alanlarını doldurun.',
+        'Dieses Feld ist erforderlich.' => 'Lütfen bu alanı doldurun.',
+        'Bitte eine gültige E-Mail-Adresse eingeben.' => 'Lütfen geçerli bir e-posta adresi girin.',
+        'Bitte einen gültigen Wert eingeben.' => 'Lütfen geçerli bir değer girin.',
+        'Bitte ein gültiges Datum eingeben.' => 'Lütfen geçerli bir tarih girin.',
+        'Bitte eine gültige Telefonnummer eingeben.' => 'Lütfen geçerli bir telefon numarası girin.',
+        'Bitte eine gültige Datei hochladen.' => 'Lütfen geçerli bir dosya yükleyin.',
+        'PDF / Drucken' => 'PDF / Yazdır',
+        'Unterlagen teilweise' => 'Belgeler kısmen tamam',
         'Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.' => 'Zorunlu alanlar: hitap, ad, soyad, vatandaşlık, pasaport başlangıç tarihi, pasaport bitiş tarihi, pasaport, portre fotoğrafı ve kontrol listesinin tamamı. AB/Schengen dışı vatandaşlar için ayrıca oturum izni numarası, oturum izni başlangıç tarihi ve oturum izni bitiş tarihi zorunludur. Umre/Hac seyahatlerinde ayrıca vize giriş ülkesi, vize numarası ve vize bitiş tarihi zorunludur.',
     ];
 
@@ -434,6 +444,39 @@ function alpenia_dashboard_link($args = []) {
     }
 
     return add_query_arg($args, $base_url);
+}
+
+
+function alpenia_display_value($value) {
+    $value = trim((string) $value);
+    return $value !== '' ? $value : '-';
+}
+
+function alpenia_date_range_display($start, $end) {
+    $start = trim((string) $start);
+    $end = trim((string) $end);
+
+    if ($start === '' && $end === '') {
+        return '-';
+    }
+
+    return alpenia_display_value($start) . ' - ' . alpenia_display_value($end);
+}
+
+function alpenia_travel_pdf_label($key) {
+    $labels = [
+        'destination' => 'Destination',
+        'travel_dates' => 'Travel Dates',
+        'passport_number' => 'Passport number',
+        'passport_issue_date' => 'Passport issue date',
+        'passport_expiry_date' => 'Passport expiry date',
+        'visa_information' => 'Visa Information',
+        'visa_entry_country' => 'Visa entry country',
+        'visa_number' => 'Visa number',
+        'visa_expiry_date' => 'Visa expiry date',
+    ];
+
+    return $labels[$key] ?? alpenia_travel_t($key);
 }
 
 /**
@@ -510,6 +553,7 @@ function alpenia_is_eu_or_schengen_nationality($nationality) {
 
 function alpenia_gender_code($gender) {
     $gender = strtolower(trim((string) $gender));
+    if ($gender === '') return '';
     if ($gender === 'frau' || $gender === 'female' || $gender === 'f') return 'F';
     return 'M';
 }
