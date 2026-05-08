@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 if (!defined('ABSPATH')) exit;
 
 /**
@@ -69,9 +69,16 @@ function alpenia_dashboard_shortcode() {
     $trip_country_filter = isset($_GET['trip_country_filter']) ? sanitize_text_field($_GET['trip_country_filter']) : '';
     $trip_city_filter = isset($_GET['trip_city_filter']) ? sanitize_text_field($_GET['trip_city_filter']) : '';
     $guide_filter = isset($_GET['guide_filter']) ? (int) $_GET['guide_filter'] : '';
+    $create_trip_requested = isset($_GET['create_trip']) && $_GET['create_trip'] == '1';
+
+    if ($create_trip_requested && !alpenia_user_can_create_trip()) {
+        $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Reiseleiter dürfen keine neuen Reisen erstellen. Bitte füge Teilnehmer zu bestehenden Reisen hinzu.')) . '</div>';
+    }
 
     if (isset($_POST['save_trip'])) {
-        if (!isset($_POST['alpenia_trip_nonce']) || !wp_verify_nonce($_POST['alpenia_trip_nonce'], 'alpenia_save_trip')) {
+        if (!alpenia_user_can_create_trip()) {
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Reiseleiter dürfen keine neuen Reisen erstellen. Bitte füge Teilnehmer zu bestehenden Reisen hinzu.')) . '</div>';
+        } elseif (!isset($_POST['alpenia_trip_nonce']) || !wp_verify_nonce($_POST['alpenia_trip_nonce'], 'alpenia_save_trip')) {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.')) . '</div>';
         } else {
             $trip_title      = sanitize_text_field($_POST['trip_title'] ?? '');
@@ -720,7 +727,7 @@ function alpenia_dashboard_shortcode() {
                 </div>
             </div>
 
-            <?php if (isset($_GET['create_trip']) && $_GET['create_trip'] == '1') : ?>
+            <?php if ($create_trip_requested && alpenia_user_can_create_trip()) : ?>
 
                 <div class="dashboard-top">
                     <div class="dashboard-brand">
@@ -1657,7 +1664,9 @@ function alpenia_dashboard_shortcode() {
                     </div>
 
                     <div class="actions">
-                        <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['create_trip' => 1])); ?>"><?php echo esc_html(alpenia_travel_t("Neue Reise erstellen")); ?></a>
+                        <?php if (alpenia_user_can_create_trip()) : ?>
+                            <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['create_trip' => 1])); ?>"><?php echo esc_html(alpenia_travel_t("Neue Reise erstellen")); ?></a>
+                        <?php endif; ?>
                         <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['add_participant' => 1])); ?>"><?php echo esc_html(alpenia_travel_t("Teilnehmer hinzufügen")); ?></a>
                         <?php if (alpenia_user_can_manage_users()) : ?>
                             <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1])); ?>"><?php echo esc_html(alpenia_travel_t("Benutzerverwaltung")); ?></a>
