@@ -40,11 +40,9 @@ function alpenia_export_trip_csv($trip_id) {
         'Passport Number',
         'Passport Valid From',
         'Passport Valid Until',
-        'Entry Visa Number',
-        'Entry Visa Valid From',
-        'Entry Visa Valid Until',
-        'Visum Note',
-        'Visum Status (Entry Country)',
+        'Visa Entry Country',
+        'Visa Number',
+        'Visa Expiry Date',
         'Processing Status',
         'Room',
         'Group',
@@ -80,11 +78,9 @@ function alpenia_export_trip_csv($trip_id) {
             alpenia_get_secure_meta($participant->ID, 'passport_no', true),
             alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true),
             alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true),
+            alpenia_get_visa_entry_country($participant->ID),
             alpenia_get_secure_meta($participant->ID, 'visa_number', true),
-            alpenia_get_secure_meta($participant->ID, 'visa_valid_from_date', true),
             alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true),
-            alpenia_get_secure_meta($participant->ID, 'visa_note', true),
-            get_post_meta($participant->ID, 'visa_status', true),
             get_post_meta($participant->ID, 'participant_status', true),
             alpenia_get_secure_meta($participant->ID, 'room_assignment', true),
             alpenia_get_secure_meta($participant->ID, 'subgroup', true),
@@ -122,10 +118,10 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
     $participants = alpenia_get_trip_participants($trip_id);
     ?>
     <!doctype html>
-    <html lang="en">
+    <html lang="<?php echo esc_attr(alpenia_travel_get_language()); ?>">
     <head>
         <meta charset="utf-8">
-        <title><?php echo esc_html($trip->post_title); ?> - Participant List</title>
+        <title><?php echo esc_html($trip->post_title); ?> - <?php echo esc_html(alpenia_travel_t('Teilnehmerliste dieser Reise')); ?></title>
         <style>
             body { font-family: Arial, sans-serif; padding: 28px; color: #17211d; background: #fff; }
             .header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
@@ -143,7 +139,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
     </head>
     <body>
         <div class="actions">
-            <button onclick="window.print()">Print / Save as PDF</button>
+            <button onclick="window.print()"><?php echo esc_html(alpenia_travel_t('PDF erstellen')); ?></button>
         </div>
 
         <div class="header">
@@ -152,7 +148,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             <?php endif; ?>
             <div>
                 <h1>Alpenia Travel Dashboard</h1>
-                <div><?php echo esc_html($trip->post_title); ?> – Participant List</div>
+                <div><?php echo esc_html($trip->post_title); ?> – <?php echo esc_html(alpenia_travel_t('Teilnehmerliste dieser Reise')); ?></div>
             </div>
         </div>
 
@@ -168,15 +164,20 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
         <table>
             <thead>
                 <tr>
-                    <th>First Name</th>
-                    <th>Last Name</th>
-                    <th>Date of Birth</th>
-                    <th>Gender</th>
-                    <th>Nationality</th>
-                    <th>Passport Number</th>
-                    <th>Passport Valid Until</th>
-                    <th>Entry Visa Number</th>
-                    <th>Entry Visa Valid Until</th>
+                    <th><?php echo esc_html(alpenia_travel_t('Vorname')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Nachname')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Geburtsdatum')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Anrede')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Reisepassnummer')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Reisepass gültig bis')); ?></th>
+                    <th colspan="3"><?php echo esc_html(alpenia_travel_t('Vize Bilgileri')); ?></th>
+                </tr>
+                <tr>
+                    <th colspan="7"></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Visum Nummer')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></th>
                 </tr>
             </thead>
             <tbody>
@@ -189,11 +190,12 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'nationality', true)); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_no', true)); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true)); ?></td>
+                        <td><?php echo esc_html(alpenia_get_visa_entry_country($participant->ID)); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_number', true)); ?></td>
                         <td><?php echo esc_html(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true)); ?></td>
                     </tr>
                 <?php endforeach; else : ?>
-                    <tr><td colspan="9">No participants available.</td></tr>
+                    <tr><td colspan="10">No participants available.</td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

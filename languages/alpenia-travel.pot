@@ -85,7 +85,7 @@ msgstr "Pasaport"
 msgid "Reisepass gültig von"
 msgstr "Pasaport başlangıç tarihi"
 msgid "Reisepass gültig bis"
-msgstr "Pasaport geçerlilik tarihi"
+msgstr "Pasaport bitiş tarihi"
 msgid "Einreiseland-Visumstatus"
 msgstr "Giriş ülkesi vize durumu"
 msgid "Visumstatus"
@@ -138,3 +138,27 @@ msgid "bearbeiten"
 msgstr "düzenle"
 msgid "löschen"
 msgstr "sil"
+
+msgid "Visum-Einreiseland"
+msgstr "Vize giriş ülkesi"
+
+msgid "z. B. Saudi-Arabien"
+msgstr "Örn. Suudi Arabistan"
+
+msgid "Vize Bilgileri"
+msgstr "Vize Bilgileri"
+
+msgid "Lütfen bu alanı doldurun."
+msgstr "Lütfen bu alanı doldurun."
+
+msgid "Lütfen geçerli bir tarih girin."
+msgstr "Lütfen geçerli bir tarih girin."
+
+msgid "Lütfen geçerli bir e-posta adresi girin."
+msgstr "Lütfen geçerli bir e-posta adresi girin."
+
+msgid "Lütfen geçerli bir telefon numarası girin."
+msgstr "Lütfen geçerli bir telefon numarası girin."
+
+msgid "Lütfen geçerli bir dosya yükleyin."
+msgstr "Lütfen geçerli bir dosya yükleyin."

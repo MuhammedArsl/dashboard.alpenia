@@ -195,9 +195,9 @@ function alpenia_get_participant_doc_score($participant_id) {
     $passport_expiry = trim((string) alpenia_get_secure_meta($participant_id, 'passport_expiry_date', true));
     $passport_no     = trim((string) alpenia_get_secure_meta($participant_id, 'passport_no', true));
     $nationality     = trim((string) alpenia_get_secure_meta($participant_id, 'nationality', true));
-    $visa_number     = trim((string) alpenia_get_secure_meta($participant_id, 'visa_number', true));
-    $visa_valid_from = trim((string) alpenia_get_secure_meta($participant_id, 'visa_valid_from_date', true));
-    $visa_expiry     = trim((string) alpenia_get_secure_meta($participant_id, 'visa_expiry_date', true));
+    $residence_permit_number = trim((string) alpenia_get_secure_meta($participant_id, 'residence_permit_number', true));
+    $residence_permit_start = trim((string) alpenia_get_secure_meta($participant_id, 'residence_permit_start_date', true));
+    $residence_permit_until = trim((string) alpenia_get_secure_meta($participant_id, 'residence_permit_valid_until', true));
 
     $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
     $check_photo     = (int) get_post_meta($participant_id, 'check_photo', true);
@@ -234,14 +234,14 @@ function alpenia_get_participant_doc_score($participant_id) {
 
     // Nicht-EU-/Nicht-Schengen zusätzlich Pflicht
     if (!alpenia_is_eu_or_schengen_nationality($nationality)) {
-        $required_items[] = 'visa_number';
-        if ($visa_number !== '') $filled_items++;
+        $required_items[] = 'residence_permit_number';
+        if ($residence_permit_number !== '') $filled_items++;
 
-        $required_items[] = 'visa_valid_from';
-        if ($visa_valid_from !== '') $filled_items++;
+        $required_items[] = 'residence_permit_start';
+        if ($residence_permit_start !== '') $filled_items++;
 
-        $required_items[] = 'visa_expiry';
-        if ($visa_expiry !== '') $filled_items++;
+        $required_items[] = 'residence_permit_until';
+        if ($residence_permit_until !== '') $filled_items++;
 
         $required_items[] = 'visa_photo_file';
         if ($visa_photo_file) $filled_items++;
@@ -287,9 +287,9 @@ function alpenia_get_missing_docs_details($participant_id) {
     $passport_valid_from = trim((string) alpenia_get_secure_meta($participant_id, 'passport_valid_from_date', true));
     $passport_expiry = trim((string) alpenia_get_secure_meta($participant_id, 'passport_expiry_date', true));
     $nationality     = trim((string) alpenia_get_secure_meta($participant_id, 'nationality', true));
-    $visa_number     = trim((string) alpenia_get_secure_meta($participant_id, 'visa_number', true));
-    $visa_valid_from = trim((string) alpenia_get_secure_meta($participant_id, 'visa_valid_from_date', true));
-    $visa_expiry     = trim((string) alpenia_get_secure_meta($participant_id, 'visa_expiry_date', true));
+    $residence_permit_number = trim((string) alpenia_get_secure_meta($participant_id, 'residence_permit_number', true));
+    $residence_permit_start = trim((string) alpenia_get_secure_meta($participant_id, 'residence_permit_start_date', true));
+    $residence_permit_until = trim((string) alpenia_get_secure_meta($participant_id, 'residence_permit_valid_until', true));
 
     $check_passport  = (int) get_post_meta($participant_id, 'check_passport', true);
     $check_photo     = (int) get_post_meta($participant_id, 'check_photo', true);
@@ -306,9 +306,9 @@ function alpenia_get_missing_docs_details($participant_id) {
     if ($check_payment !== 1) $missing[] = 'Zahlung nicht geprüft';
 
     if (!alpenia_is_eu_or_schengen_nationality($nationality)) {
-        if ($visa_number === '') $missing[] = 'Aufenthaltstitel Nummer';
-        if ($visa_valid_from === '') $missing[] = 'Aufenthaltstitel gültig von';
-        if ($visa_expiry === '') $missing[] = 'Aufenthaltstitel gültig bis';
+        if ($residence_permit_number === '') $missing[] = 'Aufenthaltstitel Nummer';
+        if ($residence_permit_start === '') $missing[] = 'Aufenthaltstitel gültig von';
+        if ($residence_permit_until === '') $missing[] = 'Aufenthaltstitel gültig bis';
         if (!$visa_photo_file) $missing[] = 'Aufenthaltstitel';
         if ($check_visa !== 1) $missing[] = 'Aufenthaltstitel nicht geprüft';
     }
