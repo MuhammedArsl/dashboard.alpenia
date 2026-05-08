@@ -154,7 +154,7 @@ function alpenia_login_shortcode() {
         }
         .alpenia-login-page-shell input:hover{transform:translateY(-1px);}
         .alpenia-login-page-shell input:focus{border-color:rgba(43,212,163,0.95);box-shadow:0 0 0 3px rgba(43,212,163,0.3),inset 0 2px 8px rgba(15,61,46,0.12);}
-        .alpenia-login-page-shell input::placeholder{color:rgba(26,26,26,0.46);}
+        .alpenia-login-page-shell input::placeholder{color:#555;opacity:1;}
         .alpenia-login-error{
             margin:0 0 18px;
             color:#ffdede;
@@ -237,7 +237,7 @@ function alpenia_login_shortcode() {
     $mode = isset($_GET['mode']) ? sanitize_key($_GET['mode']) : 'login';
 
     if (isset($_GET['session_expired']) && $_GET['session_expired'] === '1' && $_SERVER['REQUEST_METHOD'] === 'GET') {
-        $error = 'Deine Sitzung ist wegen Inaktivität abgelaufen. Bitte erneut einloggen.';
+        $error = alpenia_travel_t('Deine Sitzung ist wegen Inaktivität abgelaufen. Bitte erneut einloggen.');
         wp_clear_auth_cookie();
     }
 
@@ -257,7 +257,7 @@ function alpenia_login_shortcode() {
             $codes = (array) $signon_error->get_error_codes();
 
             if (in_array('alpenia_disabled_user', $codes, true)) {
-                return 'Dein Benutzerkonto wurde deaktiviert. Bitte den Support kontaktieren.';
+                return alpenia_travel_t('Dein Benutzerkonto wurde deaktiviert. Bitte den Support kontaktieren.');
             }
 
             if (in_array('incorrect_password', $codes, true) || in_array('invalid_username', $codes, true)) {
@@ -266,10 +266,10 @@ function alpenia_login_shortcode() {
 
             $first_error = $signon_error->get_error_message();
             if (is_string($first_error) && trim($first_error) !== '') {
-                return wp_strip_all_tags($first_error);
+                return alpenia_travel_t(wp_strip_all_tags($first_error));
             }
 
-            return 'Anmeldung momentan nicht möglich. Bitte Support kontaktieren.';
+            return alpenia_travel_t('Anmeldung momentan nicht möglich. Bitte Support kontaktieren.');
         }
     }
 
@@ -308,7 +308,7 @@ function alpenia_login_shortcode() {
 
     if (isset($_POST['alpenia_request_reset'])) {
         if (!isset($_POST['alpenia_reset_nonce']) || !wp_verify_nonce($_POST['alpenia_reset_nonce'], 'alpenia_reset_action')) {
-            $error = esc_html__('Sicherheitsfehler. Bitte erneut versuchen.', 'alpenia-travel');
+            $error = alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.');
         } else {
             $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
             if (!empty($email)) {
@@ -324,14 +324,14 @@ function alpenia_login_shortcode() {
                     alpenia_security_log('password_reset_requested', ['target_user_id' => (int) $user->ID]);
                 }
             }
-            $success = 'Wenn die E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet.';
+            $success = alpenia_travel_t('Wenn die E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet.');
             $mode = 'login';
         }
     }
 
     if (isset($_POST['alpenia_set_new_password'])) {
         if (!isset($_POST['alpenia_set_password_nonce']) || !wp_verify_nonce($_POST['alpenia_set_password_nonce'], 'alpenia_set_password_action')) {
-            $error = esc_html__('Sicherheitsfehler. Bitte erneut versuchen.', 'alpenia-travel');
+            $error = alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.');
             $mode = 'reset';
         } else {
             $user_id = (int) ($_POST['uid'] ?? 0);
@@ -339,7 +339,7 @@ function alpenia_login_shortcode() {
             $password = trim((string) ($_POST['new_password'] ?? ''));
 
             if ($user_id <= 0 || strlen($password) < 12 || !alpenia_validate_password_reset_token($user_id, $token)) {
-                $error = 'Reset-Link ungültig oder abgelaufen.';
+                $error = alpenia_travel_t('Reset-Link ungültig oder abgelaufen.');
                 alpenia_security_log('password_reset_failed', ['target_user_id' => $user_id]);
             } else {
                 wp_set_password($password, $user_id);
@@ -363,7 +363,7 @@ function alpenia_login_shortcode() {
                 }
 
                 if (empty($error)) {
-                    $success = 'Passwort erfolgreich geändert. Bitte einloggen.';
+                    $success = alpenia_travel_t('Passwort erfolgreich geändert. Bitte einloggen.');
                 }
 
                 $mode = 'login';
@@ -373,7 +373,7 @@ function alpenia_login_shortcode() {
 
     if (isset($_POST['alpenia_login'])) {
         if (!isset($_POST['alpenia_login_nonce']) || !wp_verify_nonce($_POST['alpenia_login_nonce'], 'alpenia_login_action')) {
-            $error = 'Sicherheitsfehler beim Login. Bitte Seite neu laden und erneut versuchen.';
+            $error = alpenia_travel_t('Sicherheitsfehler beim Login. Bitte Seite neu laden und erneut versuchen.');
         } else {
             $email = sanitize_email(wp_unslash($_POST['email'] ?? ''));
             $password = trim((string) ($_POST['password'] ?? ''));
@@ -390,7 +390,7 @@ function alpenia_login_shortcode() {
 
             if (!empty($attempt_data['locked_until']) && (int) $attempt_data['locked_until'] > time()) {
                 $minutes_left = max(1, (int) ceil(((int) $attempt_data['locked_until'] - time()) / MINUTE_IN_SECONDS));
-                $error = sprintf('Zu viele Fehlversuche. Bitte in %d Minute(n) erneut versuchen.', $minutes_left);
+                $error = sprintf(alpenia_travel_t('Zu viele Fehlversuche. Bitte in %d Minute(n) erneut versuchen.'), $minutes_left);
             }
         }
 
@@ -438,7 +438,7 @@ function alpenia_login_shortcode() {
     <?php echo $layout_styles; ?>
     <div class="alpenia-login-page-shell">
         <div style="display:flex;justify-content:flex-end;gap:8px;margin-bottom:12px;">
-            <a href="<?php echo esc_url(add_query_arg('ui_lang', 'de')); ?>" class="alpenia-login-nav-pill" style="text-decoration:none;"><?php echo esc_html(alpenia_travel_t('Deutsch')); ?></a>
+            <a href="<?php echo esc_url(add_query_arg('ui_lang', 'de')); ?>" class="alpenia-login-nav-pill" style="text-decoration:none;">Deutsch</a>
             <a href="<?php echo esc_url(add_query_arg('ui_lang', 'tr')); ?>" class="alpenia-login-nav-pill" style="text-decoration:none;"><?php echo esc_html(alpenia_travel_t('Türkçe')); ?></a>
         </div>
         <nav class="alpenia-login-nav" aria-label="Travel sections">

@@ -146,3 +146,129 @@ msgstr "Katılımcı gerçekten silinsin mi?"
 
 msgid "Reise wirklich löschen? Alle zugehörigen Teilnehmer werden ebenfalls gelöscht."
 msgstr "Seyahat gerçekten silinsin mi? Bağlı tüm katılımcılar da silinecek."
+
+msgid "Deine Sitzung ist wegen Inaktivität abgelaufen. Bitte erneut einloggen."
+msgstr "Oturumunuz işlem yapılmadığı için sona erdi. Lütfen tekrar giriş yapın."
+
+msgid "Dein Benutzerkonto wurde deaktiviert. Bitte den Support kontaktieren."
+msgstr "Kullanıcı hesabınız devre dışı bırakıldı. Lütfen destek ile iletişime geçin."
+
+msgid "Anmeldung momentan nicht möglich. Bitte Support kontaktieren."
+msgstr "Şu anda giriş yapılamıyor. Lütfen destek ile iletişime geçin."
+
+msgid "Wenn die E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet."
+msgstr "E-posta mevcutsa, şifre sıfırlama bağlantısı gönderildi."
+
+msgid "Reset-Link ungültig oder abgelaufen."
+msgstr "Sıfırlama bağlantısı geçersiz veya süresi dolmuş."
+
+msgid "Passwort erfolgreich geändert. Bitte einloggen."
+msgstr "Şifre başarıyla değiştirildi. Lütfen giriş yapın."
+
+msgid "Sicherheitsfehler beim Login. Bitte Seite neu laden und erneut versuchen."
+msgstr "Giriş sırasında güvenlik hatası. Lütfen sayfayı yenileyip tekrar deneyin."
+
+msgid "Zu viele Fehlversuche. Bitte in %d Minute(n) erneut versuchen."
+msgstr "Çok fazla hatalı deneme. Lütfen %d dakika sonra tekrar deneyin."
+
+msgid "Deutsch"
+msgstr "Deutsch"
+
+msgid "Dieser Benutzer wurde deaktiviert."
+msgstr "Bu kullanıcı devre dışı bırakıldı."
+
+msgid "Ungültige Anmeldedaten."
+msgstr "Geçersiz giriş bilgileri."
+
+msgid "Bitte E-Mail und Passwort eingeben."
+msgstr "Lütfen e-posta ve şifre girin."
+
+msgid "Sicherheitsfehler. Bitte erneut versuchen."
+msgstr "Güvenlik hatası. Lütfen tekrar deneyin."
+
+msgid "Bitte alle Pflichtfelder ausfüllen."
+msgstr "Lütfen tüm zorunlu alanları doldurun."
+
+msgid "Kein Zugriff."
+msgstr "Erişim yok."
+
+msgid "Benutzer konnte nicht erstellt werden."
+msgstr "Kullanıcı oluşturulamadı."
+
+msgid "Bitte Name, E-Mail und Passwort ausfüllen."
+msgstr "Lütfen ad, e-posta ve şifreyi doldurun."
+
+msgid "Diese E-Mail existiert bereits."
+msgstr "Bu e-posta zaten mevcut."
+
+msgid "Diese E-Mail wird bereits verwendet."
+msgstr "Bu e-posta zaten kullanılıyor."
+
+msgid "Fehler beim Speichern."
+msgstr "Kaydetme sırasında hata oluştu."
+
+msgid "Upload konnte nicht verarbeitet werden."
+msgstr "Yükleme işlenemedi."
+
+msgid "Ungültiger Dateityp. Nur erlaubte Formate sind zulässig."
+msgstr "Geçersiz dosya türü. Yalnızca izin verilen formatlar kullanılabilir."
+
+msgid "Die Datei ist zu groß. Maximal erlaubt: %s"
+msgstr "Dosya çok büyük. İzin verilen en fazla boyut: %s"
+
+msgid "Datei konnte nicht registriert werden."
+msgstr "Dosya kaydedilemedi."
+
+msgid "Reise nicht gefunden."
+msgstr "Seyahat bulunamadı."
+
+msgid "MFA ist für privilegierte Konten erforderlich."
+msgstr "Yetkili hesaplar için MFA gereklidir."
+
+msgid "Benutzer wurde erstellt, aber die Rolle konnte nicht korrekt gesetzt werden."
+msgstr "Kullanıcı oluşturuldu, ancak rol doğru şekilde atanamadı."
+
+msgid "Sicherheitsfehler beim Deaktivieren des Benutzers."
+msgstr "Kullanıcı devre dışı bırakılırken güvenlik hatası oluştu."
+
+msgid "Benutzer deaktiviert."
+msgstr "Kullanıcı devre dışı bırakıldı."
+
+msgid "Sicherheitsfehler beim Aktivieren des Benutzers."
+msgstr "Kullanıcı etkinleştirilirken güvenlik hatası oluştu."
+
+msgid "Benutzer aktiviert."
+msgstr "Kullanıcı etkinleştirildi."
+
+msgid "Sicherheitsfehler beim Löschen des Benutzers."
+msgstr "Kullanıcı silinirken güvenlik hatası oluştu."
+
+msgid "Sicherheitsfehler beim Bearbeiten des Benutzers."
+msgstr "Kullanıcı düzenlenirken güvenlik hatası oluştu."
+
+msgid "Reisepass Datei"
+msgstr "Pasaport dosyası"
+
+msgid "Foto Datei"
+msgstr "Fotoğraf dosyası"
+
+msgid "Reisepass nicht geprüft"
+msgstr "Pasaport kontrol edilmedi"
+
+msgid "Foto nicht geprüft"
+msgstr "Fotoğraf kontrol edilmedi"
+
+msgid "Zahlung nicht geprüft"
+msgstr "Ödeme kontrol edilmedi"
+
+msgid "Aufenthaltstitel Nummer"
+msgstr "Oturum izni numarası"
+
+msgid "Aufenthaltstitel gültig von"
+msgstr "Oturum izni başlangıç tarihi"
+
+msgid "Aufenthaltstitel gültig bis"
+msgstr "Oturum izni geçerlilik tarihi"
+
+msgid "Aufenthaltstitel nicht geprüft"
+msgstr "Oturum izni kontrol edilmedi"

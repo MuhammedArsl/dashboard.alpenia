@@ -68,7 +68,7 @@ function alpenia_validate_upload_size($field_name) {
 function alpenia_validate_upload_type($field_name) {
     $tmp_name = $_FILES[$field_name]['tmp_name'] ?? '';
     if ($tmp_name === '' || !file_exists($tmp_name)) {
-        return new WP_Error('upload_error', 'Upload konnte nicht verarbeitet werden.');
+        return new WP_Error('upload_error', alpenia_travel_t('Upload konnte nicht verarbeitet werden.'));
     }
 
     $allowed_mimes = array_keys(alpenia_allowed_mimes_by_field($field_name));
@@ -76,7 +76,7 @@ function alpenia_validate_upload_type($field_name) {
     $mime = (string) ($filetype['type'] ?? '');
 
     if ($mime === '' || !in_array($mime, $allowed_mimes, true)) {
-        return new WP_Error('invalid_file_type', 'Ungültiger Dateityp. Nur erlaubte Formate sind zulässig.');
+        return new WP_Error('invalid_file_type', alpenia_travel_t('Ungültiger Dateityp. Nur erlaubte Formate sind zulässig.'));
     }
 
     return $mime;
@@ -93,7 +93,7 @@ function alpenia_handle_file_upload($field_name) {
 
     if (!alpenia_validate_upload_size($field_name)) {
         $max_size = alpenia_get_max_upload_size_by_field($field_name);
-        return new WP_Error('file_too_large', 'Die Datei ist zu groß. Maximal erlaubt: ' . alpenia_format_bytes($max_size));
+        return new WP_Error('file_too_large', sprintf(alpenia_travel_t('Die Datei ist zu groß. Maximal erlaubt: %s'), alpenia_format_bytes($max_size)));
     }
 
     $mime_validation = alpenia_validate_upload_type($field_name);
@@ -119,7 +119,7 @@ function alpenia_handle_file_upload($field_name) {
     remove_filter('wp_unique_filename', 'alpenia_randomize_upload_filename', 10);
 
     if (isset($uploaded['error'])) {
-        return new WP_Error('upload_error', $uploaded['error']);
+        return new WP_Error('upload_error', alpenia_travel_t($uploaded['error']));
     }
 
     $attachment = [
@@ -131,7 +131,7 @@ function alpenia_handle_file_upload($field_name) {
 
     $attachment_id = wp_insert_attachment($attachment, $uploaded['file']);
     if (!$attachment_id || is_wp_error($attachment_id)) {
-        return new WP_Error('attachment_error', 'Datei konnte nicht registriert werden.');
+        return new WP_Error('attachment_error', alpenia_travel_t('Datei konnte nicht registriert werden.'));
     }
 
     return (int) $attachment_id;
