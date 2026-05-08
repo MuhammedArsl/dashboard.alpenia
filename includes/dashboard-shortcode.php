@@ -2029,11 +2029,8 @@ function alpenia_dashboard_shortcode() {
         }
 
         .dashboard-language-switch {
-            position: fixed;
-            top: 16px;
-            right: 16px;
-            z-index: 9999;
             display: inline-flex;
+            align-items: center;
             gap: 6px;
             background: rgba(16, 56, 45, 0.88);
             border: 1px solid rgba(167, 197, 184, 0.4);
