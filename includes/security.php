@@ -55,7 +55,11 @@ function alpenia_disable_cache_for_auth_shortcodes() {
         return;
     }
 
-    if (has_shortcode($post->post_content, 'alpenia_dashboard') || has_shortcode($post->post_content, 'alpenia_login')) {
+    if (
+        has_shortcode($post->post_content, 'alpenia_dashboard') ||
+        has_shortcode($post->post_content, 'alpenia_login') ||
+        has_shortcode($post->post_content, 'alpenia_participant_form')
+    ) {
         if (!defined('DONOTCACHEPAGE')) {
             define('DONOTCACHEPAGE', true);
         }

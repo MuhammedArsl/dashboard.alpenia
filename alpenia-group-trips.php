@@ -17,6 +17,7 @@ require_once ALPENIA_PLUGIN_DIR . 'includes/security-hardening.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/uploads.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/trips.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/admin-participants.php';
+require_once ALPENIA_PLUGIN_DIR . 'includes/public-participant-form.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/export-print.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/shortcode-login.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/security.php';
