@@ -33,6 +33,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
     $selected_trip_id = alpenia_public_participant_get_trip_id_by_token($request_token);
     $message = '';
     $values = [];
+    $consents = [];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alpenia_public_participant_submit'])) {
         $nonce = isset($_POST['alpenia_public_participant_nonce']) ? sanitize_text_field(wp_unslash($_POST['alpenia_public_participant_nonce'])) : '';
@@ -41,6 +42,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
         $selected_trip_id = alpenia_public_participant_get_trip_id_by_token($request_token);
 
         $values = alpenia_public_participant_get_submitted_values();
+        $consents = alpenia_public_participant_get_submitted_consents();
 
         if ($nonce === '' || !wp_verify_nonce($nonce, 'alpenia_public_participant_form')) {
             $message = alpenia_public_participant_message('Sicherheitsfehler. Bitte erneut versuchen.', 'error');
@@ -48,6 +50,8 @@ function alpenia_public_participant_form_shortcode($atts = []) {
             $message = alpenia_public_participant_message('Das Formular konnte nicht gesendet werden.', 'error');
         } elseif ($request_token === '' || !alpenia_public_participant_trip_is_available($selected_trip_id)) {
             $message = alpenia_public_participant_message('Dieser Anmeldelink ist ungültig oder die Reise ist nicht öffentlich anmeldbar.', 'error');
+        } elseif (empty($consents['privacy_consent']) || empty($consents['accuracy_consent'])) {
+            $message = alpenia_public_participant_message('Bitte bestätige die Datenschutzerklärung und die Echtheit deiner Angaben.', 'error');
         } else {
             $result = alpenia_public_participant_create($selected_trip_id, $values);
 
@@ -56,6 +60,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
             } else {
                 $message = alpenia_public_participant_message('Vielen Dank. Deine Teilnehmerdaten wurden erfolgreich übermittelt.', 'success');
                 $values = [];
+                $consents = [];
             }
         }
     }
@@ -78,10 +83,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
         <?php elseif (!$trip_available) : ?>
             <?php echo wp_kses_post(alpenia_public_participant_message('Dieser Anmeldelink ist ungültig oder die Reise ist nicht öffentlich anmeldbar.', 'error')); ?>
         <?php else : ?>
-            <div class="alpenia-public-trip-card">
-                <span><?php echo esc_html(alpenia_travel_t('Anmeldung für')); ?></span>
-                <strong><?php echo esc_html(get_the_title($selected_trip_id)); ?></strong>
-            </div>
+            <?php alpenia_public_participant_render_trip_overview($selected_trip_id); ?>
 
             <form method="post" enctype="multipart/form-data" novalidate>
                 <?php wp_nonce_field('alpenia_public_participant_form', 'alpenia_public_participant_nonce'); ?>
@@ -94,6 +96,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
 
                 <?php alpenia_public_participant_render_fields($values); ?>
                 <?php alpenia_public_participant_render_upload_fields(); ?>
+                <?php alpenia_public_participant_render_consent_fields($consents); ?>
 
                 <div class="alpenia-public-actions">
                     <p><?php echo esc_html(alpenia_travel_t('Mit * markierte Felder sind Pflichtfelder.')); ?></p>
@@ -184,7 +187,7 @@ function alpenia_public_participant_message($text, $type = 'info') {
 }
 
 function alpenia_public_participant_enqueue_assets() {
-    $version = defined('WP_DEBUG') && WP_DEBUG ? time() : '4.4';
+    $version = defined('WP_DEBUG') && WP_DEBUG ? time() : '4.5';
     wp_enqueue_style(
         'alpenia-public-participant-form',
         plugin_dir_url(ALPENIA_PLUGIN_FILE) . 'assets/public-participant-form.css',
@@ -214,6 +217,126 @@ function alpenia_public_participant_maybe_enqueue_assets() {
     }
 }
 add_action('wp_enqueue_scripts', 'alpenia_public_participant_maybe_enqueue_assets');
+
+function alpenia_public_participant_get_trip_type_label($trip_type) {
+    $labels = [
+        'kultur' => 'Kulturreise',
+        'umrah' => 'Umrah',
+        'hajj' => 'Hajj',
+    ];
+
+    return $labels[$trip_type] ?? $trip_type;
+}
+
+function alpenia_public_participant_format_trip_date_range($start_date, $end_date) {
+    if (function_exists('alpenia_date_range_display')) {
+        return alpenia_date_range_display($start_date, $end_date);
+    }
+
+    $start_date = trim((string) $start_date);
+    $end_date = trim((string) $end_date);
+
+    if ($start_date !== '' && $end_date !== '') {
+        return $start_date . ' – ' . $end_date;
+    }
+
+    return $start_date !== '' ? $start_date : $end_date;
+}
+
+function alpenia_public_participant_get_capacity_left($trip_id) {
+    $max_people = (int) get_post_meta($trip_id, 'max_people', true);
+    if ($max_people <= 0) {
+        return '-';
+    }
+
+    $participants = get_posts([
+        'post_type' => 'trip_participant',
+        'post_status' => 'publish',
+        'numberposts' => -1,
+        'fields' => 'ids',
+        'meta_key' => 'trip_id',
+        'meta_value' => absint($trip_id),
+    ]);
+
+    return max(0, $max_people - count($participants));
+}
+
+function alpenia_public_participant_get_trip_detail_items($trip_id) {
+    $trip_type = alpenia_public_participant_get_trip_type_label((string) get_post_meta($trip_id, 'trip_type', true));
+    $destination = (string) get_post_meta($trip_id, 'destination', true);
+    $country = (string) get_post_meta($trip_id, 'country', true);
+    $city = (string) get_post_meta($trip_id, 'city', true);
+    $location = trim($country . ($country !== '' && $city !== '' ? ' / ' : '') . $city);
+    $date_range = alpenia_public_participant_format_trip_date_range(
+        get_post_meta($trip_id, 'start_date', true),
+        get_post_meta($trip_id, 'end_date', true)
+    );
+    $price = trim((string) get_post_meta($trip_id, 'price', true));
+    $assigned_guide = (int) get_post_meta($trip_id, 'assigned_guide', true);
+    $guide_name = '';
+
+    if ($assigned_guide > 0) {
+        $guide = get_userdata($assigned_guide);
+        $guide_name = $guide ? $guide->display_name : '';
+    }
+
+    $items = [
+        ['label' => 'Reisetitel', 'value' => get_the_title($trip_id)],
+        ['label' => 'Reisetyp', 'value' => $trip_type],
+        ['label' => 'Reiseziel', 'value' => $destination],
+        ['label' => 'Land / Stadt', 'value' => $location],
+        ['label' => 'Reisezeitraum', 'value' => $date_range],
+        ['label' => 'Freie Plätze', 'value' => (string) alpenia_public_participant_get_capacity_left($trip_id)],
+    ];
+
+    if ($price !== '') {
+        $items[] = ['label' => 'Reisepreis', 'value' => number_format_i18n((float) $price, 2) . ' €'];
+    }
+
+    if ($guide_name !== '') {
+        $items[] = ['label' => 'Reiseleitung', 'value' => $guide_name];
+    }
+
+    return array_values(array_filter($items, static function ($item) {
+        return trim((string) $item['value']) !== '';
+    }));
+}
+
+function alpenia_public_participant_render_trip_overview($trip_id) {
+    $items = alpenia_public_participant_get_trip_detail_items($trip_id);
+    ?>
+    <section class="alpenia-public-trip-card" aria-labelledby="alpenia-public-trip-title">
+        <div class="alpenia-public-trip-card__content">
+            <span class="alpenia-public-trip-card__label"><?php echo esc_html(alpenia_travel_t('Anmeldung für')); ?></span>
+            <h3 id="alpenia-public-trip-title"><?php echo esc_html(get_the_title($trip_id)); ?></h3>
+            <p><?php echo esc_html(alpenia_travel_t('Prüfe bitte vor dem Absenden die wichtigsten Reisedetails und halte die benötigten Dokumente bereit.')); ?></p>
+        </div>
+        <dl class="alpenia-public-trip-details">
+            <?php foreach ($items as $item) : ?>
+                <div>
+                    <dt><?php echo esc_html(alpenia_travel_t($item['label'])); ?></dt>
+                    <dd><?php echo esc_html($item['value']); ?></dd>
+                </div>
+            <?php endforeach; ?>
+        </dl>
+        <div class="alpenia-public-prep-card">
+            <strong><?php echo esc_html(alpenia_travel_t('Für die Anmeldung erforderlich')); ?></strong>
+            <ul>
+                <li><?php echo esc_html(alpenia_travel_t('Vollständige Kontaktdaten und Notfallkontakt')); ?></li>
+                <li><?php echo esc_html(alpenia_travel_t('Gültige Reisepassdaten mit gut lesbarer Datei')); ?></li>
+                <li><?php echo esc_html(alpenia_travel_t('Porträtfoto und ggf. Aufenthaltstitel')); ?></li>
+            </ul>
+        </div>
+    </section>
+    <?php
+}
+
+function alpenia_public_participant_get_submitted_consents() {
+    return [
+        'privacy_consent' => !empty($_POST['privacy_consent']) ? 1 : 0,
+        'accuracy_consent' => !empty($_POST['accuracy_consent']) ? 1 : 0,
+    ];
+}
 
 function alpenia_public_participant_get_form_fields() {
     $allowed_keys = [
@@ -429,6 +552,35 @@ function alpenia_public_participant_render_fields($values) {
 
 function alpenia_public_participant_get_residence_permit_field_keys() {
     return ['residence_permit_number', 'residence_permit_start_date', 'residence_permit_valid_until'];
+}
+
+function alpenia_public_participant_render_consent_fields($consents = []) {
+    $privacy_checked = !empty($consents['privacy_consent']);
+    $accuracy_checked = !empty($consents['accuracy_consent']);
+    ?>
+    <section class="alpenia-public-section alpenia-public-section--consent">
+        <div class="alpenia-public-section__header">
+            <h3><?php echo esc_html(alpenia_travel_t('Bestätigungen')); ?></h3>
+            <p><?php echo esc_html(alpenia_travel_t('Zum Schutz deiner Daten benötigen wir vor dem Absenden zwei Zustimmungen.')); ?></p>
+        </div>
+        <div class="alpenia-public-consent-list">
+            <label class="alpenia-public-consent" for="alpenia_public_privacy_consent">
+                <input type="checkbox" id="alpenia_public_privacy_consent" name="privacy_consent" value="1" required <?php checked($privacy_checked); ?>>
+                <span>
+                    <strong><?php echo esc_html(alpenia_travel_t('Datenschutzerklärung akzeptieren')); ?> <span class="alpenia-public-required">*</span></strong>
+                    <?php echo esc_html(alpenia_travel_t('Ich habe die Datenschutzerklärung gelesen und bin mit der Verarbeitung meiner Daten zur Reiseanmeldung einverstanden.')); ?>
+                </span>
+            </label>
+            <label class="alpenia-public-consent" for="alpenia_public_accuracy_consent">
+                <input type="checkbox" id="alpenia_public_accuracy_consent" name="accuracy_consent" value="1" required <?php checked($accuracy_checked); ?>>
+                <span>
+                    <strong><?php echo esc_html(alpenia_travel_t('Echtheit der Daten bestätigen')); ?> <span class="alpenia-public-required">*</span></strong>
+                    <?php echo esc_html(alpenia_travel_t('Ich bestätige, dass alle Angaben wahrheitsgemäß, vollständig und anhand meiner gültigen Reisedokumente eingetragen wurden.')); ?>
+                </span>
+            </label>
+        </div>
+    </section>
+    <?php
 }
 
 function alpenia_public_participant_render_upload_fields() {
