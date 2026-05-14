@@ -237,10 +237,24 @@ function alpenia_public_participant_format_trip_date_range($start_date, $end_dat
     $end_date = trim((string) $end_date);
 
     if ($start_date !== '' && $end_date !== '') {
-        return $start_date . ' – ' . $end_date;
+        return alpenia_public_participant_format_date_fallback($start_date) . ' – ' . alpenia_public_participant_format_date_fallback($end_date);
     }
 
-    return $start_date !== '' ? $start_date : $end_date;
+    return $start_date !== '' ? alpenia_public_participant_format_date_fallback($start_date) : alpenia_public_participant_format_date_fallback($end_date);
+}
+
+function alpenia_public_participant_format_date_fallback($date) {
+    if (function_exists('alpenia_format_date_display')) {
+        return alpenia_format_date_display($date);
+    }
+
+    $date = trim((string) $date);
+    $date_time = DateTime::createFromFormat('!Y-m-d', $date);
+    if ($date_time instanceof DateTime && $date_time->format('Y-m-d') === $date) {
+        return $date_time->format('d.m.Y');
+    }
+
+    return $date !== '' ? $date : '-';
 }
 
 function alpenia_public_participant_get_capacity_left($trip_id) {
@@ -267,11 +281,12 @@ function alpenia_public_participant_get_trip_detail_items($trip_id) {
     $country = (string) get_post_meta($trip_id, 'country', true);
     $city = (string) get_post_meta($trip_id, 'city', true);
     $location = trim($country . ($country !== '' && $city !== '' ? ' / ' : '') . $city);
+    $departure_city = trim((string) get_post_meta($trip_id, 'departure_city', true));
+    $departure_airport = trim((string) get_post_meta($trip_id, 'departure_airport', true));
     $date_range = alpenia_public_participant_format_trip_date_range(
         get_post_meta($trip_id, 'start_date', true),
         get_post_meta($trip_id, 'end_date', true)
     );
-    $price = trim((string) get_post_meta($trip_id, 'price', true));
     $assigned_guide = (int) get_post_meta($trip_id, 'assigned_guide', true);
     $guide_name = '';
 
@@ -285,13 +300,11 @@ function alpenia_public_participant_get_trip_detail_items($trip_id) {
         ['label' => 'Reisetyp', 'value' => $trip_type],
         ['label' => 'Reiseziel', 'value' => $destination],
         ['label' => 'Land / Stadt', 'value' => $location],
+        ['label' => 'Abflugstadt', 'value' => $departure_city],
+        ['label' => 'Flughafen', 'value' => $departure_airport],
         ['label' => 'Reisezeitraum', 'value' => $date_range],
         ['label' => 'Freie Plätze', 'value' => (string) alpenia_public_participant_get_capacity_left($trip_id)],
     ];
-
-    if ($price !== '') {
-        $items[] = ['label' => 'Reisepreis', 'value' => number_format_i18n((float) $price, 2) . ' €'];
-    }
 
     if ($guide_name !== '') {
         $items[] = ['label' => 'Reiseleitung', 'value' => $guide_name];

@@ -58,6 +58,8 @@ function alpenia_export_trip_csv($trip_id) {
         'Destination',
         'Country',
         'City',
+        'Departure City',
+        'Airport',
         'Gender',
         'First Name',
         'Last Name',
@@ -96,17 +98,19 @@ function alpenia_export_trip_csv($trip_id) {
             get_post_meta($trip_id, 'destination', true),
             get_post_meta($trip_id, 'country', true),
             get_post_meta($trip_id, 'city', true),
+            get_post_meta($trip_id, 'departure_city', true),
+            get_post_meta($trip_id, 'departure_airport', true),
             alpenia_gender_code(get_post_meta($participant->ID, 'gender', true)),
             alpenia_get_secure_meta($participant->ID, 'first_name', true),
             alpenia_get_secure_meta($participant->ID, 'last_name', true),
-            alpenia_get_secure_meta($participant->ID, 'birth_date', true),
+            alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'birth_date', true)),
             alpenia_get_secure_meta($participant->ID, 'nationality', true),
             alpenia_get_secure_meta($participant->ID, 'passport_no', true),
-            alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true),
-            alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true),
+            alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true)),
+            alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true)),
             alpenia_get_visa_entry_country($participant->ID),
             alpenia_get_secure_meta($participant->ID, 'visa_number', true),
-            alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true),
+            alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true)),
             get_post_meta($participant->ID, 'participant_status', true),
             alpenia_get_secure_meta($participant->ID, 'room_assignment', true),
             alpenia_get_secure_meta($participant->ID, 'subgroup', true),
@@ -185,6 +189,8 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('destination')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'destination', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'country', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'city', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'departure_city', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'departure_airport', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('travel_dates')); ?></strong><br><?php echo esc_html(alpenia_date_range_display(get_post_meta($trip_id, 'start_date', true), get_post_meta($trip_id, 'end_date', true))); ?></div>
         </div>
 
@@ -217,16 +223,16 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                     <tr>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'first_name', true))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'last_name', true))); ?></td>
-                        <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'birth_date', true))); ?></td>
+                        <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'birth_date', true))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_gender_code(get_post_meta($participant->ID, 'gender', true)))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'nationality', true))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_no', true))); ?></td>
-                        <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true))); ?></td>
-                        <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true))); ?></td>
+                        <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true))); ?></td>
+                        <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true))); ?></td>
                         <?php if ($is_pilgrimage_trip) : ?>
                             <td><?php echo esc_html(alpenia_display_value(alpenia_get_visa_entry_country($participant->ID))); ?></td>
                             <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'visa_number', true))); ?></td>
-                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true))); ?></td>
+                            <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true))); ?></td>
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; else : ?>
