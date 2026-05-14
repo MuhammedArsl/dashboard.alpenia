@@ -413,6 +413,11 @@ function alpenia_travel_t($text) {
         'PDF / Drucken' => 'PDF / Yazdır',
         'Unterlagen teilweise' => 'Belgeler kısmen tamam',
         'Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.' => 'Zorunlu alanlar: hitap, ad, soyad, vatandaşlık, pasaport başlangıç tarihi, pasaport bitiş tarihi, pasaport, portre fotoğrafı ve kontrol listesinin tamamı. AB/Schengen dışı vatandaşlar için ayrıca oturum izni numarası, oturum izni başlangıç tarihi ve oturum izni bitiş tarihi zorunludur. Umre/Hac seyahatlerinde ayrıca vize giriş ülkesi, vize numarası ve vize bitiş tarihi zorunludur.',
+        'Bitte verwenden Sie den individuellen Anmeldelink Ihrer Reise.' => 'Lütfen seyahatinize ait bireysel kayıt bağlantısını kullanın.',
+        'Dieser Anmeldelink ist ungültig oder die Reise ist nicht öffentlich anmeldbar.' => 'Bu kayıt bağlantısı geçersiz veya seyahat herkese açık kayda uygun değil.',
+        'Teile ausschließlich diesen individuellen Anmeldelink mit Teilnehmern. Das öffentliche Formular ist ohne gültigen Link nicht zugänglich.' => 'Katılımcılarla yalnızca bu bireysel kayıt bağlantısını paylaşın. Herkese açık form geçerli bağlantı olmadan erişilebilir değildir.',
+        'Individueller Anmeldelink' => 'Bireysel kayıt bağlantısı',
+        'Formular öffnen' => 'Formu aç',
     ];
 
     if (isset($translations['tr']) && is_array($translations['tr'])) {
