@@ -1447,6 +1447,25 @@ function alpenia_dashboard_shortcode() {
                     <?php endif; ?>
                 </div>
 
+                <?php
+                $public_form_link = alpenia_public_participant_get_trip_form_url($view_trip_id);
+                $public_form_shortcode = alpenia_public_participant_get_trip_shortcode($view_trip_id);
+                ?>
+                <div class="panel" style="margin-top:20px;">
+                    <h2><?php echo esc_html(alpenia_travel_t('Öffentliche Anmeldung')); ?></h2>
+                    <p><?php echo esc_html(alpenia_travel_t('Nutze diesen individuellen Link oder Shortcode, damit Teilnehmer sich direkt für diese Reise anmelden können.')); ?></p>
+                    <div class="trip-meta-grid">
+                        <div class="trip-meta-box">
+                            <strong><?php echo esc_html(alpenia_travel_t('Anmeldelink')); ?></strong>
+                            <span><a href="<?php echo esc_url($public_form_link); ?>" target="_blank" rel="noopener"><?php echo esc_html($public_form_link); ?></a></span>
+                        </div>
+                        <div class="trip-meta-box">
+                            <strong><?php echo esc_html(alpenia_travel_t('Shortcode')); ?></strong>
+                            <span><input type="text" readonly value="<?php echo esc_attr($public_form_shortcode); ?>" onclick="this.select();" style="width:100%;max-width:360px;"></span>
+                        </div>
+                    </div>
+                </div>
+
                 <div class="panel" style="margin-top:20px;">
                     <h2><?php echo esc_html(alpenia_travel_t("Teilnehmer dieser Reise")); ?></h2>
 

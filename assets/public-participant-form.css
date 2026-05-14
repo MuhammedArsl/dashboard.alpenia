@@ -1,0 +1,227 @@
+.alpenia-public-form {
+    --alpenia-public-primary: #174b3d;
+    --alpenia-public-primary-2: #2f7d63;
+    --alpenia-public-accent: #d99a2b;
+    --alpenia-public-ink: #10251f;
+    --alpenia-public-muted: #5d746c;
+    --alpenia-public-line: #dfe9e5;
+    --alpenia-public-bg: #f6faf8;
+    max-width: 1040px;
+    margin: 32px auto;
+    padding: clamp(20px, 4vw, 36px);
+    border: 1px solid rgba(23, 75, 61, .12);
+    border-radius: 28px;
+    background: linear-gradient(145deg, #ffffff 0%, #f8fbfa 100%);
+    color: var(--alpenia-public-ink);
+    box-shadow: 0 22px 60px rgba(16, 37, 31, .12);
+    font-family: inherit;
+}
+
+.alpenia-public-form * { box-sizing: border-box; }
+.alpenia-public-form [hidden] { display: none !important; }
+
+.alpenia-public-form__hero {
+    position: relative;
+    overflow: hidden;
+    margin: calc(clamp(20px, 4vw, 36px) * -1) calc(clamp(20px, 4vw, 36px) * -1) 26px;
+    padding: clamp(28px, 5vw, 48px);
+    border-radius: 28px 28px 22px 22px;
+    background: radial-gradient(circle at top right, rgba(217, 154, 43, .25), transparent 34%), linear-gradient(135deg, #123f34, #2f7d63);
+    color: #fff;
+}
+
+.alpenia-public-form__eyebrow {
+    margin: 0 0 10px;
+    color: rgba(255,255,255,.78);
+    font-size: .82rem;
+    font-weight: 800;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+}
+
+.alpenia-public-form h2 {
+    margin: 0 0 10px;
+    color: #fff;
+    font-size: clamp(28px, 5vw, 44px);
+    line-height: 1.08;
+}
+
+.alpenia-public-intro {
+    max-width: 720px;
+    margin: 0;
+    color: rgba(255,255,255,.86);
+    font-size: 1.04rem;
+}
+
+.alpenia-public-trip-card {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 14px;
+    align-items: center;
+    margin-bottom: 22px;
+    padding: 16px 18px;
+    border: 1px solid rgba(217, 154, 43, .35);
+    border-radius: 18px;
+    background: #fff9ed;
+}
+
+.alpenia-public-trip-card span { color: #7b5a20; font-weight: 700; }
+.alpenia-public-trip-card strong { color: var(--alpenia-public-primary); font-size: 1.08rem; }
+
+.alpenia-public-section {
+    margin-top: 22px;
+    padding: clamp(18px, 3vw, 26px);
+    border: 1px solid var(--alpenia-public-line);
+    border-radius: 22px;
+    background: #fff;
+}
+
+.alpenia-public-section__header {
+    margin-bottom: 18px;
+}
+
+.alpenia-public-section__header h3 {
+    margin: 0;
+    color: var(--alpenia-public-primary);
+    font-size: clamp(20px, 3vw, 25px);
+}
+
+.alpenia-public-section__header p {
+    margin: 7px 0 0;
+    color: var(--alpenia-public-muted);
+}
+
+.alpenia-public-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 17px 20px;
+}
+
+.alpenia-public-grid--uploads {
+    align-items: stretch;
+}
+
+.alpenia-public-field label,
+.alpenia-public-upload label span {
+    display: block;
+    margin-bottom: 7px;
+    color: #1c342e;
+    font-weight: 800;
+}
+
+.alpenia-public-field input,
+.alpenia-public-field select {
+    width: 100%;
+    min-height: 48px;
+    border: 1px solid #cddbd6;
+    border-radius: 14px;
+    padding: 12px 14px;
+    background: #fbfdfc;
+    color: var(--alpenia-public-ink);
+    font: inherit;
+    transition: border-color .18s ease, box-shadow .18s ease, background .18s ease;
+}
+
+.alpenia-public-field input:focus,
+.alpenia-public-field select:focus {
+    outline: 0;
+    border-color: var(--alpenia-public-primary-2);
+    background: #fff;
+    box-shadow: 0 0 0 4px rgba(47, 125, 99, .16);
+}
+
+.alpenia-public-upload {
+    height: 100%;
+    padding: 18px;
+    border: 1px dashed #b8cbc4;
+    border-radius: 18px;
+    background: var(--alpenia-public-bg);
+}
+
+.alpenia-public-upload small,
+.alpenia-public-field small {
+    display: block;
+    margin-top: 4px;
+    color: var(--alpenia-public-muted);
+    font-weight: 500;
+}
+
+.alpenia-public-upload input[type="file"] {
+    width: 100%;
+    margin-top: 12px;
+    color: var(--alpenia-public-muted);
+    font: inherit;
+}
+
+.alpenia-public-upload input[type="file"]::file-selector-button {
+    margin-right: 12px;
+    border: 0;
+    border-radius: 999px;
+    padding: 10px 14px;
+    background: #e6f1ed;
+    color: var(--alpenia-public-primary);
+    font-weight: 800;
+    cursor: pointer;
+}
+
+.alpenia-public-required { color: #c2410c; }
+
+.alpenia-public-hidden {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+.alpenia-public-message {
+    margin: 0 0 20px;
+    padding: 15px 17px;
+    border-radius: 16px;
+    font-weight: 800;
+}
+
+.alpenia-public-error { background: #fff1f0; color: #a8071a; border: 1px solid #ffd2cc; }
+.alpenia-public-success { background: #edf9f1; color: #17663b; border: 1px solid #bde8c9; }
+.alpenia-public-info { background: #eef7ff; color: #1d4f73; border: 1px solid #cce7ff; }
+
+.alpenia-public-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 24px;
+}
+
+.alpenia-public-actions p {
+    margin: 0;
+    color: var(--alpenia-public-muted);
+}
+
+.alpenia-public-submit {
+    border: 0;
+    border-radius: 999px;
+    padding: 15px 28px;
+    background: linear-gradient(135deg, var(--alpenia-public-primary), var(--alpenia-public-primary-2));
+    color: #fff;
+    font: inherit;
+    font-weight: 900;
+    cursor: pointer;
+    box-shadow: 0 12px 24px rgba(23, 75, 61, .22);
+    transition: transform .18s ease, filter .18s ease, box-shadow .18s ease;
+}
+
+.alpenia-public-submit:hover,
+.alpenia-public-submit:focus {
+    filter: brightness(1.06);
+    transform: translateY(-1px);
+    box-shadow: 0 16px 28px rgba(23, 75, 61, .27);
+}
+
+@media (max-width: 720px) {
+    .alpenia-public-form { margin: 18px auto; border-radius: 22px; }
+    .alpenia-public-grid { grid-template-columns: 1fr; }
+    .alpenia-public-actions { align-items: stretch; flex-direction: column; }
+    .alpenia-public-submit { width: 100%; }
+}
