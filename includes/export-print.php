@@ -4,6 +4,20 @@ if (!defined('ABSPATH')) exit;
 /**
  * CSV Export
  */
+function alpenia_maybe_handle_trip_csv_export() {
+    if (!isset($_GET['export_trip_csv'])) {
+        return;
+    }
+
+    $trip_id = (int) $_GET['export_trip_csv'];
+    if ($trip_id <= 0) {
+        wp_die(esc_html(alpenia_travel_t('Reise nicht gefunden.')));
+    }
+
+    alpenia_export_trip_csv($trip_id);
+}
+add_action('template_redirect', 'alpenia_maybe_handle_trip_csv_export', 3);
+
 function alpenia_export_trip_csv($trip_id) {
     if (!alpenia_user_can_access_trip($trip_id)) {
         alpenia_security_log('trip_export_denied', ['trip_id' => (int) $trip_id]);
@@ -18,9 +32,21 @@ function alpenia_export_trip_csv($trip_id) {
 
     $participants = alpenia_get_trip_participants($trip_id);
 
+    while (ob_get_level() > 0) {
+        $buffer = ob_get_status();
+        if (empty($buffer['del'])) {
+            break;
+        }
+        ob_end_clean();
+    }
+
+    $filename = 'reise-' . sanitize_title($trip->post_title) . '-teilnehmer.csv';
+
+    status_header(200);
     nocache_headers();
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="reise-' . sanitize_title($trip->post_title) . '-teilnehmer.csv"');
+    header('Content-Disposition: attachment; filename="' . $filename . '"');
+    header('X-Content-Type-Options: nosniff');
 
     $output = fopen('php://output', 'w');
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
