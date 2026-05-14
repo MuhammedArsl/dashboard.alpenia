@@ -187,7 +187,7 @@ function alpenia_public_participant_message($text, $type = 'info') {
 }
 
 function alpenia_public_participant_enqueue_assets() {
-    $version = defined('WP_DEBUG') && WP_DEBUG ? time() : '4.5';
+    $version = defined('WP_DEBUG') && WP_DEBUG ? time() : '4.6';
     wp_enqueue_style(
         'alpenia-public-participant-form',
         plugin_dir_url(ALPENIA_PLUGIN_FILE) . 'assets/public-participant-form.css',

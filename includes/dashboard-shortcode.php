@@ -2690,20 +2690,58 @@ function alpenia_dashboard_shortcode() {
         }
 
         @media (max-width: 767px) {
-            .alpenia-dashboard { padding: 18px 20px 30px 20px; }
+            .alpenia-dashboard { padding: 14px 14px 28px; }
+            .dashboard-top { gap: 14px; margin-bottom: 18px; }
+            .dashboard-brand { width: 100%; gap: 12px; }
             .dashboard-brand-text h1 { font-size: 30px; }
-            .form-grid { grid-template-columns: 1fr; }
-            .cards { grid-template-columns: 1fr; }
-            .list-table li { flex-direction: column; align-items: flex-start; gap: 10px; }
-            .trip-meta-grid { grid-template-columns: 1fr; }
-            .actions { width: 100%; }
-            .btn-primary, .btn-secondary { width: 100%; text-align: center; }
-            .dashboard-logo { width: 58px; }
-            .filter-bar { flex-direction: column; }
+            .dashboard-logo { width: 56px; }
+            .dashboard-language-switch { margin-left: auto; }
+            .actions { width: 100%; gap: 8px; }
+            .btn-primary,
+            .btn-secondary,
+            .table-btn { width: 100%; min-height: 48px; text-align: center; white-space: normal; }
+            .cards { grid-template-columns: 1fr; gap: 12px; margin: 18px 0; }
+            .card { padding: 16px; border-radius: 12px; }
+            .card span { font-size: 30px; }
+            .panel { padding: 16px; border-radius: 12px; }
+            .panel h2 { font-size: 23px; line-height: 1.2; }
+            .form-grid { grid-template-columns: 1fr; gap: 14px; }
+            .filter-bar { flex-direction: column; gap: 10px; }
             .filter-bar > * { flex: 1 1 100%; width: 100%; }
-            .check-grid { grid-template-columns: 1fr; }
+            .filter-bar input,
+            .filter-bar select,
+            .form-group input:not([type="file"]),
+            .form-group select,
+            .form-group input[type="file"] { font-size: 16px; }
+            .participant-box { padding: 16px; border-radius: 12px; }
+            .participant-box h3 { font-size: 21px; }
+            .check-grid { grid-template-columns: 1fr; padding: 14px; }
+            .list-table li { flex-direction: column; align-items: flex-start; gap: 10px; }
+            .list-main,
+            .list-actions { width: 100%; }
+            .list-actions .table-btn,
+            .list-actions .btn-primary,
+            .list-actions .btn-secondary { flex: 1 1 100%; }
+            .trip-meta-grid { grid-template-columns: 1fr; gap: 12px; }
+            .table-wrap { margin: 0 -16px; padding: 0 16px 6px; -webkit-overflow-scrolling: touch; }
+            .alpenia-table { min-width: 980px; }
             .role-select-grid,
             .role-action-grid { grid-template-columns: 1fr; }
+            .alpenia-idle-timeout-card { padding: 16px; }
+        }
+
+        @media (max-width: 420px) {
+            .alpenia-dashboard { padding: 10px 10px 24px; }
+            .dashboard-top { align-items: stretch; }
+            .dashboard-brand,
+            .dashboard-language-switch,
+            .alpenia-logout-form { width: 100%; }
+            .dashboard-language-switch { justify-content: center; }
+            .lang-link { flex: 1 1 0; }
+            .panel,
+            .participant-box,
+            .card { padding: 14px; }
+            .table-wrap { margin: 0 -14px; padding-left: 14px; padding-right: 14px; }
         }
     </style>
 
