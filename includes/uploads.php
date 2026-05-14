@@ -4,19 +4,50 @@ if (!defined('ABSPATH')) exit;
 function alpenia_allowed_mimes_by_field($field_name) {
     $field_name = (string) $field_name;
 
-    if (strpos($field_name, 'photo_file') !== false || strpos($field_name, 'visa_photo_file') !== false) {
-        return [
-            'image/jpeg' => 'jpg',
-            'image/png'  => 'png',
-            'image/webp' => 'webp',
-        ];
+    $image_mimes = [
+        'jpg'  => 'image/jpeg',
+        'jpeg' => 'image/jpeg',
+        'png'  => 'image/png',
+        'webp' => 'image/webp',
+        'heic' => 'image/heic',
+        'heif' => 'image/heif',
+        'gif'  => 'image/gif',
+        'tif'  => 'image/tiff',
+        'tiff' => 'image/tiff',
+        'bmp'  => 'image/bmp',
+    ];
+
+    if (
+        strpos($field_name, 'photo_file') !== false &&
+        strpos($field_name, 'visa_photo_file') === false
+    ) {
+        return $image_mimes;
     }
 
-    return [
-        'application/pdf' => 'pdf',
-        'image/jpeg'      => 'jpg',
-        'image/png'       => 'png',
-    ];
+    return array_merge([
+        'pdf'  => 'application/pdf',
+        'doc'  => 'application/msword',
+        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    ], $image_mimes);
+}
+
+function alpenia_upload_accept_attribute($field_name) {
+    return implode(',', array_map(static function ($extension) {
+        return '.' . $extension;
+    }, array_keys(alpenia_allowed_mimes_by_field($field_name))));
+}
+
+function alpenia_upload_formats_label($field_name) {
+    $field_name = (string) $field_name;
+
+    if (
+        strpos($field_name, 'photo_file') !== false &&
+        strpos($field_name, 'visa_photo_file') === false
+    ) {
+        return 'JPG/JPEG, PNG, WEBP, HEIC/HEIF, GIF, TIFF oder BMP';
+    }
+
+    return 'PDF, DOC/DOCX, JPG/JPEG, PNG, WEBP, HEIC/HEIF, GIF, TIFF oder BMP';
 }
 
 function alpenia_get_max_upload_size_by_field($field_name) {
@@ -71,7 +102,7 @@ function alpenia_validate_upload_type($field_name) {
         return new WP_Error('upload_error', alpenia_travel_t('Upload konnte nicht verarbeitet werden.'));
     }
 
-    $allowed_mimes = array_keys(alpenia_allowed_mimes_by_field($field_name));
+    $allowed_mimes = array_values(alpenia_allowed_mimes_by_field($field_name));
     $filetype = wp_check_filetype_and_ext($tmp_name, $_FILES[$field_name]['name'] ?? 'upload.bin');
     $mime = (string) ($filetype['type'] ?? '');
 

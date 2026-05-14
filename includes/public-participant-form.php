@@ -606,17 +606,17 @@ function alpenia_public_participant_render_upload_fields() {
             <p><?php echo esc_html(alpenia_travel_t('Bitte lade gut lesbare Dateien in den angegebenen Formaten hoch.')); ?></p>
         </div>
         <div class="alpenia-public-grid alpenia-public-grid--uploads">
-            <?php alpenia_public_participant_render_upload_field('passport_file', 'Reisepass hochladen', 'PDF, JPG oder PNG, maximal 5 MB.', '.pdf,.jpg,.jpeg,.png', true); ?>
-            <?php alpenia_public_participant_render_upload_field('photo_file', 'Porträtfoto hochladen', 'JPG, PNG oder WEBP, maximal 2 MB.', '.jpg,.jpeg,.png,.webp', true); ?>
+            <?php alpenia_public_participant_render_upload_field('passport_file', 'Reisepass hochladen', alpenia_upload_formats_label('passport_file') . ', maximal 5 MB.', true); ?>
+            <?php alpenia_public_participant_render_upload_field('photo_file', 'Porträtfoto hochladen', alpenia_upload_formats_label('photo_file') . ', maximal 2 MB.', true); ?>
             <div data-alpenia-residence-section hidden>
-                <?php alpenia_public_participant_render_upload_field('visa_photo_file', 'Aufenthaltstitel hochladen', 'JPG, PNG oder WEBP, maximal 2 MB.', '.jpg,.jpeg,.png,.webp', true, 'data-alpenia-residence-upload'); ?>
+                <?php alpenia_public_participant_render_upload_field('visa_photo_file', 'Aufenthaltstitel hochladen', alpenia_upload_formats_label('visa_photo_file') . ', maximal 2 MB.', true, 'data-alpenia-residence-upload'); ?>
             </div>
         </div>
     </section>
     <?php
 }
 
-function alpenia_public_participant_render_upload_field($name, $label, $hint, $accept, $required = false, $input_attrs = '') {
+function alpenia_public_participant_render_upload_field($name, $label, $hint, $required = false, $input_attrs = '') {
     $input_id = 'alpenia_public_' . $name;
     ?>
     <div class="alpenia-public-upload">
@@ -624,7 +624,7 @@ function alpenia_public_participant_render_upload_field($name, $label, $hint, $a
             <span><?php echo esc_html(alpenia_travel_t($label)); ?><?php if ($required) : ?> <span class="alpenia-public-required">*</span><?php endif; ?></span>
             <small><?php echo esc_html(alpenia_travel_t($hint)); ?></small>
         </label>
-        <input type="file" id="<?php echo esc_attr($input_id); ?>" name="<?php echo esc_attr($name); ?>" accept="<?php echo esc_attr($accept); ?>" <?php echo $required ? 'required' : ''; ?> <?php echo esc_attr($input_attrs); ?>>
+        <input type="file" id="<?php echo esc_attr($input_id); ?>" name="<?php echo esc_attr($name); ?>" accept="<?php echo esc_attr(alpenia_upload_accept_attribute($name)); ?>" <?php echo $required ? 'required' : ''; ?> <?php echo esc_attr($input_attrs); ?>>
     </div>
     <?php
 }
