@@ -1,4 +1,4 @@
-﻿<?php
+<?php
 /**
  * Plugin Name: Alpenia Travel Operations Dashboard
  * Description: Dashboard für Reisen, Teilnehmer, Dokumente, Zahlungen, Gruppenplanung und Benutzerverwaltung.
