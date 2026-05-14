@@ -176,6 +176,8 @@ function alpenia_dashboard_shortcode() {
                     $second_first_name  = sanitize_text_field($_POST["second_first_name_$i"] ?? '');
                     $last_name          = sanitize_text_field($_POST["last_name_$i"] ?? '');
                     $birth_date         = sanitize_text_field($_POST["birth_date_$i"] ?? '');
+                    $street_address     = sanitize_text_field($_POST["street_address_$i"] ?? '');
+                    $postal_city        = sanitize_text_field($_POST["postal_city_$i"] ?? '');
                     $nationality        = sanitize_text_field($_POST["nationality_$i"] ?? '');
                     $passport_no        = sanitize_text_field($_POST["passport_no_$i"] ?? '');
                     $phone_number       = sanitize_text_field($_POST["phone_number_$i"] ?? '');
@@ -255,6 +257,8 @@ function alpenia_dashboard_shortcode() {
                     alpenia_update_secure_meta($participant_id, 'second_first_name', $second_first_name);
                     alpenia_update_secure_meta($participant_id, 'last_name', $last_name);
                     alpenia_update_secure_meta($participant_id, 'birth_date', $birth_date);
+                    alpenia_update_secure_meta($participant_id, 'street_address', $street_address);
+                    alpenia_update_secure_meta($participant_id, 'postal_city', $postal_city);
                     alpenia_update_secure_meta($participant_id, 'nationality', $nationality);
                     alpenia_update_secure_meta($participant_id, 'passport_no', $passport_no);
                     alpenia_update_secure_meta($participant_id, 'phone_number', $phone_number);
@@ -344,6 +348,8 @@ function alpenia_dashboard_shortcode() {
             $second_first_name  = sanitize_text_field($_POST['second_first_name'] ?? '');
             $last_name          = sanitize_text_field($_POST['last_name'] ?? '');
             $birth_date         = sanitize_text_field($_POST['birth_date'] ?? '');
+            $street_address     = sanitize_text_field($_POST['street_address'] ?? '');
+            $postal_city        = sanitize_text_field($_POST['postal_city'] ?? '');
             $nationality        = sanitize_text_field($_POST['nationality'] ?? '');
             $passport_no        = sanitize_text_field($_POST['passport_no'] ?? '');
             $phone_number       = sanitize_text_field($_POST['phone_number'] ?? '');
@@ -389,6 +395,8 @@ function alpenia_dashboard_shortcode() {
                 alpenia_update_secure_meta($participant_id, 'second_first_name', $second_first_name);
                 alpenia_update_secure_meta($participant_id, 'last_name', $last_name);
                 alpenia_update_secure_meta($participant_id, 'birth_date', $birth_date);
+                alpenia_update_secure_meta($participant_id, 'street_address', $street_address);
+                alpenia_update_secure_meta($participant_id, 'postal_city', $postal_city);
                 alpenia_update_secure_meta($participant_id, 'nationality', $nationality);
                 alpenia_update_secure_meta($participant_id, 'passport_no', $passport_no);
                 alpenia_update_secure_meta($participant_id, 'phone_number', $phone_number);
@@ -977,6 +985,16 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="street_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Straße')); ?></label>
+                                        <input type="text" id="street_address_<?php echo $i; ?>" name="street_address_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="postal_city_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('PLZ/Stadt')); ?></label>
+                                        <input type="text" id="postal_city_<?php echo $i; ?>" name="postal_city_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="nationality_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
                                         <input type="text" id="nationality_<?php echo $i; ?>" name="nationality_<?php echo $i; ?>" list="alpenia-country-list" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
                                     </div>
@@ -1128,6 +1146,8 @@ function alpenia_dashboard_shortcode() {
                 $second_first_name  = alpenia_get_secure_meta($participant_id, 'second_first_name', true);
                 $last_name          = alpenia_get_secure_meta($participant_id, 'last_name', true);
                 $birth_date         = alpenia_get_secure_meta($participant_id, 'birth_date', true);
+                $street_address     = alpenia_get_secure_meta($participant_id, 'street_address', true);
+                $postal_city        = alpenia_get_secure_meta($participant_id, 'postal_city', true);
                 $nationality        = alpenia_get_secure_meta($participant_id, 'nationality', true);
                 $passport_no        = alpenia_get_secure_meta($participant_id, 'passport_no', true);
                 $phone_number       = alpenia_get_secure_meta($participant_id, 'phone_number', true);
@@ -1205,6 +1225,16 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="birth_date"><?php echo esc_html(alpenia_travel_t('Geburtsdatum')); ?></label>
                                 <input type="date" id="birth_date" name="birth_date" value="<?php echo esc_attr($birth_date); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="street_address"><?php echo esc_html(alpenia_travel_t('Straße')); ?></label>
+                                <input type="text" id="street_address" name="street_address" value="<?php echo esc_attr($street_address); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="postal_city"><?php echo esc_html(alpenia_travel_t('PLZ/Stadt')); ?></label>
+                                <input type="text" id="postal_city" name="postal_city" value="<?php echo esc_attr($postal_city); ?>">
                             </div>
 
                             <div class="form-group">
