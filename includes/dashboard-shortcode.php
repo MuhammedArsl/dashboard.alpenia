@@ -70,15 +70,29 @@ function alpenia_dashboard_shortcode() {
     $trip_city_filter = isset($_GET['trip_city_filter']) ? sanitize_text_field($_GET['trip_city_filter']) : '';
     $guide_filter = isset($_GET['guide_filter']) ? (int) $_GET['guide_filter'] : '';
     $create_trip_requested = isset($_GET['create_trip']) && $_GET['create_trip'] == '1';
+    $edit_trip_id = isset($_GET['edit_trip']) ? (int) $_GET['edit_trip'] : 0;
+    $edit_trip_requested = $edit_trip_id > 0;
 
     if ($create_trip_requested && !alpenia_user_can_create_trip()) {
         $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Reiseleiter dürfen keine neuen Reisen erstellen. Bitte füge Teilnehmer zu bestehenden Reisen hinzu.')) . '</div>';
     }
 
+    if ($edit_trip_requested && !alpenia_user_can_edit_trip($edit_trip_id)) {
+        $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff zum Bearbeiten dieser Reise.')) . '</div>';
+        $edit_trip_requested = false;
+        $edit_trip_id = 0;
+    }
+
     if (isset($_POST['save_trip'])) {
-        if (!alpenia_user_can_create_trip()) {
+        $submitted_trip_id = (int) ($_POST['trip_id'] ?? 0);
+        $is_editing_trip = $submitted_trip_id > 0;
+        $nonce_action = $is_editing_trip ? 'alpenia_edit_trip_' . $submitted_trip_id : 'alpenia_save_trip';
+
+        if ($is_editing_trip && !alpenia_user_can_edit_trip($submitted_trip_id)) {
+            $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff zum Bearbeiten dieser Reise.')) . '</div>';
+        } elseif (!$is_editing_trip && !alpenia_user_can_create_trip()) {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Reiseleiter dürfen keine neuen Reisen erstellen. Bitte füge Teilnehmer zu bestehenden Reisen hinzu.')) . '</div>';
-        } elseif (!isset($_POST['alpenia_trip_nonce']) || !wp_verify_nonce($_POST['alpenia_trip_nonce'], 'alpenia_save_trip')) {
+        } elseif (!isset($_POST['alpenia_trip_nonce']) || !wp_verify_nonce($_POST['alpenia_trip_nonce'], $nonce_action)) {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.')) . '</div>';
         } else {
             $trip_title      = sanitize_text_field($_POST['trip_title'] ?? '');
@@ -101,13 +115,23 @@ function alpenia_dashboard_shortcode() {
             if (empty($trip_title) || empty($trip_type) || empty($destination) || empty($country) || empty($city) || empty($start_date) || empty($end_date)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
             } else {
-                $trip_id = wp_insert_post([
-                    'post_title'   => $trip_title,
-                    'post_type'    => 'group_trip',
-                    'post_status'  => 'publish',
-                    'post_author'  => get_current_user_id(),
-                    'post_content' => '',
-                ]);
+                if ($is_editing_trip) {
+                    $trip_id = wp_update_post([
+                        'ID'           => $submitted_trip_id,
+                        'post_title'   => $trip_title,
+                        'post_type'    => 'group_trip',
+                        'post_status'  => 'publish',
+                        'post_content' => '',
+                    ], true);
+                } else {
+                    $trip_id = wp_insert_post([
+                        'post_title'   => $trip_title,
+                        'post_type'    => 'group_trip',
+                        'post_status'  => 'publish',
+                        'post_author'  => get_current_user_id(),
+                        'post_content' => '',
+                    ]);
+                }
 
                 if ($trip_id && !is_wp_error($trip_id)) {
                     update_post_meta($trip_id, 'trip_type', $trip_type);
@@ -127,10 +151,14 @@ function alpenia_dashboard_shortcode() {
                     alpenia_update_secure_meta($trip_id, 'internal_notes', $internal_notes);
                     alpenia_public_participant_get_trip_registration_token($trip_id, true);
 
-                    alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
-                    $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
+                    if ($is_editing_trip) {
+                        $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise erfolgreich aktualisiert.')) . '</div>';
+                    } else {
+                        alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
+                        $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
+                    }
                 } else {
-                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Fehler beim Erstellen der Reise.')) . '</div>';
+                    $message = '<div class="alpenia-message">' . esc_html($is_editing_trip ? alpenia_travel_t('Fehler beim Aktualisieren der Reise.') : alpenia_travel_t('Fehler beim Erstellen der Reise.')) . '</div>';
                 }
             }
         }
@@ -754,7 +782,31 @@ function alpenia_dashboard_shortcode() {
                 </div>
             </div>
 
-            <?php if ($create_trip_requested && alpenia_user_can_create_trip()) : ?>
+            <?php if (($create_trip_requested && alpenia_user_can_create_trip()) || ($edit_trip_requested && alpenia_user_can_edit_trip($edit_trip_id))) : ?>
+
+                <?php
+                $trip_form_is_edit = $edit_trip_requested && alpenia_user_can_edit_trip($edit_trip_id);
+                $trip_form_id = $trip_form_is_edit ? $edit_trip_id : 0;
+                $trip_form_post = $trip_form_is_edit ? get_post($trip_form_id) : null;
+                $trip_form_values = [
+                    'trip_title' => $trip_form_post ? $trip_form_post->post_title : '',
+                    'trip_type' => $trip_form_id ? get_post_meta($trip_form_id, 'trip_type', true) : '',
+                    'trip_status' => $trip_form_id ? get_post_meta($trip_form_id, 'trip_status', true) : 'open',
+                    'destination' => $trip_form_id ? get_post_meta($trip_form_id, 'destination', true) : '',
+                    'country' => $trip_form_id ? get_post_meta($trip_form_id, 'country', true) : '',
+                    'city' => $trip_form_id ? get_post_meta($trip_form_id, 'city', true) : '',
+                    'departure_city' => $trip_form_id ? get_post_meta($trip_form_id, 'departure_city', true) : '',
+                    'departure_airport' => $trip_form_id ? get_post_meta($trip_form_id, 'departure_airport', true) : '',
+                    'start_date' => $trip_form_id ? get_post_meta($trip_form_id, 'start_date', true) : '',
+                    'end_date' => $trip_form_id ? get_post_meta($trip_form_id, 'end_date', true) : '',
+                    'max_people' => $trip_form_id ? get_post_meta($trip_form_id, 'max_people', true) : '',
+                    'price' => $trip_form_id ? get_post_meta($trip_form_id, 'price', true) : '',
+                    'assigned_guide' => $trip_form_id ? (int) get_post_meta($trip_form_id, 'assigned_guide', true) : 0,
+                    'whatsapp_link' => $trip_form_id ? get_post_meta($trip_form_id, 'whatsapp_link', true) : '',
+                    'zoom_link' => $trip_form_id ? get_post_meta($trip_form_id, 'zoom_link', true) : '',
+                    'internal_notes' => $trip_form_id ? alpenia_get_secure_meta($trip_form_id, 'internal_notes', true) : '',
+                ];
+                ?>
 
                 <div class="dashboard-top">
                     <div class="dashboard-brand">
@@ -762,8 +814,8 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1><?php echo esc_html(alpenia_travel_t("Neue Reise erstellen")); ?></h1>
-                            <p><?php echo esc_html(alpenia_travel_t('Erstelle hier eine neue Kultur- oder Pilgerreise.')); ?></p>
+                            <h1><?php echo esc_html($trip_form_is_edit ? alpenia_travel_t('Reise bearbeiten') : alpenia_travel_t("Neue Reise erstellen")); ?></h1>
+                            <p><?php echo esc_html($trip_form_is_edit ? alpenia_travel_t('Aktualisiere hier die Reisedaten.') : alpenia_travel_t('Erstelle hier eine neue Kultur- oder Pilgerreise.')); ?></p>
                         </div>
                     </div>
                     <div class="actions">
@@ -775,77 +827,80 @@ function alpenia_dashboard_shortcode() {
 
                 <div class="panel">
                     <form method="post" class="alpenia-form">
-                        <?php wp_nonce_field('alpenia_save_trip', 'alpenia_trip_nonce'); ?>
+                        <?php wp_nonce_field($trip_form_is_edit ? 'alpenia_edit_trip_' . $trip_form_id : 'alpenia_save_trip', 'alpenia_trip_nonce'); ?>
+                        <?php if ($trip_form_is_edit) : ?>
+                            <input type="hidden" name="trip_id" value="<?php echo esc_attr($trip_form_id); ?>">
+                        <?php endif; ?>
 
                         <div class="form-grid">
                             <div class="form-group full">
                                 <label for="trip_title"><?php echo esc_html(alpenia_travel_t('Reisetitel')); ?></label>
-                                <input type="text" id="trip_title" name="trip_title" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt – Umrah')); ?>" required>
+                                <input type="text" id="trip_title" name="trip_title" value="<?php echo esc_attr($trip_form_values['trip_title']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt – Umrah')); ?>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="trip_type"><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></label>
                                 <select id="trip_type" name="trip_type" required>
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
-                                    <option value="kultur"><?php echo esc_html(alpenia_travel_t('Kulturreise')); ?></option>
-                                    <option value="umrah">Umrah</option>
-                                    <option value="hajj">Hajj</option>
+                                    <option value="kultur" <?php selected($trip_form_values['trip_type'], 'kultur'); ?>><?php echo esc_html(alpenia_travel_t('Kulturreise')); ?></option>
+                                    <option value="umrah" <?php selected($trip_form_values['trip_type'], 'umrah'); ?>>Umrah</option>
+                                    <option value="hajj" <?php selected($trip_form_values['trip_type'], 'hajj'); ?>>Hajj</option>
                                 </select>
                             </div>
 
                             <div class="form-group">
                                 <label for="trip_status"><?php echo esc_html(alpenia_travel_t('Reisestatus')); ?></label>
                                 <select id="trip_status" name="trip_status" required>
-                                    <option value="draft"><?php echo esc_html(alpenia_travel_t('Entwurf')); ?></option>
-                                    <option value="open" selected><?php echo esc_html(alpenia_travel_t("Offen")); ?></option>
-                                    <option value="full"><?php echo esc_html(alpenia_travel_t('Voll')); ?></option>
-                                    <option value="closed"><?php echo esc_html(alpenia_travel_t('Abgeschlossen')); ?></option>
+                                    <option value="draft" <?php selected($trip_form_values['trip_status'], 'draft'); ?>><?php echo esc_html(alpenia_travel_t('Entwurf')); ?></option>
+                                    <option value="open" <?php selected($trip_form_values['trip_status'], 'open'); ?>><?php echo esc_html(alpenia_travel_t("Offen")); ?></option>
+                                    <option value="full" <?php selected($trip_form_values['trip_status'], 'full'); ?>><?php echo esc_html(alpenia_travel_t('Voll')); ?></option>
+                                    <option value="closed" <?php selected($trip_form_values['trip_status'], 'closed'); ?>><?php echo esc_html(alpenia_travel_t('Abgeschlossen')); ?></option>
                                 </select>
                             </div>
 
                             <div class="form-group">
                                 <label for="destination"><?php echo esc_html(alpenia_travel_t('Reiseziel')); ?></label>
-                                <input type="text" id="destination" name="destination" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Mekka & Medina')); ?>" required>
+                                <input type="text" id="destination" name="destination" value="<?php echo esc_attr($trip_form_values['destination']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Mekka & Medina')); ?>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="country"><?php echo esc_html(alpenia_travel_t('Land')); ?></label>
-                                <input type="text" id="country" name="country" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
+                                <input type="text" id="country" name="country" value="<?php echo esc_attr($trip_form_values['country']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="city"><?php echo esc_html(alpenia_travel_t('Stadt')); ?></label>
-                                <input type="text" id="city" name="city" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt')); ?>" required>
+                                <input type="text" id="city" name="city" value="<?php echo esc_attr($trip_form_values['city']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt')); ?>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="departure_city"><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></label>
-                                <input type="text" id="departure_city" name="departure_city" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Wien')); ?>">
+                                <input type="text" id="departure_city" name="departure_city" value="<?php echo esc_attr($trip_form_values['departure_city']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Wien')); ?>">
                             </div>
 
                             <div class="form-group">
                                 <label for="departure_airport"><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></label>
-                                <input type="text" id="departure_airport" name="departure_airport" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Vienna International Airport')); ?>">
+                                <input type="text" id="departure_airport" name="departure_airport" value="<?php echo esc_attr($trip_form_values['departure_airport']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Vienna International Airport')); ?>">
                             </div>
 
                             <div class="form-group">
                                 <label for="start_date"><?php echo esc_html(alpenia_travel_t('Startdatum')); ?></label>
-                                <input type="date" id="start_date" name="start_date" required>
+                                <input type="date" id="start_date" name="start_date" value="<?php echo esc_attr($trip_form_values['start_date']); ?>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="end_date"><?php echo esc_html(alpenia_travel_t('Enddatum')); ?></label>
-                                <input type="date" id="end_date" name="end_date" required>
+                                <input type="date" id="end_date" name="end_date" value="<?php echo esc_attr($trip_form_values['end_date']); ?>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="max_people"><?php echo esc_html(alpenia_travel_t('Max. Teilnehmer')); ?></label>
-                                <input type="number" id="max_people" name="max_people" min="1" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. 40')); ?>" required>
+                                <input type="number" id="max_people" name="max_people" min="1" value="<?php echo esc_attr($trip_form_values['max_people']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. 40')); ?>" required>
                             </div>
 
                             <div class="form-group">
                                 <label for="price"><?php echo esc_html(alpenia_travel_t('Standardpreis (€)')); ?></label>
-                                <input type="number" id="price" name="price" min="0" step="0.01" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. 1499')); ?>" required>
+                                <input type="number" id="price" name="price" min="0" step="0.01" value="<?php echo esc_attr($trip_form_values['price']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. 1499')); ?>" required>
                             </div>
 
                             <div class="form-group">
@@ -853,28 +908,28 @@ function alpenia_dashboard_shortcode() {
                                 <select id="assigned_guide" name="assigned_guide">
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <?php foreach ($guides as $guide) : ?>
-                                        <option value="<?php echo esc_attr($guide->ID); ?>"><?php echo esc_html($guide->display_name); ?></option>
+                                        <option value="<?php echo esc_attr($guide->ID); ?>" <?php selected($trip_form_values['assigned_guide'], $guide->ID); ?>><?php echo esc_html($guide->display_name); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
 
                             <div class="form-group full">
                                 <label for="whatsapp_link"><?php echo esc_html(alpenia_travel_t('WhatsApp Gruppenlink')); ?></label>
-                                <input type="url" id="whatsapp_link" name="whatsapp_link" placeholder="https://chat.whatsapp.com/...">
+                                <input type="url" id="whatsapp_link" name="whatsapp_link" value="<?php echo esc_attr($trip_form_values['whatsapp_link']); ?>" placeholder="https://chat.whatsapp.com/...">
                             </div>
 
                             <div class="form-group full">
                                 <label for="zoom_link"><?php echo esc_html(alpenia_travel_t('Zoom Meeting Link')); ?></label>
-                                <input type="url" id="zoom_link" name="zoom_link" placeholder="https://zoom.us/j/...">
+                                <input type="url" id="zoom_link" name="zoom_link" value="<?php echo esc_attr($trip_form_values['zoom_link']); ?>" placeholder="https://zoom.us/j/...">
                             </div>
 
                             <div class="form-group full">
                                 <label for="internal_notes"><?php echo esc_html(alpenia_travel_t('Interne Notizen')); ?></label>
-                                <input type="text" id="internal_notes" name="internal_notes" placeholder="<?php echo esc_attr(alpenia_travel_t('Interne Hinweise zur Reise')); ?>">
+                                <input type="text" id="internal_notes" name="internal_notes" value="<?php echo esc_attr($trip_form_values['internal_notes']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('Interne Hinweise zur Reise')); ?>">
                             </div>
                         </div>
 
-                        <button type="submit" name="save_trip" class="btn-primary"><?php echo esc_html(alpenia_travel_t("Reise speichern")); ?></button>
+                        <button type="submit" name="save_trip" class="btn-primary"><?php echo esc_html($trip_form_is_edit ? alpenia_travel_t('Änderungen speichern') : alpenia_travel_t("Reise speichern")); ?></button>
                     </form>
                 </div>
 
@@ -1430,6 +1485,9 @@ function alpenia_dashboard_shortcode() {
                     <div class="actions">
                         <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['export_trip_csv' => $view_trip_id])); ?>"><?php echo esc_html(alpenia_travel_t("CSV Export")); ?></a>
                         <a class="btn-primary" href="<?php echo esc_url(alpenia_dashboard_link(['print_trip' => $view_trip_id])); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t("PDF / Drucken")); ?></a>
+                        <?php if (alpenia_user_can_edit_trip($view_trip_id)) : ?>
+                            <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link(['edit_trip' => $view_trip_id])); ?>"><?php echo esc_html(alpenia_travel_t('Reise bearbeiten')); ?></a>
+                        <?php endif; ?>
                         <?php if (alpenia_user_can_delete_trip($view_trip_id)) : ?>
                             <a class="btn-secondary table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $view_trip_id, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Reise löschen')); ?></a>
                         <?php endif; ?>
@@ -1886,6 +1944,9 @@ function alpenia_dashboard_shortcode() {
                                     <div class="list-actions">
                                         <span class="badge"><?php echo count($trip_participants); ?> <?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></span>
                                         <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer ansehen')); ?></a>
+                                        <?php if (alpenia_user_can_edit_trip($trip->ID)) : ?>
+                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_trip' => $trip->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Bearbeiten')); ?></a>
+                                        <?php endif; ?>
                                         <?php if (alpenia_user_can_delete_trip($trip->ID)) : ?>
                                             <a class="table-btn table-btn-danger" href="<?php echo esc_url(alpenia_dashboard_link(['delete_trip' => $trip->ID, '_delete_trip_nonce' => $delete_trip_nonce])); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Reise wirklich löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></a>
                                         <?php endif; ?>

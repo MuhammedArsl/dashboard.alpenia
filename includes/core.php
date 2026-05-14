@@ -114,6 +114,15 @@ function alpenia_user_can_create_trip() {
         || alpenia_has_role('manager');
 }
 
+function alpenia_user_can_edit_trip($trip_id) {
+    if (!$trip_id) return false;
+
+    $trip = get_post($trip_id);
+    if (!$trip || $trip->post_type !== 'group_trip') return false;
+
+    return alpenia_user_can_create_trip() && alpenia_user_can_access_trip($trip_id);
+}
+
 function alpenia_user_can_delete_trip($trip_id) {
     if (!$trip_id) return false;
 
