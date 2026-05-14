@@ -412,3 +412,14 @@
     .alpenia-public-actions { align-items: stretch; flex-direction: column; }
     .alpenia-public-submit { width: 100%; }
 }
+
+body.alpenia-public-form-active h1.entry-title,
+body.alpenia-public-form-active .entry-header .entry-title,
+body.alpenia-public-form-active .wp-block-post-title,
+body.alpenia-public-form-active .page-title,
+body:has(.alpenia-public-form) h1.entry-title,
+body:has(.alpenia-public-form) .entry-header .entry-title,
+body:has(.alpenia-public-form) .wp-block-post-title,
+body:has(.alpenia-public-form) .page-title {
+    display: none;
+}
