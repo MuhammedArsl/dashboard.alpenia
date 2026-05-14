@@ -72,7 +72,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
     <div class="alpenia-public-form">
         <div class="alpenia-public-form__hero">
             <p class="alpenia-public-form__eyebrow"><?php echo esc_html(alpenia_travel_t('Alpenia Group Trips')); ?></p>
-            <h2><?php echo esc_html(alpenia_travel_t('Teilnehmerdaten übermitteln')); ?></h2>
+            <h2><?php echo esc_html(alpenia_travel_t('Anmeldeformular')); ?></h2>
             <p class="alpenia-public-intro"><?php echo esc_html(alpenia_travel_t('Bitte fülle deine persönlichen Daten vollständig aus. Deine Angaben werden sicher als Teilnehmerdatensatz gespeichert.')); ?></p>
         </div>
 
@@ -360,7 +360,14 @@ function alpenia_public_participant_get_form_fields() {
         'emergency_contact_phone',
     ];
 
-    $fields = array_intersect_key(alpenia_participant_field_definitions(), array_flip($allowed_keys));
+    $field_definitions = alpenia_participant_field_definitions();
+    $fields = [];
+
+    foreach ($allowed_keys as $key) {
+        if (isset($field_definitions[$key])) {
+            $fields[$key] = $field_definitions[$key];
+        }
+    }
 
     foreach (['street_address', 'postal_city', 'phone_number', 'email_address'] as $key) {
         if (isset($fields[$key])) {
@@ -410,6 +417,14 @@ function alpenia_public_participant_create($trip_id, $values) {
     }
 
     $requires_residence_permit = alpenia_nationality_requires_residence_permit($values['nationality'] ?? '');
+    if ($requires_residence_permit) {
+        foreach (alpenia_public_participant_get_residence_permit_field_keys() as $required_key) {
+            if (empty($values[$required_key])) {
+                return new WP_Error('missing_residence_permit_fields', alpenia_travel_t('Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.'));
+            }
+        }
+    }
+
     $upload_validation = alpenia_public_participant_validate_upload_requirements($requires_residence_permit);
     if (is_wp_error($upload_validation)) {
         return $upload_validation;
@@ -591,17 +606,17 @@ function alpenia_public_participant_render_upload_fields() {
             <p><?php echo esc_html(alpenia_travel_t('Bitte lade gut lesbare Dateien in den angegebenen Formaten hoch.')); ?></p>
         </div>
         <div class="alpenia-public-grid alpenia-public-grid--uploads">
-            <?php alpenia_public_participant_render_upload_field('passport_file', 'Reisepass hochladen', 'PDF, JPG oder PNG, maximal 5 MB.', '.pdf,.jpg,.jpeg,.png', true); ?>
-            <?php alpenia_public_participant_render_upload_field('photo_file', 'Porträtfoto hochladen', 'JPG, PNG oder WEBP, maximal 2 MB.', '.jpg,.jpeg,.png,.webp', true); ?>
+            <?php alpenia_public_participant_render_upload_field('passport_file', 'Reisepass hochladen', alpenia_upload_formats_label('passport_file') . ', maximal 5 MB.', true); ?>
+            <?php alpenia_public_participant_render_upload_field('photo_file', 'Porträtfoto hochladen', alpenia_upload_formats_label('photo_file') . ', maximal 2 MB.', true); ?>
             <div data-alpenia-residence-section hidden>
-                <?php alpenia_public_participant_render_upload_field('visa_photo_file', 'Aufenthaltstitel hochladen', 'JPG, PNG oder WEBP, maximal 2 MB.', '.jpg,.jpeg,.png,.webp', true, 'data-alpenia-residence-upload'); ?>
+                <?php alpenia_public_participant_render_upload_field('visa_photo_file', 'Aufenthaltstitel hochladen', alpenia_upload_formats_label('visa_photo_file') . ', maximal 2 MB.', true, 'data-alpenia-residence-upload'); ?>
             </div>
         </div>
     </section>
     <?php
 }
 
-function alpenia_public_participant_render_upload_field($name, $label, $hint, $accept, $required = false, $input_attrs = '') {
+function alpenia_public_participant_render_upload_field($name, $label, $hint, $required = false, $input_attrs = '') {
     $input_id = 'alpenia_public_' . $name;
     ?>
     <div class="alpenia-public-upload">
@@ -609,7 +624,7 @@ function alpenia_public_participant_render_upload_field($name, $label, $hint, $a
             <span><?php echo esc_html(alpenia_travel_t($label)); ?><?php if ($required) : ?> <span class="alpenia-public-required">*</span><?php endif; ?></span>
             <small><?php echo esc_html(alpenia_travel_t($hint)); ?></small>
         </label>
-        <input type="file" id="<?php echo esc_attr($input_id); ?>" name="<?php echo esc_attr($name); ?>" accept="<?php echo esc_attr($accept); ?>" <?php echo $required ? 'required' : ''; ?> <?php echo esc_attr($input_attrs); ?>>
+        <input type="file" id="<?php echo esc_attr($input_id); ?>" name="<?php echo esc_attr($name); ?>" accept="<?php echo esc_attr(alpenia_upload_accept_attribute($name)); ?>" <?php echo $required ? 'required' : ''; ?> <?php echo esc_attr($input_attrs); ?>>
     </div>
     <?php
 }

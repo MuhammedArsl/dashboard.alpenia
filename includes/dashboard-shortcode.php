@@ -1072,22 +1072,22 @@ function alpenia_dashboard_shortcode() {
 
                                     <div class="form-group">
                                         <label for="passport_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Reisepass hochladen')); ?> <span class="required-mark">*</span> <small>(max. 5 MB)</small></label>
-                                        <input type="file" id="passport_file_<?php echo $i; ?>" name="passport_file_<?php echo $i; ?>" accept=".pdf,.jpg,.jpeg,.png" required>
+                                        <input type="file" id="passport_file_<?php echo $i; ?>" name="passport_file_<?php echo $i; ?>" accept="<?php echo esc_attr(alpenia_upload_accept_attribute('passport_file')); ?>" required>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="photo_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Porträt Foto hochladen')); ?> <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
-                                        <input type="file" id="photo_file_<?php echo $i; ?>" name="photo_file_<?php echo $i; ?>" accept=".jpg,.jpeg,.png" required>
+                                        <input type="file" id="photo_file_<?php echo $i; ?>" name="photo_file_<?php echo $i; ?>" accept="<?php echo esc_attr(alpenia_upload_accept_attribute('photo_file')); ?>" required>
                                     </div>
 
                                     <div class="form-group full residence-field residence-field-<?php echo $i; ?>">
                                         <label for="visa_photo_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel hochladen')); ?> <span class="required-mark">*</span> <small>(max. 2 MB)</small></label>
-                                        <input type="file" id="visa_photo_file_<?php echo $i; ?>" name="visa_photo_file_<?php echo $i; ?>" accept=".jpg,.jpeg,.png,.pdf">
+                                        <input type="file" id="visa_photo_file_<?php echo $i; ?>" name="visa_photo_file_<?php echo $i; ?>" accept="<?php echo esc_attr(alpenia_upload_accept_attribute('visa_photo_file')); ?>">
                                     </div>
 
                                     <div class="form-group full">
                                         <label for="meldezettel_file_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Meldezettel hochladen')); ?> <small>(max. 5 MB)</small></label>
-                                        <input type="file" id="meldezettel_file_<?php echo $i; ?>" name="meldezettel_file_<?php echo $i; ?>" accept=".pdf,.jpg,.jpeg,.png">
+                                        <input type="file" id="meldezettel_file_<?php echo $i; ?>" name="meldezettel_file_<?php echo $i; ?>" accept="<?php echo esc_attr(alpenia_upload_accept_attribute('meldezettel_file')); ?>">
                                     </div>
 
 
@@ -1330,22 +1330,22 @@ function alpenia_dashboard_shortcode() {
 
                             <div class="form-group">
                                 <label for="passport_file"><?php echo esc_html(alpenia_travel_t('Neuen Reisepass hochladen')); ?> <small>(max. 5 MB)</small></label>
-                                <input type="file" id="passport_file" name="passport_file" accept=".pdf,.jpg,.jpeg,.png">
+                                <input type="file" id="passport_file" name="passport_file" accept="<?php echo esc_attr(alpenia_upload_accept_attribute('passport_file')); ?>">
                             </div>
 
                             <div class="form-group">
                                 <label for="photo_file"><?php echo esc_html(alpenia_travel_t('Neues Porträt Foto hochladen')); ?> <small>(max. 2 MB)</small></label>
-                                <input type="file" id="photo_file" name="photo_file" accept=".jpg,.jpeg,.png">
+                                <input type="file" id="photo_file" name="photo_file" accept="<?php echo esc_attr(alpenia_upload_accept_attribute('photo_file')); ?>">
                             </div>
 
                             <div class="form-group full edit-residence-field">
                                 <label for="visa_photo_file"><?php echo esc_html(alpenia_travel_t('Neuen Aufenthaltstitel hochladen')); ?> <small>(max. 2 MB)</small></label>
-                                <input type="file" id="visa_photo_file" name="visa_photo_file" accept=".jpg,.jpeg,.png,.pdf">
+                                <input type="file" id="visa_photo_file" name="visa_photo_file" accept="<?php echo esc_attr(alpenia_upload_accept_attribute('visa_photo_file')); ?>">
                             </div>
 
                             <div class="form-group full">
                                 <label for="meldezettel_file"><?php echo esc_html(alpenia_travel_t('Neuen Meldezettel hochladen')); ?> <small>(max. 5 MB)</small></label>
-                                <input type="file" id="meldezettel_file" name="meldezettel_file" accept=".pdf,.jpg,.jpeg,.png">
+                                <input type="file" id="meldezettel_file" name="meldezettel_file" accept="<?php echo esc_attr(alpenia_upload_accept_attribute('meldezettel_file')); ?>">
                             </div>
 
 

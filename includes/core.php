@@ -298,6 +298,7 @@ function alpenia_travel_t($text) {
     $lang = alpenia_travel_get_language();
     $translations = alpenia_travel_get_translations();
     $extra_tr = [
+        'Anmeldeformular' => 'Kayıt formu',
         'Fehlende Unterlagen im Überblick' => 'Eksik belgeler genel bakış',
         'Zum Dashboard' => 'Kontrol paneline git',
         'Ungültige Anmeldedaten.' => 'Geçersiz giriş bilgileri.',
