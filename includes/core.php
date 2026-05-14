@@ -418,6 +418,11 @@ function alpenia_travel_t($text) {
         'Dieser Anmeldelink ist ungültig oder die Reise ist nicht öffentlich anmeldbar.' => 'Bu kayıt bağlantısı geçersiz veya seyahat herkese açık kayda uygun değil.',
         'Teile ausschließlich diesen individuellen Anmeldelink mit Teilnehmern. Das öffentliche Formular ist ohne gültigen Link nicht zugänglich.' => 'Katılımcılarla yalnızca bu bireysel kayıt bağlantısını paylaşın. Herkese açık form geçerli bağlantı olmadan erişilebilir değildir.',
         'Individueller Anmeldelink' => 'Bireysel kayıt bağlantısı',
+        'Abflugstadt' => 'Kalkış şehri',
+        'Flughafen' => 'Havalimanı',
+        'Reisezeitraum' => 'Seyahat tarihleri',
+        'z. B. Wien' => 'örn. Viyana',
+        'z. B. Vienna International Airport' => 'örn. Viyana Uluslararası Havalimanı',
         'Formular öffnen' => 'Formu aç',
     ];
 
@@ -458,6 +463,20 @@ function alpenia_display_value($value) {
     return $value !== '' ? $value : '-';
 }
 
+function alpenia_format_date_display($date) {
+    $date = trim((string) $date);
+    if ($date === '') {
+        return '-';
+    }
+
+    $date_time = DateTime::createFromFormat('!Y-m-d', $date);
+    if ($date_time instanceof DateTime && $date_time->format('Y-m-d') === $date) {
+        return $date_time->format('d.m.Y');
+    }
+
+    return $date;
+}
+
 function alpenia_date_range_display($start, $end) {
     $start = trim((string) $start);
     $end = trim((string) $end);
@@ -466,20 +485,20 @@ function alpenia_date_range_display($start, $end) {
         return '-';
     }
 
-    return alpenia_display_value($start) . ' - ' . alpenia_display_value($end);
+    return alpenia_format_date_display($start) . ' - ' . alpenia_format_date_display($end);
 }
 
 function alpenia_travel_pdf_label($key) {
     $labels = [
-        'destination' => 'Destination',
-        'travel_dates' => 'Travel Dates',
-        'passport_number' => 'Passport number',
-        'passport_issue_date' => 'Passport issue date',
-        'passport_expiry_date' => 'Passport expiry date',
-        'visa_information' => 'Visa Information',
-        'visa_entry_country' => 'Visa entry country',
-        'visa_number' => 'Visa number',
-        'visa_expiry_date' => 'Visa expiry date',
+        'destination' => 'Reiseziel',
+        'travel_dates' => 'Reisezeitraum',
+        'passport_number' => 'Reisepassnummer',
+        'passport_issue_date' => 'Reisepass gültig von',
+        'passport_expiry_date' => 'Reisepass gültig bis',
+        'visa_information' => 'Visum-Informationen',
+        'visa_entry_country' => 'Visum-Einreiseland',
+        'visa_number' => 'Visum Nummer',
+        'visa_expiry_date' => 'Visum gültig bis',
     ];
 
     return $labels[$key] ?? alpenia_travel_t($key);

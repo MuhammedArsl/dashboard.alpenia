@@ -87,6 +87,8 @@ function alpenia_dashboard_shortcode() {
             $destination     = sanitize_text_field($_POST['destination'] ?? '');
             $country         = sanitize_text_field($_POST['country'] ?? '');
             $city            = sanitize_text_field($_POST['city'] ?? '');
+            $departure_city  = sanitize_text_field($_POST['departure_city'] ?? '');
+            $departure_airport = sanitize_text_field($_POST['departure_airport'] ?? '');
             $start_date      = sanitize_text_field($_POST['start_date'] ?? '');
             $end_date        = sanitize_text_field($_POST['end_date'] ?? '');
             $max_people      = (int) ($_POST['max_people'] ?? 0);
@@ -113,6 +115,8 @@ function alpenia_dashboard_shortcode() {
                     update_post_meta($trip_id, 'destination', $destination);
                     update_post_meta($trip_id, 'country', $country);
                     update_post_meta($trip_id, 'city', $city);
+                    update_post_meta($trip_id, 'departure_city', $departure_city);
+                    update_post_meta($trip_id, 'departure_airport', $departure_airport);
                     update_post_meta($trip_id, 'start_date', $start_date);
                     update_post_meta($trip_id, 'end_date', $end_date);
                     update_post_meta($trip_id, 'max_people', $max_people);
@@ -815,6 +819,16 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
+                                <label for="departure_city"><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></label>
+                                <input type="text" id="departure_city" name="departure_city" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Wien')); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="departure_airport"><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></label>
+                                <input type="text" id="departure_airport" name="departure_airport" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Vienna International Airport')); ?>">
+                            </div>
+
+                            <div class="form-group">
                                 <label for="start_date"><?php echo esc_html(alpenia_travel_t('Startdatum')); ?></label>
                                 <input type="date" id="start_date" name="start_date" required>
                             </div>
@@ -1432,6 +1446,8 @@ function alpenia_dashboard_shortcode() {
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'destination', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'country', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'city', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'departure_city', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'departure_airport', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Zeitraum')); ?></strong><span><?php echo esc_html(alpenia_date_range_display(get_post_meta($view_trip_id, 'start_date', true), get_post_meta($view_trip_id, 'end_date', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Freie Plätze')); ?></strong><span><?php echo esc_html(alpenia_get_trip_capacity_left($view_trip_id)); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?></strong><span><?php echo esc_html(alpenia_display_value($assigned_guide_name)); ?></span></div>
@@ -1519,11 +1535,11 @@ function alpenia_dashboard_shortcode() {
                                             <?php endif; ?>
                                             <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'nationality', true))); ?></td>
                                             <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_no', true))); ?></td>
-                                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true))); ?></td>
-                                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true))); ?></td>
+                                            <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true))); ?></td>
+                                            <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true))); ?></td>
                                             <?php if ($view_is_pilgrimage_trip) : ?>
                                                 <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'visa_number', true))); ?></td>
-                                                <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true))); ?></td>
+                                                <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true))); ?></td>
                                             <?php endif; ?>
                                             <td><?php echo esc_html(alpenia_travel_translate_label(get_post_meta($participant->ID, 'participant_status', true))); ?></td>
                                             <td>
@@ -1861,8 +1877,10 @@ function alpenia_dashboard_shortcode() {
                                         <span>
                                             <?php echo esc_html(alpenia_travel_t('Freie Plätze')); ?>: <?php echo esc_html(alpenia_get_trip_capacity_left($trip->ID)); ?>
                                             · <?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?>: <?php echo esc_html($guide_name); ?>
-                                            · <?php echo esc_html(alpenia_travel_t('Start')); ?>: <?php echo esc_html(get_post_meta($trip->ID, 'start_date', true)); ?>
-                                            · <?php echo esc_html(alpenia_travel_t('Ende')); ?>: <?php echo esc_html(get_post_meta($trip->ID, 'end_date', true)); ?>
+                                            · <?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?>: <?php echo esc_html(alpenia_display_value(get_post_meta($trip->ID, 'departure_city', true))); ?>
+                                            · <?php echo esc_html(alpenia_travel_t('Flughafen')); ?>: <?php echo esc_html(alpenia_display_value(get_post_meta($trip->ID, 'departure_airport', true))); ?>
+                                            · <?php echo esc_html(alpenia_travel_t('Start')); ?>: <?php echo esc_html(alpenia_format_date_display(get_post_meta($trip->ID, 'start_date', true))); ?>
+                                            · <?php echo esc_html(alpenia_travel_t('Ende')); ?>: <?php echo esc_html(alpenia_format_date_display(get_post_meta($trip->ID, 'end_date', true))); ?>
                                         </span>
                                     </div>
                                     <div class="list-actions">
