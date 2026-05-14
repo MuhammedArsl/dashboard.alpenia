@@ -31,6 +31,7 @@
 
         conditionalInputs.forEach(function (input) {
             input.disabled = !requiresResidencePermit;
+            input.required = requiresResidencePermit;
         });
 
         if (uploadInput) {
@@ -40,6 +41,11 @@
     }
 
     document.addEventListener('DOMContentLoaded', function () {
+        var publicForm = document.querySelector('.alpenia-public-form');
+        if (publicForm && document.body) {
+            document.body.classList.add('alpenia-public-form-active');
+        }
+
         var countryList = getEuSchengenCountries();
         document.querySelectorAll('.alpenia-public-form form').forEach(function (form) {
             var nationalityField = form.querySelector('[data-alpenia-nationality]');

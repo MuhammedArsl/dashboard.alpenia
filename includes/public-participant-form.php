@@ -72,7 +72,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
     <div class="alpenia-public-form">
         <div class="alpenia-public-form__hero">
             <p class="alpenia-public-form__eyebrow"><?php echo esc_html(alpenia_travel_t('Alpenia Group Trips')); ?></p>
-            <h2><?php echo esc_html(alpenia_travel_t('Teilnehmerdaten übermitteln')); ?></h2>
+            <h2><?php echo esc_html(alpenia_travel_t('Anmeldeformular')); ?></h2>
             <p class="alpenia-public-intro"><?php echo esc_html(alpenia_travel_t('Bitte fülle deine persönlichen Daten vollständig aus. Deine Angaben werden sicher als Teilnehmerdatensatz gespeichert.')); ?></p>
         </div>
 
@@ -360,7 +360,14 @@ function alpenia_public_participant_get_form_fields() {
         'emergency_contact_phone',
     ];
 
-    $fields = array_intersect_key(alpenia_participant_field_definitions(), array_flip($allowed_keys));
+    $field_definitions = alpenia_participant_field_definitions();
+    $fields = [];
+
+    foreach ($allowed_keys as $key) {
+        if (isset($field_definitions[$key])) {
+            $fields[$key] = $field_definitions[$key];
+        }
+    }
 
     foreach (['street_address', 'postal_city', 'phone_number', 'email_address'] as $key) {
         if (isset($fields[$key])) {
@@ -410,6 +417,14 @@ function alpenia_public_participant_create($trip_id, $values) {
     }
 
     $requires_residence_permit = alpenia_nationality_requires_residence_permit($values['nationality'] ?? '');
+    if ($requires_residence_permit) {
+        foreach (alpenia_public_participant_get_residence_permit_field_keys() as $required_key) {
+            if (empty($values[$required_key])) {
+                return new WP_Error('missing_residence_permit_fields', alpenia_travel_t('Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.'));
+            }
+        }
+    }
+
     $upload_validation = alpenia_public_participant_validate_upload_requirements($requires_residence_permit);
     if (is_wp_error($upload_validation)) {
         return $upload_validation;
