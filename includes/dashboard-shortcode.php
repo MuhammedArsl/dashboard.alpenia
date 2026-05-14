@@ -121,6 +121,7 @@ function alpenia_dashboard_shortcode() {
                     update_post_meta($trip_id, 'whatsapp_link', $whatsapp_link);
                     update_post_meta($trip_id, 'zoom_link', $zoom_link);
                     alpenia_update_secure_meta($trip_id, 'internal_notes', $internal_notes);
+                    alpenia_public_participant_get_trip_registration_token($trip_id, true);
 
                     alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
                     $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
@@ -1449,19 +1450,17 @@ function alpenia_dashboard_shortcode() {
 
                 <?php
                 $public_form_link = alpenia_public_participant_get_trip_form_url($view_trip_id);
-                $public_form_shortcode = alpenia_public_participant_get_trip_shortcode($view_trip_id);
                 ?>
                 <div class="panel" style="margin-top:20px;">
                     <h2><?php echo esc_html(alpenia_travel_t('Öffentliche Anmeldung')); ?></h2>
-                    <p><?php echo esc_html(alpenia_travel_t('Nutze diesen individuellen Link oder Shortcode, damit Teilnehmer sich direkt für diese Reise anmelden können.')); ?></p>
+                    <p><?php echo esc_html(alpenia_travel_t('Teile ausschließlich diesen individuellen Anmeldelink mit Teilnehmern. Das öffentliche Formular ist ohne gültigen Link nicht zugänglich.')); ?></p>
                     <div class="trip-meta-grid">
                         <div class="trip-meta-box">
-                            <strong><?php echo esc_html(alpenia_travel_t('Anmeldelink')); ?></strong>
-                            <span><a href="<?php echo esc_url($public_form_link); ?>" target="_blank" rel="noopener"><?php echo esc_html($public_form_link); ?></a></span>
-                        </div>
-                        <div class="trip-meta-box">
-                            <strong><?php echo esc_html(alpenia_travel_t('Shortcode')); ?></strong>
-                            <span><input type="text" readonly value="<?php echo esc_attr($public_form_shortcode); ?>" onclick="this.select();" style="width:100%;max-width:360px;"></span>
+                            <strong><?php echo esc_html(alpenia_travel_t('Individueller Anmeldelink')); ?></strong>
+                            <span>
+                                <input type="text" readonly value="<?php echo esc_attr($public_form_link); ?>" onclick="this.select();" style="width:100%;max-width:640px;">
+                                <a href="<?php echo esc_url($public_form_link); ?>" target="_blank" rel="noopener"><?php echo esc_html(alpenia_travel_t('Formular öffnen')); ?></a>
+                            </span>
                         </div>
                     </div>
                 </div>

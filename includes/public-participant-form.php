@@ -4,7 +4,9 @@ if (!defined('ABSPATH')) exit;
 /**
  * Public participant self-registration form.
  *
- * Usage: [alpenia_participant_form trip_id="123"] or append ?trip_id=123 to the public registration page.
+ * The shortcode stays registered for backwards compatibility, but renders the
+ * form only when a valid trip-specific token is supplied via the generated
+ * registration link.
  */
 function alpenia_public_participant_form_shortcode($atts = []) {
     if (!defined('DONOTCACHEPAGE')) {
@@ -20,18 +22,23 @@ function alpenia_public_participant_form_shortcode($atts = []) {
 
     $atts = shortcode_atts([
         'trip_id' => 0,
+        'trip_token' => '',
     ], $atts, 'alpenia_participant_form');
 
-    $fixed_trip_id = absint($atts['trip_id']);
-    $query_trip_id = isset($_GET['trip_id']) ? absint(wp_unslash($_GET['trip_id'])) : 0;
-    $selected_trip_id = $fixed_trip_id > 0 ? $fixed_trip_id : $query_trip_id;
+    $request_token = alpenia_public_participant_sanitize_registration_token($atts['trip_token']);
+    if ($request_token === '') {
+        $request_token = alpenia_public_participant_get_request_token();
+    }
+
+    $selected_trip_id = alpenia_public_participant_get_trip_id_by_token($request_token);
     $message = '';
     $values = [];
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alpenia_public_participant_submit'])) {
         $nonce = isset($_POST['alpenia_public_participant_nonce']) ? sanitize_text_field(wp_unslash($_POST['alpenia_public_participant_nonce'])) : '';
         $honeypot = isset($_POST['alpenia_company_website']) ? trim((string) wp_unslash($_POST['alpenia_company_website'])) : '';
-        $selected_trip_id = $fixed_trip_id > 0 ? $fixed_trip_id : absint($_POST['trip_id'] ?? 0);
+        $request_token = isset($_POST['trip_token']) ? alpenia_public_participant_sanitize_registration_token(wp_unslash($_POST['trip_token'])) : '';
+        $selected_trip_id = alpenia_public_participant_get_trip_id_by_token($request_token);
 
         $values = alpenia_public_participant_get_submitted_values();
 
@@ -39,7 +46,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
             $message = alpenia_public_participant_message('Sicherheitsfehler. Bitte erneut versuchen.', 'error');
         } elseif ($honeypot !== '') {
             $message = alpenia_public_participant_message('Das Formular konnte nicht gesendet werden.', 'error');
-        } elseif (!alpenia_public_participant_trip_is_available($selected_trip_id)) {
+        } elseif ($request_token === '' || !alpenia_public_participant_trip_is_available($selected_trip_id)) {
             $message = alpenia_public_participant_message('Dieser Anmeldelink ist ungültig oder die Reise ist nicht öffentlich anmeldbar.', 'error');
         } else {
             $result = alpenia_public_participant_create($selected_trip_id, $values);
@@ -66,7 +73,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
 
         <?php echo wp_kses_post($message); ?>
 
-        <?php if (!$selected_trip_id) : ?>
+        <?php if (!$selected_trip_id && $request_token === '') : ?>
             <?php echo wp_kses_post(alpenia_public_participant_message('Bitte verwenden Sie den individuellen Anmeldelink Ihrer Reise.', 'info')); ?>
         <?php elseif (!$trip_available) : ?>
             <?php echo wp_kses_post(alpenia_public_participant_message('Dieser Anmeldelink ist ungültig oder die Reise ist nicht öffentlich anmeldbar.', 'error')); ?>
@@ -79,7 +86,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
             <form method="post" enctype="multipart/form-data" novalidate>
                 <?php wp_nonce_field('alpenia_public_participant_form', 'alpenia_public_participant_nonce'); ?>
                 <input type="hidden" name="alpenia_public_participant_submit" value="1">
-                <input type="hidden" name="trip_id" value="<?php echo esc_attr($selected_trip_id); ?>">
+                <input type="hidden" name="trip_token" value="<?php echo esc_attr($request_token); ?>">
                 <div class="alpenia-public-hidden" aria-hidden="true">
                     <label for="alpenia_company_website">Website</label>
                     <input type="text" id="alpenia_company_website" name="alpenia_company_website" tabindex="-1" autocomplete="off">
@@ -99,6 +106,77 @@ function alpenia_public_participant_form_shortcode($atts = []) {
     return ob_get_clean();
 }
 add_shortcode('alpenia_participant_form', 'alpenia_public_participant_form_shortcode');
+
+function alpenia_public_participant_get_token_meta_key() {
+    return '_alpenia_registration_token';
+}
+
+function alpenia_public_participant_sanitize_registration_token($token) {
+    $token = sanitize_text_field((string) $token);
+    return preg_replace('/[^A-Za-z0-9]/', '', $token);
+}
+
+function alpenia_public_participant_get_request_token() {
+    if (!isset($_GET['trip_token'])) {
+        return '';
+    }
+
+    return alpenia_public_participant_sanitize_registration_token(wp_unslash($_GET['trip_token']));
+}
+
+function alpenia_public_participant_generate_registration_token() {
+    do {
+        $token = wp_generate_password(32, false, false);
+        $existing = get_posts([
+            'post_type' => 'group_trip',
+            'post_status' => 'any',
+            'numberposts' => 1,
+            'fields' => 'ids',
+            'meta_key' => alpenia_public_participant_get_token_meta_key(),
+            'meta_value' => $token,
+        ]);
+    } while (!empty($existing));
+
+    return $token;
+}
+
+function alpenia_public_participant_get_trip_registration_token($trip_id, $create_if_missing = false) {
+    $trip_id = absint($trip_id);
+    if (!$trip_id) {
+        return '';
+    }
+
+    $trip = get_post($trip_id);
+    if (!$trip || $trip->post_type !== 'group_trip') {
+        return '';
+    }
+
+    $token = alpenia_public_participant_sanitize_registration_token(get_post_meta($trip_id, alpenia_public_participant_get_token_meta_key(), true));
+    if ($token === '' && $create_if_missing) {
+        $token = alpenia_public_participant_generate_registration_token();
+        update_post_meta($trip_id, alpenia_public_participant_get_token_meta_key(), $token);
+    }
+
+    return $token;
+}
+
+function alpenia_public_participant_get_trip_id_by_token($token) {
+    $token = alpenia_public_participant_sanitize_registration_token($token);
+    if ($token === '') {
+        return 0;
+    }
+
+    $trip_ids = get_posts([
+        'post_type' => 'group_trip',
+        'post_status' => 'publish',
+        'numberposts' => 1,
+        'fields' => 'ids',
+        'meta_key' => alpenia_public_participant_get_token_meta_key(),
+        'meta_value' => $token,
+    ]);
+
+    return empty($trip_ids) ? 0 : (int) $trip_ids[0];
+}
 
 function alpenia_public_participant_message($text, $type = 'info') {
     $class = $type === 'success' ? 'alpenia-public-success' : ($type === 'error' ? 'alpenia-public-error' : 'alpenia-public-info');
@@ -441,9 +519,15 @@ function alpenia_public_participant_get_form_page_url() {
 }
 
 function alpenia_public_participant_get_trip_form_url($trip_id) {
-    return add_query_arg('trip_id', absint($trip_id), alpenia_public_participant_get_form_page_url());
+    $token = alpenia_public_participant_get_trip_registration_token($trip_id, true);
+
+    if ($token === '') {
+        return alpenia_public_participant_get_form_page_url();
+    }
+
+    return add_query_arg('trip_token', rawurlencode($token), alpenia_public_participant_get_form_page_url());
 }
 
 function alpenia_public_participant_get_trip_shortcode($trip_id) {
-    return '[alpenia_participant_form trip_id="' . absint($trip_id) . '"]';
+    return '[alpenia_participant_form]';
 }
