@@ -7,9 +7,11 @@
     --alpenia-public-muted: #5d746c;
     --alpenia-public-line: #dfe9e5;
     --alpenia-public-bg: #f6faf8;
+    --alpenia-public-shell-pad: clamp(18px, 4vw, 38px);
+    width: min(1080px, calc(100% - 28px));
     max-width: 1080px;
     margin: 32px auto;
-    padding: clamp(18px, 4vw, 38px);
+    padding: var(--alpenia-public-shell-pad);
     border: 1px solid rgba(23, 75, 61, .12);
     border-radius: 34px;
     background:
@@ -21,12 +23,14 @@
 }
 
 .alpenia-public-form * { box-sizing: border-box; }
+.alpenia-public-form,
+.alpenia-public-form * { overflow-wrap: anywhere; }
 .alpenia-public-form [hidden] { display: none !important; }
 
 .alpenia-public-form__hero {
     position: relative;
     overflow: hidden;
-    margin: calc(clamp(18px, 4vw, 38px) * -1) calc(clamp(18px, 4vw, 38px) * -1) 28px;
+    margin: calc(var(--alpenia-public-shell-pad) * -1) calc(var(--alpenia-public-shell-pad) * -1) 28px;
     padding: clamp(32px, 6vw, 58px);
     border-radius: 34px 34px 26px 26px;
     background:
@@ -406,12 +410,101 @@
 }
 
 @media (max-width: 720px) {
-    .alpenia-public-form { margin: 18px auto; border-radius: 24px; }
+    .alpenia-public-form {
+        --alpenia-public-shell-pad: 16px;
+        width: min(100% - 20px, 1080px);
+        margin: 12px auto;
+        border-radius: 22px;
+        box-shadow: 0 16px 42px rgba(16, 37, 31, .12);
+    }
+
+    .alpenia-public-form__hero {
+        margin-bottom: 16px;
+        padding: 28px 18px;
+        border-radius: 22px 22px 18px 18px;
+    }
+
+    .alpenia-public-form__hero::after {
+        right: -44px;
+        bottom: -70px;
+        width: 150px;
+        height: 150px;
+    }
+
+    .alpenia-public-form__eyebrow {
+        max-width: 100%;
+        white-space: normal;
+        font-size: .72rem;
+        line-height: 1.25;
+    }
+
+    .alpenia-public-form h2 { font-size: clamp(26px, 9vw, 34px); }
+    .alpenia-public-intro { font-size: .98rem; line-height: 1.5; }
+
+    .alpenia-public-trip-card,
+    .alpenia-public-section {
+        margin-top: 16px;
+        padding: 14px;
+        border-radius: 20px;
+    }
+
+    .alpenia-public-trip-card { gap: 12px; }
+
+    .alpenia-public-trip-card__content,
+    .alpenia-public-prep-card,
+    .alpenia-public-upload,
+    .alpenia-public-consent {
+        padding: 14px;
+        border-radius: 16px;
+    }
+
     .alpenia-public-grid,
-    .alpenia-public-trip-details { grid-template-columns: 1fr; }
-    .alpenia-public-actions { align-items: stretch; flex-direction: column; }
-    .alpenia-public-submit { width: 100%; }
+    .alpenia-public-trip-details { grid-template-columns: 1fr; gap: 13px; }
+
+    .alpenia-public-trip-details div {
+        min-height: auto;
+        padding: 13px;
+    }
+
+    .alpenia-public-field input,
+    .alpenia-public-field select {
+        min-height: 48px;
+        border-radius: 14px;
+        font-size: 16px;
+    }
+
+    .alpenia-public-consent {
+        grid-template-columns: 26px minmax(0, 1fr);
+        gap: 10px;
+    }
+
+    .alpenia-public-actions {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 14px;
+        border-radius: 18px;
+    }
+
+    .alpenia-public-submit { width: 100%; min-height: 52px; }
 }
+
+@media (max-width: 420px) {
+    .alpenia-public-form {
+        --alpenia-public-shell-pad: 12px;
+        width: calc(100% - 12px);
+        border-radius: 18px;
+    }
+
+    .alpenia-public-form__hero { padding: 24px 14px; }
+    .alpenia-public-trip-card h3 { font-size: clamp(21px, 8vw, 28px); }
+    .alpenia-public-section__header { margin-bottom: 14px; padding-bottom: 12px; }
+
+    .alpenia-public-upload input[type="file"]::file-selector-button {
+        width: 100%;
+        margin: 0 0 10px;
+    }
+}
+
 
 body.alpenia-public-form-active h1.entry-title,
 body.alpenia-public-form-active .entry-header .entry-title,
