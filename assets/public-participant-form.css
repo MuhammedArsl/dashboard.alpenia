@@ -258,15 +258,11 @@
     font-weight: 850;
 }
 
-.alpenia-public-form .alpenia-public-field input,
-.alpenia-public-form .alpenia-public-field select {
+.alpenia-public-field input,
+.alpenia-public-field select {
     display: block;
-    box-sizing: border-box;
-    inline-size: 100%;
     width: 100%;
-    max-inline-size: 100%;
     max-width: 100%;
-    min-inline-size: 0;
     min-width: 0;
     min-height: 50px;
     border: 1px solid #cddbd6;
@@ -279,7 +275,7 @@
     transition: border-color .18s ease, box-shadow .18s ease, background .18s ease, transform .18s ease;
 }
 
-.alpenia-public-form .alpenia-public-field select {
+.alpenia-public-field select {
     height: 50px;
     padding-right: 44px;
     overflow: hidden;
@@ -296,27 +292,6 @@
         calc(100% - 16px) calc(50% - 3px);
     background-size: 6px 6px, 6px 6px;
     background-repeat: no-repeat;
-}
-
-
-.alpenia-public-form .alpenia-public-field input[type="date"] {
-    inline-size: 100% !important;
-    width: 100% !important;
-    max-inline-size: 100% !important;
-    max-width: 100% !important;
-    min-inline-size: 0 !important;
-    min-width: 0 !important;
-    appearance: none;
-    -webkit-appearance: none;
-}
-
-.alpenia-public-form .alpenia-public-field input[type="date"]::-webkit-date-and-time-value {
-    min-height: 1.25em;
-    text-align: left;
-}
-
-.alpenia-public-form .alpenia-public-field input[type="date"]::-webkit-calendar-picker-indicator {
-    margin-left: auto;
 }
 
 .alpenia-public-field input:hover,
@@ -528,8 +503,8 @@
         padding: 13px;
     }
 
-    .alpenia-public-form .alpenia-public-field input,
-    .alpenia-public-form .alpenia-public-field select {
+    .alpenia-public-field input,
+    .alpenia-public-field select {
         min-height: 48px;
         border-radius: 14px;
         font-size: 16px;
@@ -547,7 +522,7 @@
         border-radius: 18px;
     }
 
-    .alpenia-public-form .alpenia-public-field select {
+    .alpenia-public-field select {
         height: 48px;
         padding-left: 13px;
         padding-right: 42px;
