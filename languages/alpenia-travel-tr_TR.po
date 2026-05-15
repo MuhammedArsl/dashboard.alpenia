@@ -300,3 +300,6 @@ msgstr "Lütfen geçerli bir telefon numarası girin."
 
 msgid "Lütfen geçerli bir dosya yükleyin."
 msgstr "Lütfen geçerli bir dosya yükleyin."
+
+msgid "Info anzeigen"
+msgstr "Bilgileri göster"
