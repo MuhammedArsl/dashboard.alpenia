@@ -866,6 +866,35 @@ function alpenia_dashboard_shortcode() {
     $missing_docs_items = [];
     $open_payments_items = [];
     $overview_item_limit = 6;
+    $business_revenue_total = 0.0;
+    $business_revenue_paid = 0.0;
+    $business_revenue_open = 0.0;
+    $participants_in_review = 0;
+    $total_capacity = 0;
+    $occupied_capacity = 0;
+    $trip_growth_stats = [];
+
+    foreach ($all_trips as $trip_item) {
+        $max_people = (int) get_post_meta($trip_item->ID, 'max_people', true);
+        $trip_growth_stats[$trip_item->ID] = [
+            'trip_id' => $trip_item->ID,
+            'title' => $trip_item->post_title,
+            'status' => get_post_meta($trip_item->ID, 'trip_status', true),
+            'participants' => 0,
+            'capacity' => max(0, $max_people),
+            'revenue_total' => 0.0,
+            'revenue_paid' => 0.0,
+            'revenue_open' => 0.0,
+            'missing_docs' => 0,
+            'open_payments' => 0,
+            'in_review' => 0,
+            'occupancy' => 0,
+        ];
+
+        if ($max_people > 0) {
+            $total_capacity += $max_people;
+        }
+    }
 
     foreach ($participants as $participant) {
         $participant_id = $participant->ID;
@@ -873,11 +902,35 @@ function alpenia_dashboard_shortcode() {
 
         if (!$trip_id || !alpenia_user_can_access_trip($trip_id)) continue;
 
-        $score = alpenia_get_participant_doc_score($participant_id);
+        $payment_total = (float) get_post_meta($participant_id, 'payment_total', true);
+        $payment_paid = (float) get_post_meta($participant_id, 'payment_paid', true);
         $payment_open = alpenia_get_participant_payment_open($participant_id);
+        $participant_status = sanitize_key((string) get_post_meta($participant_id, 'participant_status', true));
+        $score = alpenia_get_participant_doc_score($participant_id);
+
+        $business_revenue_total += $payment_total;
+        $business_revenue_paid += $payment_paid;
+        $business_revenue_open += $payment_open;
+
+        if ($participant_status === 'in_pruefung') {
+            $participants_in_review++;
+        }
+
+        if (isset($trip_growth_stats[$trip_id])) {
+            $trip_growth_stats[$trip_id]['participants']++;
+            $trip_growth_stats[$trip_id]['revenue_total'] += $payment_total;
+            $trip_growth_stats[$trip_id]['revenue_paid'] += $payment_paid;
+            $trip_growth_stats[$trip_id]['revenue_open'] += $payment_open;
+            if ($participant_status === 'in_pruefung') {
+                $trip_growth_stats[$trip_id]['in_review']++;
+            }
+        }
 
         if ($score !== 'complete') {
             $missing_docs_count++;
+            if (isset($trip_growth_stats[$trip_id])) {
+                $trip_growth_stats[$trip_id]['missing_docs']++;
+            }
             if (count($missing_docs_items) < $overview_item_limit) {
                 $missing_docs_items[] = [
                     'trip_id' => $trip_id,
@@ -894,6 +947,9 @@ function alpenia_dashboard_shortcode() {
 
         if ($payment_open > 0) {
             $open_payments_count++;
+            if (isset($trip_growth_stats[$trip_id])) {
+                $trip_growth_stats[$trip_id]['open_payments']++;
+            }
             if (count($open_payments_items) < $overview_item_limit) {
                 $open_payments_items[] = [
                     'trip_id' => $trip_id,
@@ -909,6 +965,33 @@ function alpenia_dashboard_shortcode() {
             }
         }
     }
+
+    foreach ($trip_growth_stats as $trip_id => $stats) {
+        if ($stats['capacity'] > 0) {
+            $trip_growth_stats[$trip_id]['occupancy'] = min(100, (int) round(($stats['participants'] / $stats['capacity']) * 100));
+            $occupied_capacity += min($stats['participants'], $stats['capacity']);
+        }
+    }
+
+    $average_occupancy = $total_capacity > 0 ? (int) round(($occupied_capacity / $total_capacity) * 100) : 0;
+    $action_required_trips = array_values(array_filter($trip_growth_stats, function($stats) {
+        $has_low_occupancy = $stats['capacity'] > 0 && $stats['occupancy'] < 50 && $stats['status'] === 'open';
+        return $stats['missing_docs'] > 0 || $stats['open_payments'] > 0 || $stats['in_review'] > 0 || $has_low_occupancy;
+    }));
+
+    usort($action_required_trips, function($a, $b) {
+        $score_a = ($a['open_payments'] * 3) + ($a['missing_docs'] * 2) + $a['in_review'];
+        $score_b = ($b['open_payments'] * 3) + ($b['missing_docs'] * 2) + $b['in_review'];
+        return $score_b <=> $score_a;
+    });
+
+    $top_revenue_trips = array_values(array_filter($trip_growth_stats, function($stats) {
+        return $stats['revenue_total'] > 0;
+    }));
+    usort($top_revenue_trips, function($a, $b) {
+        return $b['revenue_total'] <=> $a['revenue_total'];
+    });
+    $top_revenue_trips = array_slice($top_revenue_trips, 0, 3);
 
     $latest_participants = array_slice($participants, 0, 5);
 
@@ -2129,6 +2212,86 @@ function alpenia_dashboard_shortcode() {
                     </div>
                 </div>
 
+                <section class="growth-overview" aria-label="<?php echo esc_attr(alpenia_travel_t('Firmenwachstum Übersicht')); ?>">
+                    <div class="growth-overview__header">
+                        <div>
+                            <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Firmenwachstum')); ?></span>
+                            <h2><?php echo esc_html(alpenia_travel_t('Wachstums-Kompass')); ?></h2>
+                            <p><?php echo esc_html(alpenia_travel_t('Finanzen, Auslastung und operative Engpässe auf einen Blick.')); ?></p>
+                        </div>
+                        <a class="btn-secondary" href="<?php echo esc_url(alpenia_dashboard_link(['trip_status_filter' => 'open'])); ?>"><?php echo esc_html(alpenia_travel_t('Offene Reisen prüfen')); ?></a>
+                    </div>
+
+                    <div class="growth-kpi-grid">
+                        <article class="growth-kpi">
+                            <span><?php echo esc_html(alpenia_travel_t('Geplanter Umsatz')); ?></span>
+                            <strong>€ <?php echo esc_html(number_format($business_revenue_total, 2, ',', '.')); ?></strong>
+                            <small><?php echo esc_html(sprintf(alpenia_travel_t('%d Teilnehmer erfasst'), $total_participants)); ?></small>
+                        </article>
+                        <article class="growth-kpi growth-kpi--positive">
+                            <span><?php echo esc_html(alpenia_travel_t('Bereits bezahlt')); ?></span>
+                            <strong>€ <?php echo esc_html(number_format($business_revenue_paid, 2, ',', '.')); ?></strong>
+                            <small><?php echo esc_html(alpenia_travel_t('Liquidität aus Teilnehmerzahlungen')); ?></small>
+                        </article>
+                        <article class="growth-kpi growth-kpi--warning">
+                            <span><?php echo esc_html(alpenia_travel_t('Noch offen')); ?></span>
+                            <strong>€ <?php echo esc_html(number_format($business_revenue_open, 2, ',', '.')); ?></strong>
+                            <small><?php echo esc_html(sprintf(alpenia_travel_t('%d offene Zahlungen'), $open_payments_count)); ?></small>
+                        </article>
+                        <article class="growth-kpi">
+                            <span><?php echo esc_html(alpenia_travel_t('Durchschnittliche Auslastung')); ?></span>
+                            <strong><?php echo esc_html($average_occupancy); ?>%</strong>
+                            <small><?php echo esc_html(sprintf(alpenia_travel_t('%1$d von %2$d Plätzen belegt'), $occupied_capacity, $total_capacity)); ?></small>
+                        </article>
+                        <article class="growth-kpi growth-kpi--danger">
+                            <span><?php echo esc_html(alpenia_travel_t('Reisen mit Handlungsbedarf')); ?></span>
+                            <strong><?php echo esc_html(count($action_required_trips)); ?></strong>
+                            <small><?php echo esc_html(alpenia_travel_t('Zahlung, Unterlagen oder Prüfung offen')); ?></small>
+                        </article>
+                        <article class="growth-kpi">
+                            <span><?php echo esc_html(alpenia_travel_t('Teilnehmer in Prüfung')); ?></span>
+                            <strong><?php echo esc_html($participants_in_review); ?></strong>
+                            <small><?php echo esc_html(alpenia_travel_t('Backoffice-Pipeline')); ?></small>
+                        </article>
+                    </div>
+
+                    <div class="growth-insight-grid">
+                        <div class="growth-insight">
+                            <h3><?php echo esc_html(alpenia_travel_t('Top-Reisen nach Umsatz')); ?></h3>
+                            <?php if (!empty($top_revenue_trips)) : ?>
+                                <ol class="growth-rank-list">
+                                    <?php foreach ($top_revenue_trips as $stats) : ?>
+                                        <li>
+                                            <a href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $stats['trip_id']])); ?>"><?php echo esc_html($stats['title']); ?></a>
+                                            <span>€ <?php echo esc_html(number_format($stats['revenue_total'], 2, ',', '.')); ?> · <?php echo esc_html($stats['participants']); ?> <?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ol>
+                            <?php else : ?>
+                                <p><?php echo esc_html(alpenia_travel_t('Noch keine Umsatzdaten vorhanden.')); ?></p>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="growth-insight">
+                            <h3><?php echo esc_html(alpenia_travel_t('Nächste Wachstumsaktionen')); ?></h3>
+                            <?php if (!empty($action_required_trips)) : ?>
+                                <ul class="growth-action-list">
+                                    <?php foreach (array_slice($action_required_trips, 0, 4) as $stats) : ?>
+                                        <li>
+                                            <a href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $stats['trip_id']])); ?>"><?php echo esc_html($stats['title']); ?></a>
+                                            <span>
+                                                <?php echo esc_html(sprintf(alpenia_travel_t('%1$d Zahlungen · %2$d Unterlagen · %3$d in Prüfung'), $stats['open_payments'], $stats['missing_docs'], $stats['in_review'])); ?>
+                                            </span>
+                                        </li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            <?php else : ?>
+                                <p><?php echo esc_html(alpenia_travel_t('Aktuell keine kritischen Engpässe.')); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </section>
+
                 <div class="panel">
                     <h2><?php echo esc_html(alpenia_travel_t('Reisen mit Teilnehmerliste')); ?></h2>
 
@@ -2833,6 +2996,174 @@ function alpenia_dashboard_shortcode() {
             font-weight: 700;
             color: #ffffff !important;
             opacity: 1 !important;
+        }
+
+        .growth-overview {
+            position: relative;
+            overflow: hidden;
+            margin: 0 0 30px;
+            padding: 24px;
+            border: 1px solid rgba(217, 154, 43, 0.25);
+            border-radius: 26px;
+            background:
+                linear-gradient(145deg, rgba(255, 255, 255, 0.97), rgba(246, 251, 248, 0.98)),
+                radial-gradient(circle at top right, rgba(217, 154, 43, 0.22), transparent 34%);
+            box-shadow: 0 22px 55px rgba(10, 37, 30, 0.16);
+        }
+
+        .growth-overview::before {
+            content: "";
+            position: absolute;
+            inset: auto -80px -120px auto;
+            width: 260px;
+            height: 260px;
+            border-radius: 50%;
+            background: rgba(47, 125, 99, 0.13);
+            pointer-events: none;
+        }
+
+        .growth-overview__header {
+            position: relative;
+            z-index: 1;
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .growth-overview__header h2 {
+            margin: 0;
+            color: #0b3329;
+            font-size: clamp(26px, 3vw, 38px);
+            font-weight: 900;
+            line-height: 1.08;
+        }
+
+        .growth-overview__header p {
+            max-width: 620px;
+            margin: 8px 0 0;
+            color: #466357;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .growth-kpi-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 18px;
+        }
+
+        .growth-kpi {
+            display: grid;
+            gap: 8px;
+            min-width: 0;
+            padding: 18px;
+            border: 1px solid rgba(47, 125, 99, 0.14);
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            box-shadow: 0 12px 30px rgba(16, 37, 31, 0.07);
+        }
+
+        .growth-kpi span {
+            color: #617a70;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .growth-kpi strong {
+            color: #123f34;
+            font-size: clamp(26px, 3vw, 36px);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .growth-kpi small {
+            color: #466357;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .growth-kpi--positive {
+            border-color: rgba(47, 125, 99, 0.24);
+            background: #effaf5;
+        }
+
+        .growth-kpi--warning {
+            border-color: rgba(217, 154, 43, 0.3);
+            background: #fff8ea;
+        }
+
+        .growth-kpi--danger {
+            border-color: rgba(176, 62, 62, 0.2);
+            background: #fff3f1;
+        }
+
+        .growth-insight-grid {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .growth-insight {
+            min-width: 0;
+            padding: 18px;
+            border: 1px solid rgba(47, 125, 99, 0.14);
+            border-radius: 20px;
+            background: rgba(246, 252, 249, 0.9);
+        }
+
+        .growth-insight h3 {
+            margin: 0 0 12px;
+            color: #123f34;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .growth-insight p {
+            margin: 0;
+            color: #466357;
+            font-weight: 800;
+        }
+
+        .growth-rank-list,
+        .growth-action-list {
+            display: grid;
+            gap: 10px;
+            margin: 0;
+            padding-left: 20px;
+        }
+
+        .growth-action-list {
+            padding-left: 0;
+            list-style: none;
+        }
+
+        .growth-rank-list li,
+        .growth-action-list li {
+            display: grid;
+            gap: 4px;
+            color: #466357;
+            font-weight: 800;
+        }
+
+        .growth-rank-list a,
+        .growth-action-list a {
+            color: #123f34;
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+        .growth-rank-list a:hover,
+        .growth-action-list a:hover {
+            text-decoration: underline;
         }
 
         .panel {
@@ -3832,6 +4163,8 @@ function alpenia_dashboard_shortcode() {
             .dashboard-sidebar__nav { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .overview-card-grid { grid-template-columns: 1fr; }
             .overview-card--participants { grid-column: auto; }
+            .growth-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .growth-insight-grid { grid-template-columns: 1fr; }
             .cards { grid-template-columns: repeat(2, minmax(0,1fr)); }
             .trip-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
@@ -3849,6 +4182,10 @@ function alpenia_dashboard_shortcode() {
             .dashboard-sidebar__header { border-radius: 18px; }
             .overview-card-grid { gap: 14px; margin-top: 14px; }
             .overview-card { padding: 16px; border-radius: 20px; }
+            .growth-overview { padding: 16px; border-radius: 20px; }
+            .growth-overview__header { flex-direction: column; }
+            .growth-kpi-grid { grid-template-columns: 1fr; }
+            .growth-insight-grid { grid-template-columns: 1fr; }
             .overview-card__header { align-items: center; }
             .overview-list-card { grid-template-columns: 1fr; border-radius: 16px; }
             .overview-list-card__actions { justify-content: stretch; }
