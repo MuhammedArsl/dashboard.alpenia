@@ -1170,6 +1170,61 @@ function alpenia_dashboard_shortcode() {
     $growth_revenue_delta = $growth_previous_month_revenue > 0 ? (int) round((($growth_current_month_revenue - $growth_previous_month_revenue) / $growth_previous_month_revenue) * 100) : ($growth_current_month_revenue > 0 ? 100 : 0);
     $growth_top_type_label = !empty($growth_type_breakdown) ? $growth_type_breakdown[0]['label'] : '-';
     $growth_top_location_label = !empty($growth_location_breakdown) ? $growth_location_breakdown[0]['label'] : '-';
+    }
+
+    $average_occupancy = $total_capacity > 0 ? (int) round(($occupied_capacity / $total_capacity) * 100) : 0;
+    $action_required_trips = array_values(array_filter($trip_growth_stats, function($stats) {
+        $has_low_occupancy = $stats['capacity'] > 0 && $stats['occupancy'] < 50 && $stats['status'] === 'open';
+        return $stats['missing_docs'] > 0 || $stats['open_payments'] > 0 || $stats['in_review'] > 0 || $has_low_occupancy;
+    }));
+
+    usort($action_required_trips, function($a, $b) {
+        $score_a = ($a['open_payments'] * 3) + ($a['missing_docs'] * 2) + $a['in_review'];
+        $score_b = ($b['open_payments'] * 3) + ($b['missing_docs'] * 2) + $b['in_review'];
+        return $score_b <=> $score_a;
+    });
+
+    $top_revenue_trips = array_values(array_filter($trip_growth_stats, function($stats) {
+        return $stats['revenue_total'] > 0;
+    }));
+    usort($top_revenue_trips, function($a, $b) {
+        return $b['revenue_total'] <=> $a['revenue_total'];
+    });
+    $top_revenue_trips = array_slice($top_revenue_trips, 0, 3);
+
+    usort($priority_payment_items, function($a, $b) {
+        return $b['payment_open'] <=> $a['payment_open'];
+    });
+    $priority_payment_items = array_slice($priority_payment_items, 0, 6);
+
+    $finance_trip_summaries = array_values(array_filter($trip_growth_stats, function($stats) {
+        return $stats['revenue_total'] > 0 || $stats['revenue_open'] > 0;
+    }));
+    usort($finance_trip_summaries, function($a, $b) {
+        return $b['revenue_open'] <=> $a['revenue_open'];
+    });
+    $finance_trip_summaries = array_slice($finance_trip_summaries, 0, 5);
+    $payment_collection_rate = $business_revenue_total > 0 ? min(100, (int) round(($business_revenue_paid / $business_revenue_total) * 100)) : 0;
+    $payment_open_rate = $business_revenue_total > 0 ? max(0, 100 - $payment_collection_rate) : 0;
+
+    arsort($missing_docs_by_type);
+    $operation_doc_bottlenecks = array_slice($missing_docs_by_type, 0, 6, true);
+
+    $operation_trip_summaries = array_values(array_filter($trip_growth_stats, function($stats) {
+        return $stats['missing_docs'] > 0 || $stats['open_payments'] > 0 || $stats['in_review'] > 0 || $stats['new_participants'] > 0;
+    }));
+    usort($operation_trip_summaries, function($a, $b) {
+        $score_a = ($a['missing_docs'] * 3) + ($a['open_payments'] * 2) + $a['in_review'] + $a['new_participants'];
+        $score_b = ($b['missing_docs'] * 3) + ($b['open_payments'] * 2) + $b['in_review'] + $b['new_participants'];
+        return $score_b <=> $score_a;
+    });
+    $operation_trip_summaries = array_slice($operation_trip_summaries, 0, 5);
+
+    usort($operations_task_items, function($a, $b) {
+        return $b['priority'] <=> $a['priority'];
+    });
+    $operations_task_items = array_slice($operations_task_items, 0, 6);
+    $operations_open_work_count = $missing_docs_count + $open_payments_count + $participant_status_counts['neu'] + $participant_status_counts['in_pruefung'];
 
     $latest_participants = array_slice($participants, 0, 5);
 
