@@ -865,6 +865,7 @@ function alpenia_dashboard_shortcode() {
     $open_payments_count = 0;
     $missing_docs_items = [];
     $open_payments_items = [];
+    $priority_payment_items = [];
     $overview_item_limit = 6;
     $business_revenue_total = 0.0;
     $business_revenue_paid = 0.0;
@@ -950,18 +951,20 @@ function alpenia_dashboard_shortcode() {
             if (isset($trip_growth_stats[$trip_id])) {
                 $trip_growth_stats[$trip_id]['open_payments']++;
             }
+            $payment_item = [
+                'trip_id' => $trip_id,
+                'trip_title' => get_the_title($trip_id),
+                'participant_name' => trim(
+                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
+                    alpenia_get_secure_meta($participant_id, 'last_name', true)
+                ),
+                'payment_open' => $payment_open,
+                'payment_status' => alpenia_get_payment_status($participant_id),
+                'participant_id' => $participant_id,
+            ];
+            $priority_payment_items[] = $payment_item;
             if (count($open_payments_items) < $overview_item_limit) {
-                $open_payments_items[] = [
-                    'trip_id' => $trip_id,
-                    'trip_title' => get_the_title($trip_id),
-                    'participant_name' => trim(
-                        alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                        alpenia_get_secure_meta($participant_id, 'last_name', true)
-                    ),
-                    'payment_open' => $payment_open,
-                    'payment_status' => alpenia_get_payment_status($participant_id),
-                    'participant_id' => $participant_id,
-                ];
+                $open_payments_items[] = $payment_item;
             }
         }
     }
@@ -992,6 +995,21 @@ function alpenia_dashboard_shortcode() {
         return $b['revenue_total'] <=> $a['revenue_total'];
     });
     $top_revenue_trips = array_slice($top_revenue_trips, 0, 3);
+
+    usort($priority_payment_items, function($a, $b) {
+        return $b['payment_open'] <=> $a['payment_open'];
+    });
+    $priority_payment_items = array_slice($priority_payment_items, 0, 6);
+
+    $finance_trip_summaries = array_values(array_filter($trip_growth_stats, function($stats) {
+        return $stats['revenue_total'] > 0 || $stats['revenue_open'] > 0;
+    }));
+    usort($finance_trip_summaries, function($a, $b) {
+        return $b['revenue_open'] <=> $a['revenue_open'];
+    });
+    $finance_trip_summaries = array_slice($finance_trip_summaries, 0, 5);
+    $payment_collection_rate = $business_revenue_total > 0 ? min(100, (int) round(($business_revenue_paid / $business_revenue_total) * 100)) : 0;
+    $payment_open_rate = $business_revenue_total > 0 ? max(0, 100 - $payment_collection_rate) : 0;
 
     $latest_participants = array_slice($participants, 0, 5);
 
@@ -2292,6 +2310,90 @@ function alpenia_dashboard_shortcode() {
                     </div>
                 </section>
 
+                <section class="finance-overview" aria-label="<?php echo esc_attr(alpenia_travel_t('Finanz- und Zahlungsübersicht')); ?>">
+                    <div class="finance-overview__header">
+                        <div>
+                            <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Finanzen')); ?></span>
+                            <h2><?php echo esc_html(alpenia_travel_t('Finanz- und Zahlungsübersicht')); ?></h2>
+                            <p><?php echo esc_html(alpenia_travel_t('Zahlungsquote, offene Beträge und priorisierte Zahlungsvorgänge für schnelleres Forderungsmanagement.')); ?></p>
+                        </div>
+                        <div class="finance-rate" aria-label="<?php echo esc_attr(alpenia_travel_t('Zahlungsquote')); ?>">
+                            <strong><?php echo esc_html($payment_collection_rate); ?>%</strong>
+                            <span><?php echo esc_html(alpenia_travel_t('eingezogen')); ?></span>
+                        </div>
+                    </div>
+
+                    <div class="finance-summary-grid">
+                        <article class="finance-summary-card">
+                            <span><?php echo esc_html(alpenia_travel_t('Gesamtforderung')); ?></span>
+                            <strong>€ <?php echo esc_html(number_format($business_revenue_total, 2, ',', '.')); ?></strong>
+                        </article>
+                        <article class="finance-summary-card finance-summary-card--paid">
+                            <span><?php echo esc_html(alpenia_travel_t('Eingezogen')); ?></span>
+                            <strong>€ <?php echo esc_html(number_format($business_revenue_paid, 2, ',', '.')); ?></strong>
+                        </article>
+                        <article class="finance-summary-card finance-summary-card--open">
+                            <span><?php echo esc_html(alpenia_travel_t('Offen')); ?></span>
+                            <strong>€ <?php echo esc_html(number_format($business_revenue_open, 2, ',', '.')); ?></strong>
+                        </article>
+                        <article class="finance-summary-card">
+                            <span><?php echo esc_html(alpenia_travel_t('Offene Quote')); ?></span>
+                            <strong><?php echo esc_html($payment_open_rate); ?>%</strong>
+                        </article>
+                    </div>
+
+                    <div class="finance-progress">
+                        <span style="width: <?php echo esc_attr($payment_collection_rate); ?>%;"></span>
+                    </div>
+
+                    <div class="finance-detail-grid">
+                        <div class="finance-detail-card">
+                            <h3><?php echo esc_html(alpenia_travel_t('Offene Beträge pro Reise')); ?></h3>
+                            <?php if (!empty($finance_trip_summaries)) : ?>
+                                <div class="finance-trip-list">
+                                    <?php foreach ($finance_trip_summaries as $stats) :
+                                        $trip_collection_rate = $stats['revenue_total'] > 0 ? min(100, (int) round(($stats['revenue_paid'] / $stats['revenue_total']) * 100)) : 0;
+                                        $status_class = $stats['revenue_open'] <= 0 ? 'is-paid' : ($trip_collection_rate >= 70 ? 'is-watch' : 'is-risk');
+                                    ?>
+                                        <article class="finance-trip-row <?php echo esc_attr($status_class); ?>">
+                                            <div class="finance-trip-row__main">
+                                                <a href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $stats['trip_id'], 'participant_payment_filter' => 'open'])); ?>"><?php echo esc_html($stats['title']); ?></a>
+                                                <span><?php echo esc_html(sprintf(alpenia_travel_t('%1$d Teilnehmer · %2$d offene Zahlungen'), $stats['participants'], $stats['open_payments'])); ?></span>
+                                            </div>
+                                            <div class="finance-trip-row__amount">
+                                                <strong>€ <?php echo esc_html(number_format($stats['revenue_open'], 2, ',', '.')); ?></strong>
+                                                <span><?php echo esc_html($trip_collection_rate); ?>% <?php echo esc_html(alpenia_travel_t('bezahlt')); ?></span>
+                                            </div>
+                                            <div class="finance-mini-progress"><span style="width: <?php echo esc_attr($trip_collection_rate); ?>%;"></span></div>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else : ?>
+                                <p><?php echo esc_html(alpenia_travel_t('Noch keine Zahlungsdaten pro Reise vorhanden.')); ?></p>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="finance-detail-card">
+                            <h3><?php echo esc_html(alpenia_travel_t('Priorisierte offene Zahlungen')); ?></h3>
+                            <?php if (!empty($priority_payment_items)) : ?>
+                                <div class="finance-priority-list">
+                                    <?php foreach ($priority_payment_items as $item) : ?>
+                                        <article class="finance-priority-item">
+                                            <div>
+                                                <span><?php echo esc_html($item['trip_title']); ?></span>
+                                                <a href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html($item['participant_name']); ?></a>
+                                            </div>
+                                            <strong>€ <?php echo esc_html(number_format($item['payment_open'], 2, ',', '.')); ?></strong>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else : ?>
+                                <p><?php echo esc_html(alpenia_travel_t('Aktuell sind keine offenen Zahlungen priorisiert.')); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </section>
+
                 <div class="panel">
                     <h2><?php echo esc_html(alpenia_travel_t('Reisen mit Teilnehmerliste')); ?></h2>
 
@@ -3164,6 +3266,241 @@ function alpenia_dashboard_shortcode() {
         .growth-rank-list a:hover,
         .growth-action-list a:hover {
             text-decoration: underline;
+        }
+
+        .finance-overview {
+            position: relative;
+            overflow: hidden;
+            margin: 0 0 30px;
+            padding: 24px;
+            border: 1px solid rgba(120,180,150,0.24);
+            border-radius: 26px;
+            background:
+                linear-gradient(145deg, rgba(15, 55, 45, 0.97), rgba(18, 75, 61, 0.95)),
+                radial-gradient(circle at top right, rgba(217, 154, 43, 0.18), transparent 36%);
+            color: #ffffff;
+            box-shadow: 0 22px 55px rgba(10, 37, 30, 0.18);
+        }
+
+        .finance-overview__header {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .finance-overview__header h2 {
+            margin: 0;
+            color: #ffffff;
+            font-size: clamp(26px, 3vw, 38px);
+            font-weight: 900;
+            line-height: 1.08;
+        }
+
+        .finance-overview__header p {
+            max-width: 720px;
+            margin: 8px 0 0;
+            color: #d6eee4;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .finance-rate {
+            display: grid;
+            place-items: center;
+            min-width: 128px;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.16);
+            border-radius: 22px;
+            background: rgba(255,255,255,0.1);
+            text-align: center;
+        }
+
+        .finance-rate strong {
+            color: #ffffff;
+            font-size: 38px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .finance-rate span {
+            margin-top: 6px;
+            color: #d6eee4;
+            font-weight: 900;
+            text-transform: uppercase;
+            letter-spacing: 0.08em;
+            font-size: 12px;
+        }
+
+        .finance-summary-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .finance-summary-card {
+            display: grid;
+            gap: 8px;
+            min-width: 0;
+            padding: 16px;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 18px;
+            background: rgba(255,255,255,0.09);
+        }
+
+        .finance-summary-card span {
+            color: #d6eee4;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .finance-summary-card strong {
+            color: #ffffff;
+            font-size: clamp(22px, 2.2vw, 30px);
+            font-weight: 900;
+            line-height: 1.05;
+        }
+
+        .finance-summary-card--paid {
+            background: rgba(81, 190, 137, 0.16);
+        }
+
+        .finance-summary-card--open {
+            background: rgba(217, 154, 43, 0.18);
+        }
+
+        .finance-progress,
+        .finance-mini-progress {
+            overflow: hidden;
+            height: 10px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.14);
+        }
+
+        .finance-progress {
+            margin-bottom: 18px;
+        }
+
+        .finance-progress span,
+        .finance-mini-progress span {
+            display: block;
+            height: 100%;
+            border-radius: inherit;
+            background: linear-gradient(90deg, #7dd3a8, #d99a2b);
+        }
+
+        .finance-detail-grid {
+            display: grid;
+            grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+            gap: 14px;
+        }
+
+        .finance-detail-card {
+            min-width: 0;
+            padding: 18px;
+            border: 1px solid rgba(255,255,255,0.14);
+            border-radius: 20px;
+            background: rgba(255,255,255,0.92);
+            color: #123f34;
+        }
+
+        .finance-detail-card h3 {
+            margin: 0 0 14px;
+            color: #123f34;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .finance-detail-card p {
+            margin: 0;
+            color: #466357;
+            font-weight: 800;
+        }
+
+        .finance-trip-list,
+        .finance-priority-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .finance-trip-row {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 10px 14px;
+            align-items: center;
+            padding: 14px;
+            border: 1px solid rgba(47, 125, 99, 0.13);
+            border-left: 5px solid #d99a2b;
+            border-radius: 16px;
+            background: #f8fcfa;
+        }
+
+        .finance-trip-row.is-paid { border-left-color: #2f7d63; }
+        .finance-trip-row.is-watch { border-left-color: #d99a2b; }
+        .finance-trip-row.is-risk { border-left-color: #b03e3e; }
+
+        .finance-trip-row__main,
+        .finance-trip-row__amount {
+            display: grid;
+            gap: 4px;
+        }
+
+        .finance-trip-row__main a,
+        .finance-priority-item a {
+            color: #123f34;
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+        .finance-trip-row__main a:hover,
+        .finance-priority-item a:hover {
+            text-decoration: underline;
+        }
+
+        .finance-trip-row__main span,
+        .finance-trip-row__amount span,
+        .finance-priority-item span {
+            color: #617a70;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .finance-trip-row__amount {
+            text-align: right;
+        }
+
+        .finance-trip-row__amount strong,
+        .finance-priority-item strong {
+            color: #7a4b0c;
+            font-size: 18px;
+            font-weight: 900;
+        }
+
+        .finance-mini-progress {
+            grid-column: 1 / -1;
+            height: 8px;
+            background: rgba(47, 125, 99, 0.11);
+        }
+
+        .finance-priority-item {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+            padding: 14px;
+            border: 1px solid rgba(217, 154, 43, 0.2);
+            border-radius: 16px;
+            background: #fff8ea;
+        }
+
+        .finance-priority-item > div {
+            display: grid;
+            gap: 4px;
+            min-width: 0;
         }
 
         .panel {
@@ -4165,6 +4502,8 @@ function alpenia_dashboard_shortcode() {
             .overview-card--participants { grid-column: auto; }
             .growth-kpi-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .growth-insight-grid { grid-template-columns: 1fr; }
+            .finance-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .finance-detail-grid { grid-template-columns: 1fr; }
             .cards { grid-template-columns: repeat(2, minmax(0,1fr)); }
             .trip-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
@@ -4186,6 +4525,14 @@ function alpenia_dashboard_shortcode() {
             .growth-overview__header { flex-direction: column; }
             .growth-kpi-grid { grid-template-columns: 1fr; }
             .growth-insight-grid { grid-template-columns: 1fr; }
+            .finance-overview { padding: 16px; border-radius: 20px; }
+            .finance-overview__header { flex-direction: column; }
+            .finance-rate { width: 100%; }
+            .finance-summary-grid { grid-template-columns: 1fr; }
+            .finance-detail-grid { grid-template-columns: 1fr; }
+            .finance-trip-row { grid-template-columns: 1fr; }
+            .finance-trip-row__amount { text-align: left; }
+            .finance-priority-item { align-items: flex-start; flex-direction: column; }
             .overview-card__header { align-items: center; }
             .overview-list-card { grid-template-columns: 1fr; border-radius: 16px; }
             .overview-list-card__actions { justify-content: stretch; }
