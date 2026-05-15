@@ -21,6 +21,7 @@ require_once ALPENIA_PLUGIN_DIR . 'includes/public-participant-form.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/export-print.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/shortcode-login.php';
 require_once ALPENIA_PLUGIN_DIR . 'includes/security.php';
+require_once ALPENIA_PLUGIN_DIR . 'includes/dashboard-business-overview.php';
 
 require_once ALPENIA_PLUGIN_DIR . 'includes/dashboard-shortcode.php';
 
