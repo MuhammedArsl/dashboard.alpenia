@@ -56,11 +56,22 @@
     border-radius: 50%;
 }
 
+.alpenia-public-form__hero-top {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+}
+
 .alpenia-public-form__eyebrow {
     display: inline-flex;
     align-items: center;
     gap: 8px;
-    margin: 0 0 12px;
+    margin: 0;
     padding: 7px 12px;
     border: 1px solid rgba(255, 255, 255, .22);
     border-radius: 999px;
@@ -70,6 +81,50 @@
     font-weight: 900;
     letter-spacing: .12em;
     text-transform: uppercase;
+}
+
+.alpenia-public-language-switch {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 6px 8px 6px 12px;
+    border: 1px solid rgba(255, 255, 255, .22);
+    border-radius: 999px;
+    background: rgba(8, 35, 28, .28);
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.08);
+    backdrop-filter: blur(8px);
+}
+
+.alpenia-public-language-switch span {
+    color: rgba(255,255,255,.8);
+    font-size: .78rem;
+    font-weight: 850;
+}
+
+.alpenia-public-language-switch a {
+    display: inline-grid;
+    place-items: center;
+    min-width: 36px;
+    height: 32px;
+    border: 1px solid rgba(255, 255, 255, .2);
+    border-radius: 999px;
+    color: #fff;
+    font-size: .82rem;
+    font-weight: 900;
+    text-decoration: none;
+    transition: background .18s ease, transform .18s ease, box-shadow .18s ease;
+}
+
+.alpenia-public-language-switch a:hover,
+.alpenia-public-language-switch a:focus {
+    background: rgba(255,255,255,.14);
+    transform: translateY(-1px);
+}
+
+.alpenia-public-language-switch a.is-active {
+    background: #fff;
+    color: var(--alpenia-public-primary);
+    box-shadow: 0 8px 18px rgba(5, 20, 15, .18);
 }
 
 .alpenia-public-form h2 {
@@ -508,6 +563,11 @@
         height: 150px;
     }
 
+    .alpenia-public-form__hero-top {
+        align-items: stretch;
+        gap: 10px;
+    }
+
     .alpenia-public-form__eyebrow {
         max-width: 100%;
         white-space: normal;
@@ -515,6 +575,15 @@
         line-height: 1.25;
         letter-spacing: .08em;
         padding: 6px 10px;
+    }
+
+    .alpenia-public-language-switch {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .alpenia-public-language-switch a {
+        flex: 1 1 0;
     }
 
     .alpenia-public-form h2 {
