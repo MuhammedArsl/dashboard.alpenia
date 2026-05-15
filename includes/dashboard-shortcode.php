@@ -1020,9 +1020,36 @@ function alpenia_dashboard_shortcode() {
                         <input type="hidden" name="trip_id" value="<?php echo esc_attr($selected_trip_id); ?>">
                         <input type="hidden" name="participant_count" value="<?php echo esc_attr($participant_count); ?>">
 
+                        <div class="participant-wizard" data-participant-wizard>
+                            <div class="participant-wizard__top">
+                                <div>
+                                    <p class="participant-wizard__eyebrow"><?php echo esc_html(alpenia_travel_t('Schrittweise Erfassung')); ?></p>
+                                    <h2><?php echo esc_html(alpenia_travel_t('Teilnehmer einzeln bearbeiten')); ?></h2>
+                                    <p><?php echo esc_html(alpenia_travel_t('Damit nichts durcheinandergerät, wird immer nur eine Person geöffnet. Die Übersicht zeigt dir, bei welchem Teilnehmer du gerade bist.')); ?></p>
+                                </div>
+                                <div class="participant-wizard__count">
+                                    <span data-wizard-current>1</span> / <?php echo esc_html($participant_count); ?>
+                                </div>
+                            </div>
+
+                            <div class="participant-wizard__tabs" role="tablist" aria-label="<?php echo esc_attr(alpenia_travel_t('Teilnehmer auswählen')); ?>">
+                                <?php for ($tab_i = 1; $tab_i <= $participant_count; $tab_i++) : ?>
+                                    <button type="button" class="participant-wizard__tab<?php echo $tab_i === 1 ? ' is-active' : ''; ?>" data-wizard-tab="<?php echo esc_attr($tab_i); ?>" role="tab" aria-selected="<?php echo $tab_i === 1 ? 'true' : 'false'; ?>" aria-controls="participant_step_<?php echo esc_attr($tab_i); ?>">
+                                        <span><?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></span>
+                                        <strong><?php echo esc_html($tab_i); ?></strong>
+                                    </button>
+                                <?php endfor; ?>
+                            </div>
+
                         <?php for ($i = 1; $i <= $participant_count; $i++) : ?>
-                            <div class="participant-box">
-                                <h3><?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?> <?php echo $i; ?></h3>
+                            <div class="participant-box<?php echo $i === 1 ? ' is-active' : ''; ?>" id="participant_step_<?php echo esc_attr($i); ?>" data-participant-step="<?php echo esc_attr($i); ?>"<?php echo $i === 1 ? '' : ' hidden'; ?>>
+                                <div class="participant-box__header">
+                                    <div>
+                                        <span class="participant-box__kicker"><?php echo esc_html(sprintf(alpenia_travel_t('Person %1$d von %2$d'), $i, $participant_count)); ?></span>
+                                        <h3><?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?> <?php echo $i; ?></h3>
+                                    </div>
+                                    <p><?php echo esc_html(alpenia_travel_t('Bitte zuerst diese Person fertig ausfüllen, dann zur nächsten Person wechseln.')); ?></p>
+                                </div>
 
                                 <div class="form-grid">
                                     <div class="form-group">
@@ -1192,10 +1219,24 @@ function alpenia_dashboard_shortcode() {
 
 
                                 </div>
+
+                                <div class="participant-box__actions">
+                                    <button type="button" class="btn-secondary" data-wizard-prev <?php echo $i === 1 ? 'disabled' : ''; ?>><?php echo esc_html(alpenia_travel_t('Vorheriger Teilnehmer')); ?></button>
+                                    <?php if ($i < $participant_count) : ?>
+                                        <button type="button" class="btn-primary" data-wizard-next><?php echo esc_html(alpenia_travel_t('Nächster Teilnehmer')); ?></button>
+                                    <?php else : ?>
+                                        <button type="button" class="btn-primary" data-wizard-submit><?php echo esc_html(alpenia_travel_t('Alle Teilnehmer prüfen und speichern')); ?></button>
+                                    <?php endif; ?>
+                                </div>
                             </div>
                         <?php endfor; ?>
+                        </div>
 
-                        <button type="submit" name="save_participants_batch" class="btn-primary"><?php echo esc_html(alpenia_travel_t('Alle Teilnehmer speichern')); ?></button>
+                        <div class="participant-wizard__final-actions">
+                            <p><?php echo esc_html(alpenia_travel_t('Du kannst jederzeit über die nummerierten Reiter zwischen den Teilnehmern wechseln.')); ?></p>
+                            <button type="button" class="btn-primary" data-wizard-submit><?php echo esc_html(alpenia_travel_t('Alle Teilnehmer prüfen und speichern')); ?></button>
+                            <button type="submit" name="save_participants_batch" value="1" class="participant-wizard__native-submit" hidden><?php echo esc_html(alpenia_travel_t('Alle Teilnehmer speichern')); ?></button>
+                        </div>
                     </form>
                 </div>
 
@@ -2445,19 +2486,155 @@ function alpenia_dashboard_shortcode() {
             font-size: 15px;
         }
 
+        .participant-wizard {
+            display: grid;
+            gap: 18px;
+        }
+
+        .participant-wizard__top {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: center;
+            padding: 18px;
+            border: 1px solid rgba(125,211,168,0.24);
+            border-radius: 18px;
+            background: linear-gradient(135deg, rgba(29,77,63,0.94), rgba(18,46,38,0.92));
+        }
+
+        .participant-wizard__eyebrow {
+            margin: 0 0 6px;
+            color: #9ff0c7;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.12em;
+            text-transform: uppercase;
+        }
+
+        .participant-wizard__top h2 {
+            margin: 0 0 6px;
+            color: #ffffff;
+            font-size: 26px;
+        }
+
+        .participant-wizard__top p {
+            margin: 0;
+            color: rgba(255,255,255,0.78);
+            line-height: 1.5;
+        }
+
+        .participant-wizard__count {
+            flex: 0 0 auto;
+            min-width: 104px;
+            padding: 14px 16px;
+            border-radius: 16px;
+            background: rgba(125,211,168,0.14);
+            color: #ffffff;
+            font-size: 22px;
+            font-weight: 900;
+            text-align: center;
+        }
+
+        .participant-wizard__tabs {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 10px;
+        }
+
+        .participant-wizard__tab {
+            min-height: 58px;
+            padding: 10px 12px;
+            border: 1px solid rgba(120,180,150,0.28);
+            border-radius: 14px;
+            background: rgba(16,36,29,0.72);
+            color: #ffffff;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .participant-wizard__tab span {
+            display: block;
+            font-size: 12px;
+            opacity: 0.78;
+        }
+
+        .participant-wizard__tab strong {
+            display: block;
+            margin-top: 2px;
+            font-size: 20px;
+        }
+
+        .participant-wizard__tab.is-active {
+            border-color: rgba(125,211,168,0.82);
+            background: linear-gradient(135deg, #1d4d3f, #2d6a57);
+            box-shadow: 0 12px 24px rgba(5,18,14,0.22);
+        }
+
         .participant-box {
             background: rgba(16,36,29,0.82);
             border: 1px solid rgba(120,180,150,0.22);
-            border-radius: 14px;
+            border-radius: 18px;
             padding: 20px;
-            margin-bottom: 22px;
+            margin-bottom: 0;
+        }
+
+        .participant-box__header {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: flex-start;
+            margin-bottom: 18px;
+            padding-bottom: 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .participant-box__header p {
+            max-width: 420px;
+            margin: 0;
+            color: rgba(255,255,255,0.72);
+            line-height: 1.5;
+        }
+
+        .participant-box__kicker {
+            display: inline-flex;
+            margin-bottom: 7px;
+            color: #9ff0c7;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
         }
 
         .participant-box h3 {
-            margin-top: 0;
-            margin-bottom: 18px;
+            margin: 0;
             font-size: 24px;
             color: #ffffff;
+        }
+
+        .participant-box__actions,
+        .participant-wizard__final-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            justify-content: flex-end;
+            align-items: center;
+            margin-top: 8px;
+            padding-top: 18px;
+            border-top: 1px solid rgba(255,255,255,0.08);
+        }
+
+        .participant-wizard__final-actions {
+            justify-content: space-between;
+            margin-top: 0;
+            padding: 16px;
+            border: 1px solid rgba(120,180,150,0.22);
+            border-radius: 16px;
+            background: rgba(16,36,29,0.62);
+        }
+
+        .participant-wizard__final-actions p {
+            margin: 0;
+            color: rgba(255,255,255,0.76);
         }
 
         .check-grid {
@@ -2792,8 +2969,16 @@ function alpenia_dashboard_shortcode() {
             .form-group input:not([type="file"]),
             .form-group select,
             .form-group input[type="file"] { font-size: 16px; }
+            .participant-wizard__top,
+            .participant-box__header,
+            .participant-wizard__final-actions { flex-direction: column; align-items: stretch; }
+            .participant-wizard__count { width: 100%; }
+            .participant-wizard__tabs { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .participant-box { padding: 16px; border-radius: 12px; }
             .participant-box h3 { font-size: 21px; }
+            .participant-box__actions .btn-primary,
+            .participant-box__actions .btn-secondary,
+            .participant-wizard__final-actions .btn-primary { width: 100%; }
             .check-grid { grid-template-columns: 1fr; padding: 14px; }
             .list-table li { flex-direction: column; align-items: flex-start; gap: 10px; }
             .list-main,
@@ -2950,6 +3135,104 @@ function alpenia_dashboard_shortcode() {
             toggleEditResidenceFields();
             toggleEditPilgrimageVisaFields();
         }
+
+
+        document.querySelectorAll('[data-participant-wizard]').forEach(function (wizard) {
+            const form = wizard.closest('form');
+            const steps = Array.from(wizard.querySelectorAll('[data-participant-step]'));
+            const tabs = Array.from(wizard.querySelectorAll('[data-wizard-tab]'));
+            const currentLabel = wizard.querySelector('[data-wizard-current]');
+            const nativeSubmit = form ? form.querySelector('.participant-wizard__native-submit') : null;
+            let activeIndex = 0;
+
+            function setStep(index) {
+                if (!steps.length) return;
+                activeIndex = Math.max(0, Math.min(index, steps.length - 1));
+
+                steps.forEach(function (step, stepIndex) {
+                    const isActive = stepIndex === activeIndex;
+                    step.hidden = !isActive;
+                    step.classList.toggle('is-active', isActive);
+                });
+
+                tabs.forEach(function (tab, tabIndex) {
+                    const isActive = tabIndex === activeIndex;
+                    tab.classList.toggle('is-active', isActive);
+                    tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+                });
+
+                if (currentLabel) {
+                    currentLabel.textContent = String(activeIndex + 1);
+                }
+
+                const currentStep = steps[activeIndex];
+                if (currentStep) {
+                    currentStep.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            }
+
+            function showInvalidField() {
+                if (!form) return false;
+                const invalidField = form.querySelector(':invalid');
+                if (!invalidField) return false;
+                const invalidStep = invalidField.closest('[data-participant-step]');
+                if (invalidStep) {
+                    const invalidIndex = steps.indexOf(invalidStep);
+                    if (invalidIndex !== -1) {
+                        setStep(invalidIndex);
+                    }
+                }
+                window.setTimeout(function () {
+                    invalidField.reportValidity();
+                    invalidField.focus({ preventScroll: true });
+                }, 80);
+                return true;
+            }
+
+            tabs.forEach(function (tab) {
+                tab.addEventListener('click', function () {
+                    const index = parseInt(tab.getAttribute('data-wizard-tab'), 10) - 1;
+                    setStep(index);
+                });
+            });
+
+            wizard.querySelectorAll('[data-wizard-prev]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    setStep(activeIndex - 1);
+                });
+            });
+
+            wizard.querySelectorAll('[data-wizard-next]').forEach(function (button) {
+                button.addEventListener('click', function () {
+                    const currentStep = steps[activeIndex];
+                    const invalidInCurrentStep = currentStep ? currentStep.querySelector(':invalid') : null;
+                    if (invalidInCurrentStep) {
+                        invalidInCurrentStep.reportValidity();
+                        invalidInCurrentStep.focus({ preventScroll: true });
+                        return;
+                    }
+                    setStep(activeIndex + 1);
+                });
+            });
+
+            document.querySelectorAll('[data-wizard-submit]').forEach(function (button) {
+                if (button.closest('form') !== form) return;
+                button.addEventListener('click', function () {
+                    if (!form) return;
+                    if (!form.checkValidity()) {
+                        showInvalidField();
+                        return;
+                    }
+                    if (nativeSubmit && typeof nativeSubmit.click === 'function') {
+                        nativeSubmit.click();
+                    } else {
+                        form.submit();
+                    }
+                });
+            });
+
+            setStep(0);
+        });
 
         const validationMessages = {
             valueMissing: '<?php echo esc_js(alpenia_travel_t('Dieses Feld ist erforderlich.')); ?>',

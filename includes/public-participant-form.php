@@ -71,7 +71,10 @@ function alpenia_public_participant_form_shortcode($atts = []) {
     ?>
     <div class="alpenia-public-form">
         <div class="alpenia-public-form__hero">
-            <p class="alpenia-public-form__eyebrow"><?php echo esc_html(alpenia_travel_t('Alpenia Group Trips')); ?></p>
+            <div class="alpenia-public-form__hero-top">
+                <p class="alpenia-public-form__eyebrow"><?php echo esc_html(alpenia_travel_t('Alpenia Group Trips')); ?></p>
+                <?php echo alpenia_public_participant_language_switcher($request_token); ?>
+            </div>
             <h2><?php echo esc_html(alpenia_travel_t('Anmeldeformular')); ?></h2>
             <p class="alpenia-public-intro"><?php echo esc_html(alpenia_travel_t('Bitte fülle deine persönlichen Daten vollständig aus. Deine Angaben werden sicher als Teilnehmerdatensatz gespeichert.')); ?></p>
         </div>
@@ -109,6 +112,29 @@ function alpenia_public_participant_form_shortcode($atts = []) {
     return ob_get_clean();
 }
 add_shortcode('alpenia_participant_form', 'alpenia_public_participant_form_shortcode');
+
+function alpenia_public_participant_language_switcher($request_token = '') {
+    $current_url = home_url(add_query_arg([], isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : ''));
+    $args = ['ui_lang' => 'de'];
+    if ($request_token !== '') {
+        $args['trip_token'] = $request_token;
+    }
+    $de_url = add_query_arg($args, $current_url);
+
+    $args['ui_lang'] = 'tr';
+    $tr_url = add_query_arg($args, $current_url);
+    $current_lang = alpenia_travel_get_language();
+
+    ob_start();
+    ?>
+    <div class="alpenia-public-language-switch" role="group" aria-label="<?php echo esc_attr(alpenia_travel_t('Formularsprache wechseln')); ?>">
+        <span><?php echo esc_html(alpenia_travel_t('Sprache')); ?></span>
+        <a class="<?php echo $current_lang === 'de' ? 'is-active' : ''; ?>" href="<?php echo esc_url($de_url); ?>" aria-label="Deutsch">DE</a>
+        <a class="<?php echo $current_lang === 'tr' ? 'is-active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" aria-label="Türkçe">TR</a>
+    </div>
+    <?php
+    return ob_get_clean();
+}
 
 function alpenia_public_participant_get_token_meta_key() {
     return '_alpenia_registration_token';
@@ -187,7 +213,7 @@ function alpenia_public_participant_message($text, $type = 'info') {
 }
 
 function alpenia_public_participant_enqueue_assets() {
-    $version = defined('WP_DEBUG') && WP_DEBUG ? time() : '5.0';
+    $version = defined('WP_DEBUG') && WP_DEBUG ? time() : '5.1';
     wp_enqueue_style(
         'alpenia-public-participant-form',
         plugin_dir_url(ALPENIA_PLUGIN_FILE) . 'assets/public-participant-form.css',
