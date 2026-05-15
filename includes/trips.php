@@ -96,6 +96,36 @@ function alpenia_get_filtered_trips($search = '', $type = '', $status = '', $cou
     return $trips;
 }
 
+function alpenia_get_paginated_filtered_trips($search = '', $type = '', $status = '', $country = '', $city = '', $assigned_guide = '', $page = 1, $per_page = 20) {
+    $page = max(1, (int) $page);
+    $per_page = max(1, min(100, (int) $per_page));
+
+    if (!alpenia_is_admin_user() && !alpenia_is_backoffice_user()) {
+        $trips = array_values(alpenia_get_filtered_trips($search, $type, $status, $country, $city, $assigned_guide));
+        $total = count($trips);
+
+        return [
+            'posts' => array_slice($trips, ($page - 1) * $per_page, $per_page),
+            'total' => $total,
+            'max_pages' => max(1, (int) ceil($total / $per_page)),
+        ];
+    }
+
+    $args = alpenia_get_trip_query_args($search, $type, $status, $country, $city, $assigned_guide);
+    unset($args['numberposts']);
+    $args['posts_per_page'] = $per_page;
+    $args['paged'] = $page;
+    $args['no_found_rows'] = false;
+
+    $query = new WP_Query($args);
+
+    return [
+        'posts' => $query->posts,
+        'total' => (int) $query->found_posts,
+        'max_pages' => max(1, (int) $query->max_num_pages),
+    ];
+}
+
 /**
  * Teilnehmer einer Reise
  */
@@ -113,6 +143,94 @@ function alpenia_get_trip_participants($trip_id) {
         'orderby'     => 'date',
         'order'       => 'DESC',
     ]);
+}
+
+function alpenia_count_trip_participants($trip_id) {
+    if (!alpenia_user_can_access_trip($trip_id)) {
+        return 0;
+    }
+
+    $query = new WP_Query([
+        'post_type'      => 'trip_participant',
+        'post_status'    => 'publish',
+        'posts_per_page' => 1,
+        'fields'         => 'ids',
+        'meta_key'       => 'trip_id',
+        'meta_value'     => (int) $trip_id,
+        'no_found_rows'  => false,
+    ]);
+
+    return (int) $query->found_posts;
+}
+
+function alpenia_participant_matches_dashboard_filters($participant_id, $filters = []) {
+    $search = strtolower(trim((string) ($filters['search'] ?? '')));
+
+    if ($search !== '') {
+        $searchable_values = [
+            get_the_title($participant_id),
+            alpenia_get_secure_meta($participant_id, 'first_name', true),
+            alpenia_get_secure_meta($participant_id, 'last_name', true),
+            alpenia_get_secure_meta($participant_id, 'passport_no', true),
+            alpenia_get_secure_meta($participant_id, 'email', true),
+        ];
+        $haystack = strtolower(implode(' ', array_map('strval', $searchable_values)));
+
+        if (strpos($haystack, $search) === false) {
+            return false;
+        }
+    }
+
+    $doc_status = sanitize_key((string) ($filters['doc_status'] ?? ''));
+    if ($doc_status === 'missing' && alpenia_get_participant_doc_score($participant_id) === 'complete') {
+        return false;
+    }
+    if ($doc_status === 'complete' && alpenia_get_participant_doc_score($participant_id) !== 'complete') {
+        return false;
+    }
+
+    $payment_status = sanitize_key((string) ($filters['payment_status'] ?? ''));
+    if ($payment_status !== '') {
+        $payment_open = alpenia_get_participant_payment_open($participant_id);
+        $current_payment_status = alpenia_get_payment_status($participant_id);
+
+        if ($payment_status === 'open' && $payment_open <= 0) {
+            return false;
+        }
+        if ($payment_status === 'paid' && $current_payment_status !== 'bezahlt') {
+            return false;
+        }
+        if ($payment_status === 'partial' && $current_payment_status !== 'teilweise bezahlt') {
+            return false;
+        }
+    }
+
+    $participant_status = sanitize_key((string) ($filters['participant_status'] ?? ''));
+    if ($participant_status !== '' && sanitize_key((string) get_post_meta($participant_id, 'participant_status', true)) !== $participant_status) {
+        return false;
+    }
+
+    return true;
+}
+
+function alpenia_get_paginated_trip_participants($trip_id, $filters = [], $page = 1, $per_page = 50) {
+    $page = max(1, (int) $page);
+    $per_page = max(1, min(100, (int) $per_page));
+    $participants = array_values(alpenia_get_trip_participants($trip_id));
+
+    if (!empty($filters)) {
+        $participants = array_values(array_filter($participants, function($participant) use ($filters) {
+            return alpenia_participant_matches_dashboard_filters($participant->ID, $filters);
+        }));
+    }
+
+    $total = count($participants);
+
+    return [
+        'posts' => array_slice($participants, ($page - 1) * $per_page, $per_page),
+        'total' => $total,
+        'max_pages' => max(1, (int) ceil($total / $per_page)),
+    ];
 }
 
 /**
@@ -136,8 +254,7 @@ function alpenia_get_payment_status($participant_id) {
 
 function alpenia_get_trip_capacity_left($trip_id) {
     $max_people = (int) get_post_meta($trip_id, 'max_people', true);
-    $participants = alpenia_get_trip_participants($trip_id);
-    $count = count($participants);
+    $count = alpenia_count_trip_participants($trip_id);
 
     if ($max_people <= 0) return '-';
     return max(0, $max_people - $count);
