@@ -842,6 +842,7 @@ function alpenia_dashboard_shortcode() {
     $open_payments_count = 0;
     $missing_docs_items = [];
     $open_payments_items = [];
+    $overview_item_limit = 6;
 
     foreach ($participants as $participant) {
         $participant_id = $participant->ID;
@@ -854,33 +855,39 @@ function alpenia_dashboard_shortcode() {
 
         if ($score !== 'complete') {
             $missing_docs_count++;
-            $missing_docs_items[] = [
-                'trip_id' => $trip_id,
-                'trip_title' => get_the_title($trip_id),
-                'participant_name' => trim(
-                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                    alpenia_get_secure_meta($participant_id, 'last_name', true)
-                ),
-                'missing_docs' => alpenia_get_missing_docs_details($participant_id),
-                'participant_id' => $participant_id,
-            ];
+            if (count($missing_docs_items) < $overview_item_limit) {
+                $missing_docs_items[] = [
+                    'trip_id' => $trip_id,
+                    'trip_title' => get_the_title($trip_id),
+                    'participant_name' => trim(
+                        alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
+                        alpenia_get_secure_meta($participant_id, 'last_name', true)
+                    ),
+                    'missing_docs' => alpenia_get_missing_docs_details($participant_id),
+                    'participant_id' => $participant_id,
+                ];
+            }
         }
 
         if ($payment_open > 0) {
             $open_payments_count++;
-            $open_payments_items[] = [
-                'trip_id' => $trip_id,
-                'trip_title' => get_the_title($trip_id),
-                'participant_name' => trim(
-                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                    alpenia_get_secure_meta($participant_id, 'last_name', true)
-                ),
-                'payment_open' => $payment_open,
-                'payment_status' => alpenia_get_payment_status($participant_id),
-                'participant_id' => $participant_id,
-            ];
+            if (count($open_payments_items) < $overview_item_limit) {
+                $open_payments_items[] = [
+                    'trip_id' => $trip_id,
+                    'trip_title' => get_the_title($trip_id),
+                    'participant_name' => trim(
+                        alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
+                        alpenia_get_secure_meta($participant_id, 'last_name', true)
+                    ),
+                    'payment_open' => $payment_open,
+                    'payment_status' => alpenia_get_payment_status($participant_id),
+                    'participant_id' => $participant_id,
+                ];
+            }
         }
     }
+
+    $latest_participants = array_slice($participants, 0, 5);
 
     ob_start();
     ?>
@@ -2271,12 +2278,17 @@ function alpenia_dashboard_shortcode() {
                                             </details>
                                         </div>
                                         <div class="overview-list-card__actions">
-                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id'], 'participant_doc_filter' => 'missing'])); ?>"><?php echo esc_html(alpenia_travel_t('Alle fehlenden Unterlagen anzeigen')); ?></a>
                                             <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
                                         </div>
                                     </article>
                                 <?php endforeach; ?>
                             </div>
+                            <?php if ($missing_docs_count > count($missing_docs_items)) : ?>
+                                <p class="overview-card__hint">
+                                    <?php echo esc_html(sprintf(alpenia_travel_t('Es werden die ersten %1$d von %2$d Einträgen angezeigt. Öffne eine Reise, um die gefilterte, paginierte Liste vollständig abzuarbeiten.'), count($missing_docs_items), $missing_docs_count)); ?>
+                                </p>
+                            <?php endif; ?>
                         <?php else : ?>
                             <div class="overview-empty-state">
                                 <strong><?php echo esc_html(alpenia_travel_t('Aktuell keine fehlenden Unterlagen.')); ?></strong>
@@ -2316,12 +2328,17 @@ function alpenia_dashboard_shortcode() {
                                             </details>
                                         </div>
                                         <div class="overview-list-card__actions">
-                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id'], 'participant_payment_filter' => 'open'])); ?>"><?php echo esc_html(alpenia_travel_t('Alle offenen Zahlungen anzeigen')); ?></a>
                                             <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
                                         </div>
                                     </article>
                                 <?php endforeach; ?>
                             </div>
+                            <?php if ($open_payments_count > count($open_payments_items)) : ?>
+                                <p class="overview-card__hint">
+                                    <?php echo esc_html(sprintf(alpenia_travel_t('Es werden die ersten %1$d von %2$d Einträgen angezeigt. Öffne eine Reise, um die gefilterte, paginierte Liste vollständig abzuarbeiten.'), count($open_payments_items), $open_payments_count)); ?>
+                                </p>
+                            <?php endif; ?>
                         <?php else : ?>
                             <div class="overview-empty-state">
                                 <strong><?php echo esc_html(alpenia_travel_t('Aktuell keine offenen Zahlungen.')); ?></strong>
@@ -2335,12 +2352,12 @@ function alpenia_dashboard_shortcode() {
                                 <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Aktivität')); ?></span>
                                 <h2><?php echo esc_html(alpenia_travel_t('Letzte Teilnehmer')); ?></h2>
                             </div>
-                            <span class="overview-card__count"><?php echo esc_html(min(5, count($participants))); ?></span>
+                            <span class="overview-card__count"><?php echo esc_html(count($latest_participants)); ?></span>
                         </div>
 
-                        <?php if ($participants) : ?>
+                        <?php if ($latest_participants) : ?>
                             <div class="participant-card-list">
-                                <?php foreach (array_slice($participants, 0, 5) as $participant) :
+                                <?php foreach ($latest_participants as $participant) :
                                     $trip_id = (int) get_post_meta($participant->ID, 'trip_id', true);
                                     $gender = get_post_meta($participant->ID, 'gender', true);
                                 ?>
@@ -2886,6 +2903,18 @@ function alpenia_dashboard_shortcode() {
             font-size: 24px;
             font-weight: 900;
             box-shadow: 0 12px 28px rgba(123, 90, 32, 0.1);
+        }
+
+        .overview-card__hint {
+            position: relative;
+            z-index: 1;
+            margin: 14px 0 0;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: #eef8f4;
+            color: #174b3d;
+            font-weight: 800;
+            line-height: 1.45;
         }
 
         .overview-list,
