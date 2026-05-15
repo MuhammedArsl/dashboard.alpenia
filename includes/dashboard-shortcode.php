@@ -866,6 +866,14 @@ function alpenia_dashboard_shortcode() {
     $missing_docs_items = [];
     $open_payments_items = [];
     $priority_payment_items = [];
+    $operations_task_items = [];
+    $missing_docs_by_type = [];
+    $participant_status_counts = [
+        'neu' => 0,
+        'in_pruefung' => 0,
+        'vollstaendig' => 0,
+        'other' => 0,
+    ];
     $overview_item_limit = 6;
     $business_revenue_total = 0.0;
     $business_revenue_paid = 0.0;
@@ -889,6 +897,8 @@ function alpenia_dashboard_shortcode() {
             'missing_docs' => 0,
             'open_payments' => 0,
             'in_review' => 0,
+            'new_participants' => 0,
+            'complete_participants' => 0,
             'occupancy' => 0,
         ];
 
@@ -913,6 +923,12 @@ function alpenia_dashboard_shortcode() {
         $business_revenue_paid += $payment_paid;
         $business_revenue_open += $payment_open;
 
+        if (isset($participant_status_counts[$participant_status])) {
+            $participant_status_counts[$participant_status]++;
+        } else {
+            $participant_status_counts['other']++;
+        }
+
         if ($participant_status === 'in_pruefung') {
             $participants_in_review++;
         }
@@ -924,11 +940,23 @@ function alpenia_dashboard_shortcode() {
             $trip_growth_stats[$trip_id]['revenue_open'] += $payment_open;
             if ($participant_status === 'in_pruefung') {
                 $trip_growth_stats[$trip_id]['in_review']++;
+            } elseif ($participant_status === 'neu') {
+                $trip_growth_stats[$trip_id]['new_participants']++;
+            } elseif ($participant_status === 'vollstaendig') {
+                $trip_growth_stats[$trip_id]['complete_participants']++;
             }
         }
 
+        $missing_details = [];
         if ($score !== 'complete') {
+            $missing_details = alpenia_get_missing_docs_details($participant_id);
             $missing_docs_count++;
+            foreach ($missing_details as $missing_detail) {
+                if (!isset($missing_docs_by_type[$missing_detail])) {
+                    $missing_docs_by_type[$missing_detail] = 0;
+                }
+                $missing_docs_by_type[$missing_detail]++;
+            }
             if (isset($trip_growth_stats[$trip_id])) {
                 $trip_growth_stats[$trip_id]['missing_docs']++;
             }
@@ -940,7 +968,7 @@ function alpenia_dashboard_shortcode() {
                         alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
                         alpenia_get_secure_meta($participant_id, 'last_name', true)
                     ),
-                    'missing_docs' => alpenia_get_missing_docs_details($participant_id),
+                    'missing_docs' => $missing_details,
                     'participant_id' => $participant_id,
                 ];
             }
@@ -966,6 +994,37 @@ function alpenia_dashboard_shortcode() {
             if (count($open_payments_items) < $overview_item_limit) {
                 $open_payments_items[] = $payment_item;
             }
+        }
+
+        $operation_reasons = [];
+        if (!empty($missing_details)) {
+            $operation_reasons[] = alpenia_travel_t('Unterlagen fehlen');
+        }
+        if ($payment_open > 0) {
+            $operation_reasons[] = alpenia_travel_t('Zahlung offen');
+        }
+        if ($participant_status === 'in_pruefung') {
+            $operation_reasons[] = alpenia_travel_t('In Prüfung');
+        } elseif ($participant_status === 'neu') {
+            $operation_reasons[] = alpenia_travel_t('Neu erfassen');
+        }
+
+        if (!empty($operation_reasons)) {
+            $operation_priority = (count($missing_details) * 3) + ($payment_open > 0 ? 2 : 0) + ($participant_status === 'in_pruefung' ? 2 : 0);
+            $operations_task_items[] = [
+                'trip_id' => $trip_id,
+                'trip_title' => get_the_title($trip_id),
+                'participant_name' => trim(
+                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
+                    alpenia_get_secure_meta($participant_id, 'last_name', true)
+                ),
+                'participant_id' => $participant_id,
+                'reasons' => $operation_reasons,
+                'payment_open' => $payment_open,
+                'missing_count' => count($missing_details),
+                'participant_status' => $participant_status,
+                'priority' => $operation_priority,
+            ];
         }
     }
 
@@ -1010,6 +1069,25 @@ function alpenia_dashboard_shortcode() {
     $finance_trip_summaries = array_slice($finance_trip_summaries, 0, 5);
     $payment_collection_rate = $business_revenue_total > 0 ? min(100, (int) round(($business_revenue_paid / $business_revenue_total) * 100)) : 0;
     $payment_open_rate = $business_revenue_total > 0 ? max(0, 100 - $payment_collection_rate) : 0;
+
+    arsort($missing_docs_by_type);
+    $operation_doc_bottlenecks = array_slice($missing_docs_by_type, 0, 6, true);
+
+    $operation_trip_summaries = array_values(array_filter($trip_growth_stats, function($stats) {
+        return $stats['missing_docs'] > 0 || $stats['open_payments'] > 0 || $stats['in_review'] > 0 || $stats['new_participants'] > 0;
+    }));
+    usort($operation_trip_summaries, function($a, $b) {
+        $score_a = ($a['missing_docs'] * 3) + ($a['open_payments'] * 2) + $a['in_review'] + $a['new_participants'];
+        $score_b = ($b['missing_docs'] * 3) + ($b['open_payments'] * 2) + $b['in_review'] + $b['new_participants'];
+        return $score_b <=> $score_a;
+    });
+    $operation_trip_summaries = array_slice($operation_trip_summaries, 0, 5);
+
+    usort($operations_task_items, function($a, $b) {
+        return $b['priority'] <=> $a['priority'];
+    });
+    $operations_task_items = array_slice($operations_task_items, 0, 6);
+    $operations_open_work_count = $missing_docs_count + $open_payments_count + $participant_status_counts['neu'] + $participant_status_counts['in_pruefung'];
 
     $latest_participants = array_slice($participants, 0, 5);
 
@@ -2394,6 +2472,96 @@ function alpenia_dashboard_shortcode() {
                     </div>
                 </section>
 
+                <section class="operations-overview" aria-label="<?php echo esc_attr(alpenia_travel_t('Operations-Zentrale')); ?>">
+                    <div class="operations-overview__header">
+                        <div>
+                            <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Operations')); ?></span>
+                            <h2><?php echo esc_html(alpenia_travel_t('Operations-Zentrale')); ?></h2>
+                            <p><?php echo esc_html(alpenia_travel_t('Backoffice-Aufgaben, Dokumenten-Engpässe und kritische Reisen klar priorisiert.')); ?></p>
+                        </div>
+                        <div class="operations-workload">
+                            <strong><?php echo esc_html($operations_open_work_count); ?></strong>
+                            <span><?php echo esc_html(alpenia_travel_t('offene Arbeitspunkte')); ?></span>
+                        </div>
+                    </div>
+
+                    <div class="operations-status-grid">
+                        <article>
+                            <span><?php echo esc_html(alpenia_travel_t('Neu')); ?></span>
+                            <strong><?php echo esc_html($participant_status_counts['neu']); ?></strong>
+                        </article>
+                        <article>
+                            <span><?php echo esc_html(alpenia_travel_t('In Prüfung')); ?></span>
+                            <strong><?php echo esc_html($participant_status_counts['in_pruefung']); ?></strong>
+                        </article>
+                        <article>
+                            <span><?php echo esc_html(alpenia_travel_t('Vollständig')); ?></span>
+                            <strong><?php echo esc_html($participant_status_counts['vollstaendig']); ?></strong>
+                        </article>
+                        <article>
+                            <span><?php echo esc_html(alpenia_travel_t('Fehlende Unterlagen')); ?></span>
+                            <strong><?php echo esc_html($missing_docs_count); ?></strong>
+                        </article>
+                    </div>
+
+                    <div class="operations-detail-grid">
+                        <div class="operations-card">
+                            <h3><?php echo esc_html(alpenia_travel_t('Dokumenten-Engpässe')); ?></h3>
+                            <?php if (!empty($operation_doc_bottlenecks)) : ?>
+                                <div class="operations-bottleneck-list">
+                                    <?php foreach ($operation_doc_bottlenecks as $doc_label => $doc_count) : ?>
+                                        <div class="operations-bottleneck-row">
+                                            <span><?php echo esc_html(alpenia_travel_t($doc_label)); ?></span>
+                                            <strong><?php echo esc_html($doc_count); ?></strong>
+                                        </div>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else : ?>
+                                <p><?php echo esc_html(alpenia_travel_t('Aktuell keine Dokumenten-Engpässe.')); ?></p>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="operations-card">
+                            <h3><?php echo esc_html(alpenia_travel_t('Backoffice-Aufgaben pro Reise')); ?></h3>
+                            <?php if (!empty($operation_trip_summaries)) : ?>
+                                <div class="operations-trip-list">
+                                    <?php foreach ($operation_trip_summaries as $stats) : ?>
+                                        <article class="operations-trip-row">
+                                            <a href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $stats['trip_id']])); ?>"><?php echo esc_html($stats['title']); ?></a>
+                                            <span><?php echo esc_html(sprintf(alpenia_travel_t('%1$d Unterlagen · %2$d Zahlungen · %3$d in Prüfung · %4$d neu'), $stats['missing_docs'], $stats['open_payments'], $stats['in_review'], $stats['new_participants'])); ?></span>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else : ?>
+                                <p><?php echo esc_html(alpenia_travel_t('Aktuell keine offenen Backoffice-Aufgaben pro Reise.')); ?></p>
+                            <?php endif; ?>
+                        </div>
+
+                        <div class="operations-card operations-card--wide">
+                            <h3><?php echo esc_html(alpenia_travel_t('Heute abarbeiten')); ?></h3>
+                            <?php if (!empty($operations_task_items)) : ?>
+                                <div class="operations-task-list">
+                                    <?php foreach ($operations_task_items as $task) : ?>
+                                        <article class="operations-task-item">
+                                            <div>
+                                                <span><?php echo esc_html($task['trip_title']); ?></span>
+                                                <a href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $task['participant_id']])); ?>"><?php echo esc_html($task['participant_name']); ?></a>
+                                            </div>
+                                            <p><?php echo esc_html(implode(' · ', $task['reasons'])); ?></p>
+                                            <div class="operations-task-actions">
+                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $task['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $task['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
+                                            </div>
+                                        </article>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php else : ?>
+                                <p><?php echo esc_html(alpenia_travel_t('Heute sind keine priorisierten Aufgaben offen.')); ?></p>
+                            <?php endif; ?>
+                        </div>
+                    </div>
+                </section>
+
                 <div class="panel">
                     <h2><?php echo esc_html(alpenia_travel_t('Reisen mit Teilnehmerliste')); ?></h2>
 
@@ -3503,6 +3671,214 @@ function alpenia_dashboard_shortcode() {
             min-width: 0;
         }
 
+        .operations-overview {
+            position: relative;
+            overflow: hidden;
+            margin: 0 0 30px;
+            padding: 24px;
+            border: 1px solid rgba(217, 154, 43, 0.22);
+            border-radius: 26px;
+            background:
+                linear-gradient(145deg, rgba(255,255,255,0.98), rgba(249,251,247,0.98)),
+                radial-gradient(circle at top left, rgba(47, 125, 99, 0.14), transparent 34%);
+            color: #123f34;
+            box-shadow: 0 22px 55px rgba(10, 37, 30, 0.14);
+        }
+
+        .operations-overview__header {
+            display: flex;
+            justify-content: space-between;
+            gap: 18px;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .operations-overview__header h2 {
+            margin: 0;
+            color: #0b3329;
+            font-size: clamp(26px, 3vw, 38px);
+            font-weight: 900;
+            line-height: 1.08;
+        }
+
+        .operations-overview__header p {
+            max-width: 720px;
+            margin: 8px 0 0;
+            color: #466357;
+            font-weight: 700;
+            line-height: 1.45;
+        }
+
+        .operations-workload {
+            display: grid;
+            place-items: center;
+            min-width: 150px;
+            padding: 16px;
+            border: 1px solid rgba(217, 154, 43, 0.24);
+            border-radius: 22px;
+            background: #fff8ea;
+            text-align: center;
+        }
+
+        .operations-workload strong {
+            color: #7a4b0c;
+            font-size: 38px;
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .operations-workload span {
+            margin-top: 6px;
+            color: #5f3e05;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .operations-status-grid {
+            display: grid;
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 14px;
+            margin-bottom: 16px;
+        }
+
+        .operations-status-grid article {
+            display: grid;
+            gap: 8px;
+            min-width: 0;
+            padding: 16px;
+            border: 1px solid rgba(47, 125, 99, 0.14);
+            border-radius: 18px;
+            background: rgba(255,255,255,0.9);
+            box-shadow: 0 12px 30px rgba(16, 37, 31, 0.06);
+        }
+
+        .operations-status-grid span {
+            color: #617a70;
+            font-size: 12px;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .operations-status-grid strong {
+            color: #123f34;
+            font-size: clamp(24px, 2.5vw, 34px);
+            font-weight: 900;
+            line-height: 1;
+        }
+
+        .operations-detail-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .operations-card {
+            min-width: 0;
+            padding: 18px;
+            border: 1px solid rgba(47, 125, 99, 0.14);
+            border-radius: 20px;
+            background: rgba(248,252,250,0.92);
+        }
+
+        .operations-card--wide {
+            grid-column: 1 / -1;
+        }
+
+        .operations-card h3 {
+            margin: 0 0 14px;
+            color: #123f34;
+            font-size: 20px;
+            font-weight: 900;
+        }
+
+        .operations-card p {
+            margin: 0;
+            color: #466357;
+            font-weight: 800;
+            line-height: 1.45;
+        }
+
+        .operations-bottleneck-list,
+        .operations-trip-list,
+        .operations-task-list {
+            display: grid;
+            gap: 10px;
+        }
+
+        .operations-bottleneck-row,
+        .operations-trip-row,
+        .operations-task-item {
+            padding: 14px;
+            border: 1px solid rgba(47, 125, 99, 0.13);
+            border-radius: 16px;
+            background: #ffffff;
+        }
+
+        .operations-bottleneck-row {
+            display: flex;
+            justify-content: space-between;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .operations-bottleneck-row span,
+        .operations-trip-row span,
+        .operations-task-item span {
+            color: #617a70;
+            font-size: 13px;
+            font-weight: 800;
+        }
+
+        .operations-bottleneck-row strong {
+            display: inline-grid;
+            place-items: center;
+            min-width: 34px;
+            height: 34px;
+            border-radius: 999px;
+            background: #fff1f1;
+            color: #8f2424;
+            font-weight: 900;
+        }
+
+        .operations-trip-row {
+            display: grid;
+            gap: 5px;
+        }
+
+        .operations-trip-row a,
+        .operations-task-item a:not(.table-btn) {
+            color: #123f34;
+            font-weight: 900;
+            text-decoration: none;
+        }
+
+        .operations-trip-row a:hover,
+        .operations-task-item a:not(.table-btn):hover {
+            text-decoration: underline;
+        }
+
+        .operations-task-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .operations-task-item > div:first-child {
+            display: grid;
+            gap: 4px;
+        }
+
+        .operations-task-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            justify-content: flex-end;
+        }
+
         .panel {
             background: rgba(18,46,38,0.9);
             padding: 20px;
@@ -4504,6 +4880,10 @@ function alpenia_dashboard_shortcode() {
             .growth-insight-grid { grid-template-columns: 1fr; }
             .finance-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
             .finance-detail-grid { grid-template-columns: 1fr; }
+            .operations-status-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+            .operations-detail-grid { grid-template-columns: 1fr; }
+            .operations-task-item { grid-template-columns: 1fr; }
+            .operations-task-actions { justify-content: flex-start; }
             .cards { grid-template-columns: repeat(2, minmax(0,1fr)); }
             .trip-meta-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
         }
@@ -4533,6 +4913,13 @@ function alpenia_dashboard_shortcode() {
             .finance-trip-row { grid-template-columns: 1fr; }
             .finance-trip-row__amount { text-align: left; }
             .finance-priority-item { align-items: flex-start; flex-direction: column; }
+            .operations-overview { padding: 16px; border-radius: 20px; }
+            .operations-overview__header { flex-direction: column; }
+            .operations-workload { width: 100%; }
+            .operations-status-grid { grid-template-columns: 1fr; }
+            .operations-detail-grid { grid-template-columns: 1fr; }
+            .operations-task-item { grid-template-columns: 1fr; }
+            .operations-task-actions { justify-content: stretch; }
             .overview-card__header { align-items: center; }
             .overview-list-card { grid-template-columns: 1fr; border-radius: 16px; }
             .overview-list-card__actions { justify-content: stretch; }
