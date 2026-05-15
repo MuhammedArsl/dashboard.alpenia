@@ -776,6 +776,14 @@ function alpenia_dashboard_shortcode() {
             'orderby'     => 'date',
             'order'       => 'DESC',
         ]);
+
+        $latest_participants = get_posts([
+            'post_type'   => 'trip_participant',
+            'post_status' => 'publish',
+            'numberposts' => 5,
+            'orderby'     => 'date',
+            'order'       => 'DESC',
+        ]);
     } else {
         $allowed_trip_ids = array_map(function($trip) {
             return $trip->ID;
@@ -789,6 +797,21 @@ function alpenia_dashboard_shortcode() {
             'post_type'   => 'trip_participant',
             'post_status' => 'publish',
             'numberposts' => -1,
+            'meta_query'  => [
+                [
+                    'key'     => 'trip_id',
+                    'value'   => $allowed_trip_ids,
+                    'compare' => 'IN',
+                ]
+            ],
+            'orderby'     => 'date',
+            'order'       => 'DESC',
+        ]);
+
+        $latest_participants = get_posts([
+            'post_type'   => 'trip_participant',
+            'post_status' => 'publish',
+            'numberposts' => 5,
             'meta_query'  => [
                 [
                     'key'     => 'trip_id',
@@ -2367,6 +2390,12 @@ function alpenia_dashboard_shortcode() {
                                             <h3><?php echo esc_html(trim($gender . ' ' . $participant->post_title)); ?></h3>
                                             <p><?php echo $trip_id ? esc_html(get_the_title($trip_id)) : esc_html(alpenia_travel_t('Keine Reise')); ?></p>
                                             <?php echo wp_kses_post(alpenia_get_participant_doc_badge($participant->ID)); ?>
+                                            <div class="participant-mini-card__actions">
+                                                <?php if ($trip_id) : ?>
+                                                    <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip_id])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                                <?php endif; ?>
+                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $participant->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
+                                            </div>
                                         </div>
                                     </article>
                                 <?php endforeach; ?>
@@ -3109,6 +3138,19 @@ function alpenia_dashboard_shortcode() {
 
         .participant-mini-card .status-badge {
             margin-top: 10px;
+        }
+
+        .participant-mini-card__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .participant-mini-card__actions .table-btn {
+            min-height: 38px;
+            padding: 9px 12px;
+            border-radius: 999px;
         }
 
         .filter-bar {
