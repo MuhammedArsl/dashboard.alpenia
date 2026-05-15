@@ -354,6 +354,7 @@ function alpenia_travel_t($text) {
         'Start' => 'Başlangıç',
         'Ende' => 'Bitiş',
         'Offene Zahlungen im Überblick' => 'Açık ödemeler genel bakış',
+        'Info anzeigen' => 'Bilgileri göster',
         'Dashboard Übersichten' => 'Kontrol paneli özetleri',
         'Übersicht' => 'Genel bakış',
         'Planung' => 'Planlama',
