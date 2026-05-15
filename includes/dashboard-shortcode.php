@@ -94,6 +94,59 @@ function alpenia_dashboard_language_switcher() {
     return ob_get_clean();
 }
 
+function alpenia_dashboard_get_per_page($key, $default = 20, $allowed = [10, 20, 50, 100]) {
+    $value = isset($_GET[$key]) ? (int) $_GET[$key] : (int) $default;
+    return in_array($value, $allowed, true) ? $value : (int) $default;
+}
+
+function alpenia_dashboard_render_pagination($current_page, $max_pages, $base_args, $page_arg) {
+    $current_page = max(1, (int) $current_page);
+    $max_pages = max(1, (int) $max_pages);
+
+    if ($max_pages <= 1) {
+        return '';
+    }
+
+    $base_args = array_filter((array) $base_args, function($value) {
+        return $value !== '' && $value !== null;
+    });
+
+    $window_start = max(1, $current_page - 2);
+    $window_end = min($max_pages, $current_page + 2);
+
+    ob_start();
+    ?>
+    <nav class="alpenia-pagination" aria-label="<?php echo esc_attr(alpenia_travel_t('Seitennavigation')); ?>">
+        <?php if ($current_page > 1) : ?>
+            <a href="<?php echo esc_url(alpenia_dashboard_link(array_merge($base_args, [$page_arg => $current_page - 1]))); ?>"><?php echo esc_html(alpenia_travel_t('Zurück')); ?></a>
+        <?php endif; ?>
+
+        <?php if ($window_start > 1) : ?>
+            <a href="<?php echo esc_url(alpenia_dashboard_link(array_merge($base_args, [$page_arg => 1]))); ?>">1</a>
+            <?php if ($window_start > 2) : ?><span>…</span><?php endif; ?>
+        <?php endif; ?>
+
+        <?php for ($page = $window_start; $page <= $window_end; $page++) : ?>
+            <?php if ($page === $current_page) : ?>
+                <span class="is-active"><?php echo esc_html($page); ?></span>
+            <?php else : ?>
+                <a href="<?php echo esc_url(alpenia_dashboard_link(array_merge($base_args, [$page_arg => $page]))); ?>"><?php echo esc_html($page); ?></a>
+            <?php endif; ?>
+        <?php endfor; ?>
+
+        <?php if ($window_end < $max_pages) : ?>
+            <?php if ($window_end < $max_pages - 1) : ?><span>…</span><?php endif; ?>
+            <a href="<?php echo esc_url(alpenia_dashboard_link(array_merge($base_args, [$page_arg => $max_pages]))); ?>"><?php echo esc_html($max_pages); ?></a>
+        <?php endif; ?>
+
+        <?php if ($current_page < $max_pages) : ?>
+            <a href="<?php echo esc_url(alpenia_dashboard_link(array_merge($base_args, [$page_arg => $current_page + 1]))); ?>"><?php echo esc_html(alpenia_travel_t('Weiter')); ?></a>
+        <?php endif; ?>
+    </nav>
+    <?php
+    return ob_get_clean();
+}
+
 function alpenia_dashboard_shortcode() {
     if (!defined('DONOTCACHEPAGE')) {
         define('DONOTCACHEPAGE', true);
@@ -131,6 +184,8 @@ function alpenia_dashboard_shortcode() {
     $trip_country_filter = isset($_GET['trip_country_filter']) ? sanitize_text_field($_GET['trip_country_filter']) : '';
     $trip_city_filter = isset($_GET['trip_city_filter']) ? sanitize_text_field($_GET['trip_city_filter']) : '';
     $guide_filter = isset($_GET['guide_filter']) ? (int) $_GET['guide_filter'] : '';
+    $trip_page = isset($_GET['trip_page']) ? max(1, (int) $_GET['trip_page']) : 1;
+    $trips_per_page = alpenia_dashboard_get_per_page('trips_per_page', 20, [10, 20, 50, 100]);
     $create_trip_requested = isset($_GET['create_trip']) && $_GET['create_trip'] == '1';
     $edit_trip_id = isset($_GET['edit_trip']) ? (int) $_GET['edit_trip'] : 0;
     $edit_trip_requested = $edit_trip_id > 0;
@@ -684,20 +739,48 @@ function alpenia_dashboard_shortcode() {
     }
 
     $all_trips = alpenia_get_filtered_trips('', '', '', '', '', '');
-    $filtered_trips = alpenia_get_filtered_trips(
+    $filtered_trips_result = alpenia_get_paginated_filtered_trips(
         $trip_search,
         $trip_type_filter,
         $trip_status_filter,
         $trip_country_filter,
         $trip_city_filter,
-        $guide_filter
+        $guide_filter,
+        $trip_page,
+        $trips_per_page
     );
+    $filtered_trips = $filtered_trips_result['posts'];
+    $filtered_trips_total = (int) $filtered_trips_result['total'];
+    $filtered_trips_max_pages = (int) $filtered_trips_result['max_pages'];
+
+    if ($filtered_trips_total > 0 && $trip_page > $filtered_trips_max_pages) {
+        $trip_page = $filtered_trips_max_pages;
+        $filtered_trips_result = alpenia_get_paginated_filtered_trips(
+            $trip_search,
+            $trip_type_filter,
+            $trip_status_filter,
+            $trip_country_filter,
+            $trip_city_filter,
+            $guide_filter,
+            $trip_page,
+            $trips_per_page
+        );
+        $filtered_trips = $filtered_trips_result['posts'];
+    }
 
     if (alpenia_is_admin_user() || alpenia_is_backoffice_user()) {
         $participants = get_posts([
             'post_type'   => 'trip_participant',
             'post_status' => 'publish',
             'numberposts' => -1,
+            'orderby'     => 'date',
+            'order'       => 'DESC',
+        ]);
+
+        $latest_participants = get_posts([
+            'post_type'   => 'trip_participant',
+            'post_status' => 'publish',
+            'numberposts' => 5,
             'orderby'     => 'date',
             'order'       => 'DESC',
         ]);
@@ -714,6 +797,21 @@ function alpenia_dashboard_shortcode() {
             'post_type'   => 'trip_participant',
             'post_status' => 'publish',
             'numberposts' => -1,
+            'meta_query'  => [
+                [
+                    'key'     => 'trip_id',
+                    'value'   => $allowed_trip_ids,
+                    'compare' => 'IN',
+                ]
+            ],
+            'orderby'     => 'date',
+            'order'       => 'DESC',
+        ]);
+
+        $latest_participants = get_posts([
+            'post_type'   => 'trip_participant',
+            'post_status' => 'publish',
+            'numberposts' => 5,
             'meta_query'  => [
                 [
                     'key'     => 'trip_id',
@@ -767,6 +865,7 @@ function alpenia_dashboard_shortcode() {
     $open_payments_count = 0;
     $missing_docs_items = [];
     $open_payments_items = [];
+    $overview_item_limit = 6;
 
     foreach ($participants as $participant) {
         $participant_id = $participant->ID;
@@ -779,31 +878,35 @@ function alpenia_dashboard_shortcode() {
 
         if ($score !== 'complete') {
             $missing_docs_count++;
-            $missing_docs_items[] = [
-                'trip_id' => $trip_id,
-                'trip_title' => get_the_title($trip_id),
-                'participant_name' => trim(
-                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                    alpenia_get_secure_meta($participant_id, 'last_name', true)
-                ),
-                'missing_docs' => alpenia_get_missing_docs_details($participant_id),
-                'participant_id' => $participant_id,
-            ];
+            if (count($missing_docs_items) < $overview_item_limit) {
+                $missing_docs_items[] = [
+                    'trip_id' => $trip_id,
+                    'trip_title' => get_the_title($trip_id),
+                    'participant_name' => trim(
+                        alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
+                        alpenia_get_secure_meta($participant_id, 'last_name', true)
+                    ),
+                    'missing_docs' => alpenia_get_missing_docs_details($participant_id),
+                    'participant_id' => $participant_id,
+                ];
+            }
         }
 
         if ($payment_open > 0) {
             $open_payments_count++;
-            $open_payments_items[] = [
-                'trip_id' => $trip_id,
-                'trip_title' => get_the_title($trip_id),
-                'participant_name' => trim(
-                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                    alpenia_get_secure_meta($participant_id, 'last_name', true)
-                ),
-                'payment_open' => $payment_open,
-                'payment_status' => alpenia_get_payment_status($participant_id),
-                'participant_id' => $participant_id,
-            ];
+            if (count($open_payments_items) < $overview_item_limit) {
+                $open_payments_items[] = [
+                    'trip_id' => $trip_id,
+                    'trip_title' => get_the_title($trip_id),
+                    'participant_name' => trim(
+                        alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
+                        alpenia_get_secure_meta($participant_id, 'last_name', true)
+                    ),
+                    'payment_open' => $payment_open,
+                    'payment_status' => alpenia_get_payment_status($participant_id),
+                    'participant_id' => $participant_id,
+                ];
+            }
         }
     }
 
@@ -1568,7 +1671,34 @@ function alpenia_dashboard_shortcode() {
                 }
 
                 $trip = get_post($view_trip_id);
-                $trip_participants = alpenia_get_trip_participants($view_trip_id);
+                $participant_search = isset($_GET['participant_search']) ? sanitize_text_field(wp_unslash($_GET['participant_search'])) : '';
+                $participant_doc_filter = isset($_GET['participant_doc_filter']) ? sanitize_key(wp_unslash($_GET['participant_doc_filter'])) : '';
+                $participant_payment_filter = isset($_GET['participant_payment_filter']) ? sanitize_key(wp_unslash($_GET['participant_payment_filter'])) : '';
+                $participant_status_filter = isset($_GET['participant_status_filter']) ? sanitize_key(wp_unslash($_GET['participant_status_filter'])) : '';
+                $participant_page = isset($_GET['participant_page']) ? max(1, (int) $_GET['participant_page']) : 1;
+                $participants_per_page = alpenia_dashboard_get_per_page('participants_per_page', 50, [25, 50, 100]);
+                $trip_participants_result = alpenia_get_paginated_trip_participants($view_trip_id, [
+                    'search' => $participant_search,
+                    'doc_status' => $participant_doc_filter,
+                    'payment_status' => $participant_payment_filter,
+                    'participant_status' => $participant_status_filter,
+                ], $participant_page, $participants_per_page);
+                $trip_participants = $trip_participants_result['posts'];
+                $trip_participants_total = (int) $trip_participants_result['total'];
+                $trip_participants_max_pages = (int) $trip_participants_result['max_pages'];
+
+                if ($trip_participants_total > 0 && $participant_page > $trip_participants_max_pages) {
+                    $participant_page = $trip_participants_max_pages;
+                    $trip_participants_result = alpenia_get_paginated_trip_participants($view_trip_id, [
+                        'search' => $participant_search,
+                        'doc_status' => $participant_doc_filter,
+                        'payment_status' => $participant_payment_filter,
+                        'participant_status' => $participant_status_filter,
+                    ], $participant_page, $participants_per_page);
+                    $trip_participants = $trip_participants_result['posts'];
+                }
+
+                $trip_participants_all_count = alpenia_count_trip_participants($view_trip_id);
                 $assigned_guide_id = (int) get_post_meta($view_trip_id, 'assigned_guide', true);
                 $assigned_guide_name = $assigned_guide_id ? get_the_author_meta('display_name', $assigned_guide_id) : '';
                 $delete_trip_nonce = wp_create_nonce('alpenia_delete_trip_' . $view_trip_id);
@@ -1643,6 +1773,44 @@ function alpenia_dashboard_shortcode() {
 
                 <div class="panel" style="margin-top:20px;">
                     <h2><?php echo esc_html(alpenia_travel_t("Teilnehmer dieser Reise")); ?></h2>
+
+                    <form method="get" class="filter-bar filter-bar--participants">
+                        <input type="hidden" name="view_trip" value="<?php echo esc_attr($view_trip_id); ?>">
+                        <input type="text" name="participant_search" value="<?php echo esc_attr($participant_search); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('Teilnehmer, Passnummer oder E-Mail suchen')); ?>">
+
+                        <select name="participant_doc_filter">
+                            <option value=""><?php echo esc_html(alpenia_travel_t('Alle Dokumente')); ?></option>
+                            <option value="missing" <?php selected($participant_doc_filter, 'missing'); ?>><?php echo esc_html(alpenia_travel_t('Unterlagen fehlen')); ?></option>
+                            <option value="complete" <?php selected($participant_doc_filter, 'complete'); ?>><?php echo esc_html(alpenia_travel_t('Unterlagen komplett')); ?></option>
+                        </select>
+
+                        <select name="participant_payment_filter">
+                            <option value=""><?php echo esc_html(alpenia_travel_t('Alle Zahlungen')); ?></option>
+                            <option value="open" <?php selected($participant_payment_filter, 'open'); ?>><?php echo esc_html(alpenia_travel_t('Offene Zahlungen')); ?></option>
+                            <option value="partial" <?php selected($participant_payment_filter, 'partial'); ?>><?php echo esc_html(alpenia_travel_t('Teilweise bezahlt')); ?></option>
+                            <option value="paid" <?php selected($participant_payment_filter, 'paid'); ?>><?php echo esc_html(alpenia_travel_t('Bezahlt')); ?></option>
+                        </select>
+
+                        <select name="participant_status_filter">
+                            <option value=""><?php echo esc_html(alpenia_travel_t('Alle Status')); ?></option>
+                            <option value="neu" <?php selected($participant_status_filter, 'neu'); ?>><?php echo esc_html(alpenia_travel_t('neu')); ?></option>
+                            <option value="offen" <?php selected($participant_status_filter, 'offen'); ?>><?php echo esc_html(alpenia_travel_t('offen')); ?></option>
+                            <option value="aktiv" <?php selected($participant_status_filter, 'aktiv'); ?>><?php echo esc_html(alpenia_travel_t('aktiv')); ?></option>
+                        </select>
+
+                        <select name="participants_per_page">
+                            <option value="25" <?php selected($participants_per_page, 25); ?>>25 <?php echo esc_html(alpenia_travel_t('pro Seite')); ?></option>
+                            <option value="50" <?php selected($participants_per_page, 50); ?>>50 <?php echo esc_html(alpenia_travel_t('pro Seite')); ?></option>
+                            <option value="100" <?php selected($participants_per_page, 100); ?>>100 <?php echo esc_html(alpenia_travel_t('pro Seite')); ?></option>
+                        </select>
+
+                        <button type="submit" class="btn-primary"><?php echo esc_html(alpenia_travel_t('Filtern')); ?></button>
+                        <a href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $view_trip_id])); ?>" class="btn-secondary"><?php echo esc_html(alpenia_travel_t('Zurücksetzen')); ?></a>
+                    </form>
+
+                    <div class="list-summary">
+                        <?php echo esc_html(sprintf(alpenia_travel_t('%1$d von %2$d Teilnehmern angezeigt'), $trip_participants_total, $trip_participants_all_count)); ?>
+                    </div>
 
                     <?php if (!empty($trip_participants)) : ?>
                         <div class="table-wrap">
@@ -1729,8 +1897,16 @@ function alpenia_dashboard_shortcode() {
                                 </tbody>
                             </table>
                         </div>
+                        <?php echo alpenia_dashboard_render_pagination($participant_page, $trip_participants_max_pages, [
+                            'view_trip' => $view_trip_id,
+                            'participant_search' => $participant_search,
+                            'participant_doc_filter' => $participant_doc_filter,
+                            'participant_payment_filter' => $participant_payment_filter,
+                            'participant_status_filter' => $participant_status_filter,
+                            'participants_per_page' => $participants_per_page,
+                        ], 'participant_page'); ?>
                     <?php else : ?>
-                        <p><?php echo esc_html(alpenia_travel_t('Noch keine Teilnehmer für diese Reise vorhanden.')); ?></p>
+                        <p><?php echo esc_html(alpenia_travel_t('Keine Teilnehmer für diese Suche / Filter gefunden.')); ?></p>
                     <?php endif; ?>
                 </div>
 
@@ -2001,14 +2177,25 @@ function alpenia_dashboard_shortcode() {
                             </select>
                         <?php endif; ?>
 
+                        <select name="trips_per_page">
+                            <option value="10" <?php selected($trips_per_page, 10); ?>>10 <?php echo esc_html(alpenia_travel_t('pro Seite')); ?></option>
+                            <option value="20" <?php selected($trips_per_page, 20); ?>>20 <?php echo esc_html(alpenia_travel_t('pro Seite')); ?></option>
+                            <option value="50" <?php selected($trips_per_page, 50); ?>>50 <?php echo esc_html(alpenia_travel_t('pro Seite')); ?></option>
+                            <option value="100" <?php selected($trips_per_page, 100); ?>>100 <?php echo esc_html(alpenia_travel_t('pro Seite')); ?></option>
+                        </select>
+
                         <button type="submit" class="btn-primary"><?php echo esc_html(alpenia_travel_t('Filtern')); ?></button>
                         <a href="<?php echo esc_url(alpenia_dashboard_link()); ?>" class="btn-secondary"><?php echo esc_html(alpenia_travel_t('Zurücksetzen')); ?></a>
                     </form>
 
+                    <div class="list-summary">
+                        <?php echo esc_html(sprintf(alpenia_travel_t('%1$d Reisen gefunden – Seite %2$d von %3$d'), $filtered_trips_total, $trip_page, $filtered_trips_max_pages)); ?>
+                    </div>
+
                     <?php if ($filtered_trips) : ?>
                         <ul class="list-table">
                             <?php foreach ($filtered_trips as $trip) :
-                                $trip_participants = alpenia_get_trip_participants($trip->ID);
+                                $trip_participants_count = alpenia_count_trip_participants($trip->ID);
                                 $guide_id = (int) get_post_meta($trip->ID, 'assigned_guide', true);
                                 $guide_name = $guide_id ? get_the_author_meta('display_name', $guide_id) : '-';
                                 $delete_trip_nonce = wp_create_nonce('alpenia_delete_trip_' . $trip->ID);
@@ -2057,7 +2244,7 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="list-actions trip-list-card__actions">
-                                        <span class="badge"><?php echo count($trip_participants); ?> <?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></span>
+                                        <span class="badge"><?php echo esc_html($trip_participants_count); ?> <?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></span>
                                         <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer ansehen')); ?></a>
                                         <?php if (alpenia_user_can_edit_trip($trip->ID)) : ?>
                                             <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_trip' => $trip->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Bearbeiten')); ?></a>
@@ -2069,6 +2256,15 @@ function alpenia_dashboard_shortcode() {
                                 </li>
                             <?php endforeach; ?>
                         </ul>
+                        <?php echo alpenia_dashboard_render_pagination($trip_page, $filtered_trips_max_pages, [
+                            'trip_search' => $trip_search,
+                            'trip_type_filter' => $trip_type_filter,
+                            'trip_status_filter' => $trip_status_filter,
+                            'trip_country_filter' => $trip_country_filter,
+                            'trip_city_filter' => $trip_city_filter,
+                            'guide_filter' => $guide_filter,
+                            'trips_per_page' => $trips_per_page,
+                        ], 'trip_page'); ?>
                     <?php else : ?>
                         <p><?php echo esc_html(alpenia_travel_t('Keine Reisen für diese Suche / Filter gefunden.')); ?></p>
                     <?php endif; ?>
@@ -2103,12 +2299,17 @@ function alpenia_dashboard_shortcode() {
                                             </details>
                                         </div>
                                         <div class="overview-list-card__actions">
-                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id'], 'participant_doc_filter' => 'missing'])); ?>"><?php echo esc_html(alpenia_travel_t('Alle fehlenden Unterlagen anzeigen')); ?></a>
                                             <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
                                         </div>
                                     </article>
                                 <?php endforeach; ?>
                             </div>
+                            <?php if ($missing_docs_count > count($missing_docs_items)) : ?>
+                                <p class="overview-card__hint">
+                                    <?php echo esc_html(sprintf(alpenia_travel_t('Es werden die ersten %1$d von %2$d Einträgen angezeigt. Öffne eine Reise, um die gefilterte, paginierte Liste vollständig abzuarbeiten.'), count($missing_docs_items), $missing_docs_count)); ?>
+                                </p>
+                            <?php endif; ?>
                         <?php else : ?>
                             <div class="overview-empty-state">
                                 <strong><?php echo esc_html(alpenia_travel_t('Aktuell keine fehlenden Unterlagen.')); ?></strong>
@@ -2148,12 +2349,17 @@ function alpenia_dashboard_shortcode() {
                                             </details>
                                         </div>
                                         <div class="overview-list-card__actions">
-                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $item['trip_id'], 'participant_payment_filter' => 'open'])); ?>"><?php echo esc_html(alpenia_travel_t('Alle offenen Zahlungen anzeigen')); ?></a>
                                             <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
                                         </div>
                                     </article>
                                 <?php endforeach; ?>
                             </div>
+                            <?php if ($open_payments_count > count($open_payments_items)) : ?>
+                                <p class="overview-card__hint">
+                                    <?php echo esc_html(sprintf(alpenia_travel_t('Es werden die ersten %1$d von %2$d Einträgen angezeigt. Öffne eine Reise, um die gefilterte, paginierte Liste vollständig abzuarbeiten.'), count($open_payments_items), $open_payments_count)); ?>
+                                </p>
+                            <?php endif; ?>
                         <?php else : ?>
                             <div class="overview-empty-state">
                                 <strong><?php echo esc_html(alpenia_travel_t('Aktuell keine offenen Zahlungen.')); ?></strong>
@@ -2167,12 +2373,12 @@ function alpenia_dashboard_shortcode() {
                                 <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Aktivität')); ?></span>
                                 <h2><?php echo esc_html(alpenia_travel_t('Letzte Teilnehmer')); ?></h2>
                             </div>
-                            <span class="overview-card__count"><?php echo esc_html(min(5, count($participants))); ?></span>
+                            <span class="overview-card__count"><?php echo esc_html(count($latest_participants)); ?></span>
                         </div>
 
-                        <?php if ($participants) : ?>
+                        <?php if ($latest_participants) : ?>
                             <div class="participant-card-list">
-                                <?php foreach (array_slice($participants, 0, 5) as $participant) :
+                                <?php foreach ($latest_participants as $participant) :
                                     $trip_id = (int) get_post_meta($participant->ID, 'trip_id', true);
                                     $gender = get_post_meta($participant->ID, 'gender', true);
                                 ?>
@@ -2182,6 +2388,12 @@ function alpenia_dashboard_shortcode() {
                                             <h3><?php echo esc_html(trim($gender . ' ' . $participant->post_title)); ?></h3>
                                             <p><?php echo $trip_id ? esc_html(get_the_title($trip_id)) : esc_html(alpenia_travel_t('Keine Reise')); ?></p>
                                             <?php echo wp_kses_post(alpenia_get_participant_doc_badge($participant->ID)); ?>
+                                            <div class="participant-mini-card__actions">
+                                                <?php if ($trip_id) : ?>
+                                                    <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip_id])); ?>"><?php echo esc_html(alpenia_travel_t('Reise öffnen')); ?></a>
+                                                <?php endif; ?>
+                                                <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $participant->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
+                                            </div>
                                         </div>
                                     </article>
                                 <?php endforeach; ?>
@@ -2720,6 +2932,18 @@ function alpenia_dashboard_shortcode() {
             box-shadow: 0 12px 28px rgba(123, 90, 32, 0.1);
         }
 
+        .overview-card__hint {
+            position: relative;
+            z-index: 1;
+            margin: 14px 0 0;
+            padding: 12px 14px;
+            border-radius: 16px;
+            background: #eef8f4;
+            color: #174b3d;
+            font-weight: 800;
+            line-height: 1.45;
+        }
+
         .overview-list,
         .participant-card-list {
             position: relative;
@@ -2914,6 +3138,19 @@ function alpenia_dashboard_shortcode() {
             margin-top: 10px;
         }
 
+        .participant-mini-card__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .participant-mini-card__actions .table-btn {
+            min-height: 38px;
+            padding: 9px 12px;
+            border-radius: 999px;
+        }
+
         .filter-bar {
             display: flex;
             gap: 12px;
@@ -2924,6 +3161,51 @@ function alpenia_dashboard_shortcode() {
 
         .filter-bar > * {
             flex: 1 1 220px;
+        }
+
+        .filter-bar--participants > * {
+            flex-basis: 190px;
+        }
+
+        .list-summary {
+            margin: 0 0 16px;
+            padding: 12px 14px;
+            border-radius: 12px;
+            background: rgba(142,224,184,0.12);
+            color: #d9ffed;
+            font-weight: 800;
+        }
+
+        .alpenia-pagination {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+            margin-top: 18px;
+        }
+
+        .alpenia-pagination a,
+        .alpenia-pagination span {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 42px;
+            min-height: 42px;
+            padding: 10px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(142,224,184,0.28);
+            background: rgba(16,36,29,0.82);
+            color: #ffffff;
+            text-decoration: none;
+            font-weight: 800;
+        }
+
+        .alpenia-pagination a:hover,
+        .alpenia-pagination a:focus,
+        .alpenia-pagination .is-active {
+            background: #8ee0b8;
+            color: #10241d;
+            outline: none;
         }
 
         .alpenia-form { margin-top: 10px; }
