@@ -282,14 +282,14 @@ function alpenia_dashboard_render_business_overview($trips, $participants) {
 
         <div class="business-metric-grid">
             <?php
-            echo alpenia_dashboard_render_metric_card('Geplanter Umsatz', alpenia_dashboard_business_money($totals['revenue']));
-            echo alpenia_dashboard_render_metric_card('Bereits bezahlt', alpenia_dashboard_business_money($totals['paid']));
-            echo alpenia_dashboard_render_metric_card('Noch offen', alpenia_dashboard_business_money($totals['open']));
-            echo alpenia_dashboard_render_metric_card('Auslastung', $totals['occupancy'] . '%', sprintf(alpenia_travel_t('%1$d von %2$d Plätzen'), $totals['occupied'], $totals['capacity']));
-            echo alpenia_dashboard_render_metric_card('Anmeldungen aktueller Monat', (string) $totals['current_month_participants'], sprintf(alpenia_travel_t('%+d%% zum Vormonat'), $totals['participant_delta']));
-            echo alpenia_dashboard_render_metric_card('Umsatz aktueller Monat', alpenia_dashboard_business_money($totals['current_month_revenue']), sprintf(alpenia_travel_t('%+d%% zum Vormonat'), $totals['revenue_delta']));
-            echo alpenia_dashboard_render_metric_card('In Prüfung', (string) $data['status_counts']['in_pruefung']);
-            echo alpenia_dashboard_render_metric_card('Neu', (string) $data['status_counts']['neu']);
+            echo alpenia_dashboard_render_metric_card(alpenia_travel_t('Geplanter Umsatz'), alpenia_dashboard_business_money($totals['revenue']));
+            echo alpenia_dashboard_render_metric_card(alpenia_travel_t('Bereits bezahlt'), alpenia_dashboard_business_money($totals['paid']));
+            echo alpenia_dashboard_render_metric_card(alpenia_travel_t('Noch offen'), alpenia_dashboard_business_money($totals['open']));
+            echo alpenia_dashboard_render_metric_card(alpenia_travel_t('Auslastung'), $totals['occupancy'] . '%', sprintf(alpenia_travel_t('%1$d von %2$d Plätzen'), $totals['occupied'], $totals['capacity']));
+            echo alpenia_dashboard_render_metric_card(alpenia_travel_t('Anmeldungen aktueller Monat'), (string) $totals['current_month_participants'], sprintf(alpenia_travel_t('%+d%% zum Vormonat'), $totals['participant_delta']));
+            echo alpenia_dashboard_render_metric_card(alpenia_travel_t('Umsatz aktueller Monat'), alpenia_dashboard_business_money($totals['current_month_revenue']), sprintf(alpenia_travel_t('%+d%% zum Vormonat'), $totals['revenue_delta']));
+            echo alpenia_dashboard_render_metric_card(alpenia_travel_t('In Prüfung'), (string) $data['status_counts']['in_pruefung']);
+            echo alpenia_dashboard_render_metric_card(alpenia_travel_t('Neu'), (string) $data['status_counts']['neu']);
             ?>
         </div>
 
