@@ -2074,17 +2074,23 @@ function alpenia_dashboard_shortcode() {
                 <?php
                 $public_form_link = alpenia_public_participant_get_trip_form_url($view_trip_id);
                 ?>
-                <div class="panel" style="margin-top:20px;">
-                    <h2><?php echo esc_html(alpenia_travel_t('Öffentliche Anmeldung')); ?></h2>
-                    <p><?php echo esc_html(alpenia_travel_t('Teile ausschließlich diesen individuellen Anmeldelink mit Teilnehmern. Das öffentliche Formular ist ohne gültigen Link nicht zugänglich.')); ?></p>
-                    <div class="trip-meta-grid">
-                        <div class="trip-meta-box">
-                            <strong><?php echo esc_html(alpenia_travel_t('Individueller Anmeldelink')); ?></strong>
-                            <span class="public-registration-link">
-                                <input class="public-registration-link__input" type="text" readonly value="<?php echo esc_attr($public_form_link); ?>" onclick="this.select();" aria-label="<?php echo esc_attr(alpenia_travel_t('Individueller Anmeldelink')); ?>">
-                                <button type="button" class="btn-secondary public-registration-link__copy" data-copy-value="<?php echo esc_attr($public_form_link); ?>" data-copy-default="<?php echo esc_attr(alpenia_travel_t('Link kopieren')); ?>" data-copy-success="<?php echo esc_attr(alpenia_travel_t('Link kopiert')); ?>"><?php echo esc_html(alpenia_travel_t('Link kopieren')); ?></button>
+                <div class="panel public-registration-panel">
+                    <div class="public-registration-panel__header">
+                        <div>
+                            <span class="public-registration-panel__eyebrow"><?php echo esc_html(alpenia_travel_t('Öffentlicher Zugang')); ?></span>
+                            <h2><?php echo esc_html(alpenia_travel_t('Öffentliche Anmeldung')); ?></h2>
+                        </div>
+                        <span class="public-registration-panel__badge"><?php echo esc_html(alpenia_travel_t('Nur mit Link')); ?></span>
+                    </div>
+                    <p class="public-registration-panel__text"><?php echo esc_html(alpenia_travel_t('Teile ausschließlich diesen individuellen Anmeldelink mit Teilnehmern. Das öffentliche Formular ist ohne gültigen Link nicht zugänglich.')); ?></p>
+                    <div class="public-registration-card">
+                        <label class="public-registration-card__label" for="public-registration-link-<?php echo (int) $view_trip_id; ?>"><?php echo esc_html(alpenia_travel_t('Individueller Anmeldelink')); ?></label>
+                        <div class="public-registration-link">
+                            <input id="public-registration-link-<?php echo (int) $view_trip_id; ?>" class="public-registration-link__input" type="text" readonly value="<?php echo esc_attr($public_form_link); ?>" onclick="this.select();" aria-label="<?php echo esc_attr(alpenia_travel_t('Individueller Anmeldelink')); ?>">
+                            <div class="public-registration-link__actions">
+                                <button type="button" class="btn-secondary public-registration-link__copy" data-copy-value="<?php echo esc_attr($public_form_link); ?>" data-copy-default="<?php echo esc_attr(alpenia_travel_t('Link kopieren')); ?>" data-copy-success="<?php echo esc_attr(alpenia_travel_t('Link kopiert')); ?>" aria-live="polite"><?php echo esc_html(alpenia_travel_t('Link kopieren')); ?></button>
                                 <a class="btn-primary public-registration-link__open" href="<?php echo esc_url($public_form_link); ?>" target="_blank" rel="noopener"><?php echo esc_html(alpenia_travel_t('Formular öffnen')); ?></a>
-                            </span>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -3033,27 +3039,153 @@ function alpenia_dashboard_shortcode() {
             border: 1px solid rgba(167, 197, 184, 0.45);
         }
 
+        .public-registration-panel {
+            margin-top: 20px;
+            overflow: hidden;
+            border: 1px solid rgba(167, 197, 184, 0.34);
+            background:
+                radial-gradient(circle at 100% 0%, rgba(217, 154, 43, 0.13), transparent 32%),
+                linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 248, 0.96));
+        }
+
+        .public-registration-panel__header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 10px;
+        }
+
+        .public-registration-panel__header h2 {
+            margin: 4px 0 0;
+        }
+
+        .public-registration-panel__eyebrow,
+        .public-registration-panel__badge {
+            display: inline-flex;
+            align-items: center;
+            width: fit-content;
+            border-radius: 999px;
+            font-size: 0.76rem;
+            font-weight: 900;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+        }
+
+        .public-registration-panel__eyebrow {
+            color: #2f7460;
+        }
+
+        .public-registration-panel__badge {
+            flex: 0 0 auto;
+            padding: 8px 12px;
+            background: #fff3d6;
+            color: #8a5a0a;
+            border: 1px solid rgba(217, 154, 43, 0.35);
+        }
+
+        .public-registration-panel__text {
+            max-width: 780px;
+            margin: 0 0 16px;
+            color: #4f6b62;
+            line-height: 1.6;
+        }
+
+        .public-registration-card {
+            padding: 16px;
+            border: 1px solid rgba(167, 197, 184, 0.5);
+            border-radius: 18px;
+            background: #fff;
+            box-shadow: 0 12px 28px rgba(16, 37, 31, 0.07);
+        }
+
+        .public-registration-card__label {
+            display: block;
+            margin-bottom: 8px;
+            color: #123f34;
+            font-weight: 900;
+        }
+
         .public-registration-link {
             display: grid;
-            grid-template-columns: minmax(240px, 1fr) auto auto;
-            gap: 10px;
+            grid-template-columns: minmax(0, 1fr) auto;
+            gap: 12px;
             align-items: stretch;
-            margin-top: 10px;
+            min-width: 0;
         }
 
         .public-registration-link__input {
             width: 100%;
-            min-height: 50px;
-            border-radius: 10px;
-            border: 1px solid rgba(167, 197, 184, 0.55);
-            padding: 0 14px;
+            min-width: 0;
+            min-height: 52px;
+            border-radius: 14px;
+            border: 1px solid rgba(167, 197, 184, 0.7);
+            padding: 0 16px;
             color: #123f34;
-            background: #fff;
+            background: #fbfdfc;
+            font: inherit;
+            font-weight: 700;
+            box-shadow: inset 0 1px 0 rgba(16, 37, 31, 0.04);
         }
 
-        @media (max-width: 720px) {
+        .public-registration-link__input:focus {
+            outline: none;
+            border-color: #2f7460;
+            box-shadow: 0 0 0 4px rgba(47, 116, 96, 0.16);
+        }
+
+        .public-registration-link__actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: flex-end;
+        }
+
+        .public-registration-link__copy,
+        .public-registration-link__open {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 52px;
+            padding: 0 18px;
+            border-radius: 14px;
+            text-align: center;
+            white-space: nowrap;
+        }
+
+        @media (max-width: 900px) {
             .public-registration-link {
                 grid-template-columns: 1fr;
+            }
+
+            .public-registration-link__actions {
+                justify-content: stretch;
+            }
+
+            .public-registration-link__copy,
+            .public-registration-link__open {
+                flex: 1 1 180px;
+            }
+        }
+
+        @media (max-width: 520px) {
+            .public-registration-panel__header {
+                flex-direction: column;
+            }
+
+            .public-registration-card {
+                padding: 12px;
+                border-radius: 16px;
+            }
+
+            .public-registration-link__actions {
+                flex-direction: column;
+            }
+
+            .public-registration-link__copy,
+            .public-registration-link__open {
+                width: 100%;
+                min-height: 50px;
             }
         }
 
