@@ -178,3 +178,36 @@ msgstr ""
 
 msgid "Nur mit Link"
 msgstr ""
+
+msgid "Nachfassen"
+msgstr "Takip"
+
+msgid "Fehlende Unterlagen im Blick"
+msgstr "Eksik belgeler"
+
+msgid "Offene Zahlungen im Blick"
+msgstr "Bekleyen ödemeler"
+
+msgid "Unterlage"
+msgstr "belge"
+
+msgid "Unterlagen"
+msgstr "belge"
+
+msgid "Zum Teilnehmer"
+msgstr "Katılımcıya git"
+
+msgid "%1$s · %2$s fehlen"
+msgstr "%1$s · %2$s eksik"
+
+msgid "%1$s · %2$s offen"
+msgstr "%1$s · %2$s bekliyor"
+
+msgid "%1$s von %2$s sichtbar. Öffne den Teilnehmer direkt über die Karte."
+msgstr "%2$s içinden %1$s gösteriliyor. Katılımcıya doğrudan kart üzerinden gidin."
+
+msgid "%d Unterlage fehlt"
+msgstr "%d belge eksik"
+
+msgid "%d Unterlagen fehlen"
+msgstr "%d belge eksik"
