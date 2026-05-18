@@ -640,7 +640,7 @@ function alpenia_get_all_countries() {
         'Burundi','Chile','China','Costa Rica','Dänemark','Deutschland','Dominica','Dominikanische Republik','Dschibuti','Ecuador',
         'El Salvador','Elfenbeinküste','Eritrea','Estland','Eswatini','Fidschi','Finnland','Frankreich','Gabun','Gambia','Georgien',
         'Ghana','Grenada','Griechenland','Guatemala','Guinea','Guinea-Bissau','Guyana','Haiti','Honduras','Indien','Indonesien',
-        'Irak','Iran','Irland','Island','Israel','Italien','Jamaika','Japan','Jemen','Jordanien','Kambodscha','Kamerun','Kanada',
+        'Irak','Iran','Irland','Island','Italien','Jamaika','Japan','Jemen','Jordanien','Kambodscha','Kamerun','Kanada',
         'Kap Verde','Kasachstan','Katar','Kenia','Kirgisistan','Kiribati','Kolumbien','Komoren','Kongo','Kosovo','Kroatien','Kuba',
         'Kuwait','Laos','Lesotho','Lettland','Libanon','Liberia','Libyen','Liechtenstein','Litauen','Luxemburg','Madagaskar','Malawi',
         'Malaysia','Malediven','Mali','Malta','Marokko','Marshallinseln','Mauretanien','Mauritius','Mexiko','Mikronesien','Moldau',
@@ -655,8 +655,29 @@ function alpenia_get_all_countries() {
         'Vereinigte Arabische Emirate','Vereinigte Staaten','Vereinigtes Königreich','Vietnam','Zentralafrikanische Republik','Zypern'
     ];
 
+    $countries_turkish = [
+        'Afganistan','Almanya','Amerika Birleşik Devletleri','Andorra','Angola','Antigua ve Barbuda','Arjantin','Arnavutluk','Avustralya',
+        'Avusturya','Azerbaycan','Bahamalar','Bahreyn','Bangladeş','Barbados','Belarus','Belçika','Belize','Benin','Bhutan',
+        'Birleşik Arap Emirlikleri','Birleşik Krallık','Bolivya','Bosna Hersek','Botsvana','Brezilya','Brunei','Bulgaristan',
+        'Burkina Faso','Burundi','Cezayir','Cibuti','Çad','Çekya','Çin','Danimarka','Dominika','Dominik Cumhuriyeti','Ekvador',
+        'Ekvator Ginesi','El Salvador','Endonezya','Eritre','Ermenistan','Estonya','Esvatini','Etiyopya','Fas','Fiji','Fildişi Sahili',
+        'Filipinler','Filistin','Finlandiya','Fransa','Gabon','Gambiya','Gana','Gine','Gine-Bissau','Grenada','Guatemala','Guyana',
+        'Güney Afrika','Güney Kore','Güney Sudan','Gürcistan','Haiti','Hırvatistan','Hindistan','Hollanda','Honduras','Irak','İngiltere',
+        'İran','İrlanda','İspanya','İsveç','İsviçre','İtalya','İzlanda','Jamaika','Japonya','Kamboçya','Kamerun','Kanada','Karadağ',
+        'Katar','Kazakistan','Kenya','Kıbrıs','Kırgızistan','Kiribati','Kolombiya','Komorlar','Kongo','Kosova','Kosta Rika','Kuveyt',
+        'Kuzey Kore','Kuzey Makedonya','Küba','Laos','Lesotho','Letonya','Liberya','Libya','Lihtenştayn','Litvanya','Lübnan','Lüksemburg',
+        'Macaristan','Madagaskar','Malavi','Maldivler','Malezya','Mali','Malta','Marshall Adaları','Mauritius','Meksika','Mısır',
+        'Mikronezya','Moğolistan','Moldova','Monako','Moritanya','Mozambik','Myanmar','Namibya','Nauru','Nepal','Nijer','Nijerya',
+        'Nikaragua','Norveç','Orta Afrika Cumhuriyeti','Özbekistan','Pakistan','Palau','Panama','Papua Yeni Gine','Paraguay','Peru',
+        'Polonya','Portekiz','Romanya','Ruanda','Rusya','Saint Kitts ve Nevis','Saint Lucia','Saint Vincent ve Grenadinler','Samoa',
+        'San Marino','Sao Tome ve Principe','Senegal','Seyşeller','Sırbistan','Sierra Leone','Singapur','Slovakya','Slovenya','Solomon Adaları',
+        'Somali','Sri Lanka','Sudan','Surinam','Suriye','Suudi Arabistan','Şili','Tacikistan','Tanzanya','Tayland','Tayvan','Togo','Tonga',
+        'Trinidad ve Tobago','Tunus','Tuvalu','Türkiye','Türkmenistan','Uganda','Ukrayna','Umman','Uruguay','Ürdün','Vanuatu','Vatikan',
+        'Venezuela','Vietnam','Yemen','Yeni Zelanda','Yunanistan','Zambiya','Zimbabve'
+    ];
+
     $aliases = array_values(alpenia_get_country_turkish_aliases());
-    $merged = array_values(array_unique(array_merge($countries, $aliases)));
+    $merged = array_values(array_unique(array_merge($countries, $aliases, $countries_turkish)));
     sort($merged, SORT_NATURAL | SORT_FLAG_CASE);
     return $merged;
 }
