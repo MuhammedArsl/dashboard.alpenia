@@ -4223,7 +4223,14 @@ function alpenia_dashboard_shortcode() {
 
         .participant-mini-card .status-badge {
             margin-top: 10px;
+            color: #123f34;
+            border-color: rgba(18, 63, 52, 0.18);
+            background: rgba(18, 63, 52, 0.12);
         }
+
+        .participant-mini-card .status-green { background: rgba(39, 174, 96, 0.18); color: #145a32; border-color: rgba(39, 174, 96, 0.38); }
+        .participant-mini-card .status-yellow { background: rgba(241, 196, 15, 0.25); color: #6f4e00; border-color: rgba(191, 147, 0, 0.45); }
+        .participant-mini-card .status-red { background: rgba(231, 76, 60, 0.18); color: #8d2d1f; border-color: rgba(231, 76, 60, 0.4); }
 
         .participant-mini-card__actions {
             display: flex;

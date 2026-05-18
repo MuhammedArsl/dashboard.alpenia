@@ -278,6 +278,7 @@ function alpenia_travel_translate_label($value) {
         'neu' => alpenia_travel_t('neu'),
         'bezahlt' => alpenia_travel_t('bezahlt'),
         'nicht bezahlt' => alpenia_travel_t('nicht bezahlt'),
+        'teilweise bezahlt' => alpenia_travel_t('teilweise bezahlt'),
     ];
 
     return $labels[$value] ?? $value;
