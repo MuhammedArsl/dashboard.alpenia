@@ -315,7 +315,7 @@ function alpenia_travel_t($text) {
     $translations = alpenia_travel_get_translations();
     $extra_tr = [
         'Anmeldeformular' => 'Kayıt formu',
-        'Fehlende Unterlagen im Überblick' => 'Eksik belge genel bakış',
+        'Fehlende Unterlagen im Überblick' => 'EKSIK BELGE GENEL BAKIS',
         '%d Fehlende Unterlagen' => '%d EKSİK BELGE',
         'Zum Dashboard' => 'Kontrol paneline git',
         'Ungültige Anmeldedaten.' => 'Geçersiz giriş bilgileri.',
@@ -334,7 +334,7 @@ function alpenia_travel_t($text) {
         'Bereits bezahlt' => 'Ödenen tutar',
         'Reisepassnummer' => 'Pasaport numarası',
         'Anmeldung für' => 'Kayıt',
-        'Prüfe bitte vor dem Absenden die wichtigsten Reisedetails und halte die benötigten Dokumente bereit.' => 'Lütfen göndermeden önce en önemli seyahat bilgilerini kontrol edin ve gerekli belgeleri hazır bulundurun.',
+        'Prüfe bitte vor dem Absenden die wichtigsten Reisedetails und halte die benötigten Dokumente bereit.' => 'Göndermeden önce seyahat detaylarını hızlıca doğrulayın; zorunlu belgelerin güncel ve okunaklı olduğundan emin olun.',
 
         'E-Mail Adresse' => 'E-posta adresi',
         'Aufenthaltstitel Nummer' => 'Oturum izni numarası',
