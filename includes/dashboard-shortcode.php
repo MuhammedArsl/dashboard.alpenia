@@ -2610,6 +2610,7 @@ function alpenia_dashboard_shortcode() {
                                             <span class="overview-list-card__trip"><?php echo esc_html($item['trip_title']); ?></span>
                                             <h3><?php echo esc_html($item['participant_name']); ?></h3>
                                             <span class="overview-list-card__status"><?php echo esc_html(count($missing_doc_labels)); ?> <?php echo esc_html(alpenia_travel_t('Unterlage fehlt')); ?></span>
+                                            <span class="overview-list-card__status"><?php echo esc_html(count($missing_doc_labels)); ?> <?php echo esc_html(alpenia_travel_t(count($missing_doc_labels) === 1 ? 'Unterlage fehlt' : 'Unterlagen fehlen')); ?></span>
                                             <details class="overview-info-panel">
                                                 <summary><span><?php echo esc_html(alpenia_travel_t('Info anzeigen')); ?></span></summary>
                                                 <ul>
@@ -4176,6 +4177,38 @@ function alpenia_dashboard_shortcode() {
 
         .overview-info-panel[open] summary::after {
             transform: rotate(180deg);
+            gap: 8px;
+            cursor: pointer;
+            margin: 10px 10px 0;
+            padding: 10px 14px;
+            border: 1px solid rgba(47, 125, 99, 0.26);
+            border-radius: 999px;
+            background: linear-gradient(135deg, #ffffff 0%, #ecf8f3 100%);
+            color: #0f3a30;
+            font-weight: 900;
+            letter-spacing: 0.02em;
+            list-style: none;
+            transition: all .18s ease;
+        }
+
+        .overview-info-panel summary::-webkit-details-marker { display: none; }
+
+        .overview-info-panel summary::before {
+            content: '▸';
+            font-size: 12px;
+            color: #1f6d57;
+            transform: translateY(-1px);
+            transition: transform .18s ease;
+        }
+
+        .overview-info-panel[open] summary {
+            background: linear-gradient(135deg, #eaf7f1 0%, #ddf2ea 100%);
+            border-color: rgba(47, 125, 99, 0.35);
+            box-shadow: 0 8px 20px rgba(14, 61, 48, 0.12);
+        }
+
+        .overview-info-panel[open] summary::before {
+            transform: rotate(90deg) translateY(0);
         }
 
         .overview-info-panel summary:focus-visible {
