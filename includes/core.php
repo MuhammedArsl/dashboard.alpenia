@@ -79,6 +79,13 @@ function alpenia_is_admin_user() {
     return in_array('administrator', alpenia_get_current_user_roles(), true);
 }
 
+/**
+ * Backward-compatible alias used by older dashboard templates.
+ */
+function alpenia_user_is_admin() {
+    return alpenia_is_admin_user();
+}
+
 function alpenia_is_reiseleiter_user() {
     return in_array('reiseleiter', alpenia_get_current_user_roles(), true);
 }
