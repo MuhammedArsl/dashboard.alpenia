@@ -160,6 +160,16 @@ msgstr "Kullanıcı hesabınız devre dışı bırakılmıştır. Lütfen destek
 msgid "Anmeldung momentan nicht möglich. Bitte Support kontaktieren."
 msgstr "Şu anda giriş işlemi gerçekleştirilemiyor. Lütfen destek birimiyle iletişime geçiniz."
 
+
+msgid "Öffentlicher Zugang"
+msgstr "Herkese açık erişim"
+
+msgid "Öffentliche Anmeldung"
+msgstr "Herkese açık kayıt"
+
+msgid "Nur mit Link"
+msgstr "Yalnızca bağlantıyla"
+
 msgid "Wenn die E-Mail existiert, wurde ein Link zum Zurücksetzen gesendet."
 msgstr "E-posta adresi sistemde kayıtlıysa parola sıfırlama bağlantısı gönderilmiştir."
 
