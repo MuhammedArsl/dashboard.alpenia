@@ -2444,7 +2444,9 @@ function alpenia_dashboard_shortcode() {
                     </div>
                 </div>
 
-                <?php echo alpenia_dashboard_render_business_overview($all_trips, $participants); ?>
+                <?php if (alpenia_user_is_admin()) : ?>
+                    <?php echo alpenia_dashboard_render_business_overview($all_trips, $participants); ?>
+                <?php endif; ?>
 
                 <div class="panel">
                     <h2><?php echo esc_html(alpenia_travel_t('Reisen mit Teilnehmerliste')); ?></h2>
