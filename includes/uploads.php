@@ -8,13 +8,6 @@ function alpenia_allowed_mimes_by_field($field_name) {
         'jpg'  => 'image/jpeg',
         'jpeg' => 'image/jpeg',
         'png'  => 'image/png',
-        'webp' => 'image/webp',
-        'heic' => 'image/heic',
-        'heif' => 'image/heif',
-        'gif'  => 'image/gif',
-        'tif'  => 'image/tiff',
-        'tiff' => 'image/tiff',
-        'bmp'  => 'image/bmp',
     ];
 
     if (
@@ -26,8 +19,6 @@ function alpenia_allowed_mimes_by_field($field_name) {
 
     return array_merge([
         'pdf'  => 'application/pdf',
-        'doc'  => 'application/msword',
-        'docx' => 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
     ], $image_mimes);
 }
 
@@ -44,10 +35,10 @@ function alpenia_upload_formats_label($field_name) {
         strpos($field_name, 'photo_file') !== false &&
         strpos($field_name, 'visa_photo_file') === false
     ) {
-        return 'JPG/JPEG, PNG, WEBP, HEIC/HEIF, GIF, TIFF oder BMP';
+        return 'JPG/JPEG, PNG';
     }
 
-    return 'PDF, DOC/DOCX, JPG/JPEG, PNG, WEBP, HEIC/HEIF, GIF, TIFF oder BMP';
+    return 'PDF, JPG/JPEG, PNG';
 }
 
 function alpenia_get_max_upload_size_by_field($field_name) {
