@@ -490,6 +490,7 @@ function alpenia_travel_t($text) {
         'Reisedokumente' => 'Seyahat belgeleri',
         'Bestätigungen' => 'Onaylar',
         'Zum Schutz deiner Daten benötigen wir vor dem Absenden zwei Zustimmungen.' => 'Verilerinizi korumak için göndermeden önce iki onaya ihtiyacımız var.',
+        'Bitte bestätige vor dem Absenden die folgenden Pflichtzustimmungen:' => 'Lütfen göndermeden önce aşağıdaki zorunlu onayları verin:',
         'Datenschutzerklärung akzeptieren' => 'Gizlilik politikasını kabul et',
         'Ich habe die Datenschutzerklärung gelesen und bin mit der Verarbeitung meiner Daten zur Reiseanmeldung einverstanden.' => 'Gizlilik politikasını okudum ve seyahat kaydı için verilerimin işlenmesini kabul ediyorum.',
         'Echtheit der Daten bestätigen' => 'Bilgilerin doğruluğunu onayla',

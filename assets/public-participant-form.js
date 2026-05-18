@@ -13,6 +13,20 @@
         return window.AlpeniaPublicParticipantForm.euSchengenCountries.map(normalize);
     }
 
+    function getMessages() {
+        var fallback = {
+            consentErrorIntro: 'Bitte bestätige vor dem Absenden die folgenden Pflichtzustimmungen:',
+            privacyConsentMissing: 'Datenschutzerklärung akzeptieren',
+            accuracyConsentMissing: 'Echtheit der Daten bestätigen'
+        };
+
+        if (!window.AlpeniaPublicParticipantForm || !window.AlpeniaPublicParticipantForm.messages) {
+            return fallback;
+        }
+
+        return Object.assign({}, fallback, window.AlpeniaPublicParticipantForm.messages);
+    }
+
     function toggleResidencePermit(form, countryList) {
         var nationalityField = form.querySelector('[data-alpenia-nationality]');
         if (!nationalityField) {
@@ -65,6 +79,59 @@
         document.querySelectorAll('input[list="alpenia-public-country-list"], input[list="alpenia-country-list"], input[list="alpenia-country-list-edit"]').forEach(function (input) {
             input.addEventListener('focus', function () {
                 input.select();
+            });
+        });
+
+        var messages = getMessages();
+        document.querySelectorAll('.alpenia-public-form form').forEach(function (form) {
+            var privacyConsent = form.querySelector('input[name="privacy_consent"]');
+            var accuracyConsent = form.querySelector('input[name="accuracy_consent"]');
+            if (!privacyConsent || !accuracyConsent) {
+                return;
+            }
+
+            var consentSection = privacyConsent.closest('.alpenia-public-section--consent');
+            var errorBox = document.createElement('div');
+            errorBox.className = 'alpenia-public-message alpenia-public-error';
+            errorBox.hidden = true;
+            if (consentSection) {
+                consentSection.prepend(errorBox);
+            }
+
+            function clearConsentError() {
+                errorBox.hidden = true;
+                errorBox.textContent = '';
+            }
+
+            function validateConsents() {
+                var missing = [];
+                if (!privacyConsent.checked) {
+                    missing.push(messages.privacyConsentMissing);
+                }
+                if (!accuracyConsent.checked) {
+                    missing.push(messages.accuracyConsentMissing);
+                }
+
+                if (missing.length === 0) {
+                    clearConsentError();
+                    return true;
+                }
+
+                errorBox.textContent = messages.consentErrorIntro + ' ' + missing.join(' • ');
+                errorBox.hidden = false;
+                return false;
+            }
+
+            [privacyConsent, accuracyConsent].forEach(function (input) {
+                input.addEventListener('change', validateConsents);
+                input.addEventListener('input', validateConsents);
+            });
+
+            form.addEventListener('submit', function (event) {
+                if (!validateConsents()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
             });
         });
     });

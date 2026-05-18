@@ -229,6 +229,11 @@ function alpenia_public_participant_enqueue_assets() {
     );
     wp_localize_script('alpenia-public-participant-form', 'AlpeniaPublicParticipantForm', [
         'euSchengenCountries' => array_values(alpenia_get_eu_schengen_countries()),
+        'messages' => [
+            'consentErrorIntro' => alpenia_travel_t('Bitte bestätige vor dem Absenden die folgenden Pflichtzustimmungen:'),
+            'privacyConsentMissing' => alpenia_travel_t('Datenschutzerklärung akzeptieren'),
+            'accuracyConsentMissing' => alpenia_travel_t('Echtheit der Daten bestätigen'),
+        ],
     ]);
 }
 
