@@ -358,6 +358,8 @@ function alpenia_travel_t($text) {
         'Alle Länder' => 'Tüm ülkeler',
         'Alle Städte' => 'Tüm şehirler',
         'Alle Reiseleiter' => 'Tüm seyahat rehberleri',
+        'pro Seite' => 'sayfa başına',
+        '%1$d Reisen gefunden – Seite %2$d von %3$d' => '%1$d seyahat bulundu – Sayfa %2$d / %3$d',
         'Start' => 'Başlangıç',
         'Ende' => 'Bitiş',
         'Offene Zahlungen im Überblick' => 'Açık ödemeler genel bakış',
