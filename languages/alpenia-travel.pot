@@ -169,3 +169,12 @@ msgstr "Lütfen geçerli bir dosya yükleyin."
 
 msgid "Info anzeigen"
 msgstr "Bilgileri göster"
+
+msgid "Öffentlicher Zugang"
+msgstr ""
+
+msgid "Öffentliche Anmeldung"
+msgstr ""
+
+msgid "Nur mit Link"
+msgstr ""
