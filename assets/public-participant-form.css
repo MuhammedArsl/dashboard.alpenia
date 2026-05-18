@@ -6,6 +6,7 @@
     --alpenia-public-ink: #10251f;
     --alpenia-public-muted: #5d746c;
     --alpenia-public-line: #dfe9e5;
+    --alpenia-public-field: #f9fcfb;
     --alpenia-public-bg: #f6faf8;
     --alpenia-public-shell-pad: clamp(18px, 4vw, 38px);
     width: calc(100% - 28px);
@@ -301,7 +302,11 @@
 .alpenia-public-field {
     min-width: 0;
     max-width: 100%;
-    overflow: hidden;
+    padding: 14px;
+    border: 1px solid rgba(223, 233, 229, .9);
+    border-radius: 18px;
+    background: linear-gradient(180deg, #fff, var(--alpenia-public-field));
+    box-shadow: 0 8px 20px rgba(16, 37, 31, .04);
 }
 
 .alpenia-public-grid--uploads { align-items: stretch; }
@@ -309,9 +314,10 @@
 .alpenia-public-field label,
 .alpenia-public-upload label span {
     display: block;
-    margin-bottom: 7px;
+    margin-bottom: 8px;
     color: #1c342e;
     font-weight: 850;
+    line-height: 1.35;
 }
 
 .alpenia-public-form .alpenia-public-field input,
@@ -324,11 +330,11 @@
     max-width: 100% !important;
     min-inline-size: 0 !important;
     min-width: 0 !important;
-    min-height: 50px;
+    min-height: 52px;
     border: 1px solid #cddbd6;
-    border-radius: 16px;
-    padding: 12px 15px;
-    background: #fbfdfc;
+    border-radius: 14px;
+    padding: 13px 15px;
+    background: #fff;
     color: var(--alpenia-public-ink);
     font: inherit;
     line-height: 1.25;
@@ -336,7 +342,7 @@
 }
 
 .alpenia-public-form .alpenia-public-field select {
-    height: 50px;
+    height: 52px;
     padding-right: 44px;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -404,7 +410,8 @@
     padding: 18px;
     border: 1px dashed #abc5bc;
     border-radius: 20px;
-    background: linear-gradient(180deg, #fbfdfc, var(--alpenia-public-bg));
+    background: linear-gradient(180deg, #fff, var(--alpenia-public-bg));
+    box-shadow: inset 0 1px 0 rgba(255,255,255,.75);
 }
 
 .alpenia-public-upload small,
@@ -417,19 +424,27 @@
 
 .alpenia-public-upload input[type="file"] {
     display: block;
+    box-sizing: border-box;
     width: 100%;
     max-width: 100%;
     min-width: 0;
+    min-height: 50px;
     margin-top: 12px;
+    padding: 8px;
+    border: 1px solid #d8e5e0;
+    border-radius: 14px;
     color: var(--alpenia-public-muted);
+    background: #fff;
     font: inherit;
+    line-height: 1.35;
 }
 
 .alpenia-public-upload input[type="file"]::file-selector-button {
+    min-height: 34px;
     margin-right: 12px;
     border: 0;
     border-radius: 999px;
-    padding: 10px 14px;
+    padding: 9px 14px;
     background: #e6f1ed;
     color: var(--alpenia-public-primary);
     font-weight: 850;
@@ -456,6 +471,7 @@
     border-radius: 18px;
     background: #fff;
     cursor: pointer;
+    box-shadow: 0 8px 20px rgba(123, 90, 32, .05);
 }
 
 .alpenia-public-consent input[type="checkbox"] {
@@ -505,6 +521,7 @@
     justify-content: space-between;
     margin-top: 24px;
     padding: 18px;
+    border: 1px solid rgba(223, 233, 229, .9);
     border-radius: 22px;
     background: #fff;
     box-shadow: 0 12px 28px rgba(16, 37, 31, .06);
@@ -518,6 +535,7 @@
 .alpenia-public-submit {
     border: 0;
     border-radius: 999px;
+    min-height: 54px;
     padding: 15px 30px;
     background: linear-gradient(135deg, var(--alpenia-public-primary), var(--alpenia-public-primary-2));
     color: #fff;
@@ -647,6 +665,11 @@
     .alpenia-public-section__header h3 { font-size: 1.2rem; }
     .alpenia-public-section__header p { font-size: .94rem; }
 
+    .alpenia-public-field {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
     .alpenia-public-field label,
     .alpenia-public-upload label span {
         margin-bottom: 6px;
@@ -742,6 +765,10 @@
     .alpenia-public-upload,
     .alpenia-public-consent {
         padding: 12px;
+    }
+
+    .alpenia-public-field {
+        padding: 10px;
     }
 
     .alpenia-public-form .alpenia-public-field input,
