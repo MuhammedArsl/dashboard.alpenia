@@ -331,6 +331,8 @@ function alpenia_travel_t($text) {
         'Passwort speichern' => 'Şifreyi kaydet',
         'Passwort vergessen?' => 'Şifrenizi mi unuttunuz?',
         'Reisepassnummer' => 'Pasaport numarası',
+        'Anmeldung für' => 'Kayıt',
+        'Prüfe bitte vor dem Absenden die wichtigsten Reisedetails und halte die benötigten Dokumente bereit.' => 'Lütfen göndermeden önce en önemli seyahat bilgilerini kontrol edin ve gerekli belgeleri hazır bulundurun.',
 
         'E-Mail Adresse' => 'E-posta adresi',
         'Aufenthaltstitel Nummer' => 'Oturum izni numarası',
