@@ -1170,7 +1170,6 @@ function alpenia_dashboard_shortcode() {
     $growth_revenue_delta = $growth_previous_month_revenue > 0 ? (int) round((($growth_current_month_revenue - $growth_previous_month_revenue) / $growth_previous_month_revenue) * 100) : ($growth_current_month_revenue > 0 ? 100 : 0);
     $growth_top_type_label = !empty($growth_type_breakdown) ? $growth_type_breakdown[0]['label'] : '-';
     $growth_top_location_label = !empty($growth_location_breakdown) ? $growth_location_breakdown[0]['label'] : '-';
-    }
 
     $average_occupancy = $total_capacity > 0 ? (int) round(($occupied_capacity / $total_capacity) * 100) : 0;
     $action_required_trips = array_values(array_filter($trip_growth_stats, function($stats) {
