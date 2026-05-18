@@ -632,8 +632,8 @@ function alpenia_get_country_turkish_aliases() {
     ];
 }
 
-function alpenia_get_all_countries() {
-    $countries = [
+function alpenia_get_countries_de() {
+    return [
         'Afghanistan','Ägypten','Albanien','Algerien','Andorra','Angola','Antigua und Barbuda','Äquatorialguinea','Argentinien',
         'Armenien','Aserbaidschan','Äthiopien','Australien','Bahamas','Bahrain','Bangladesch','Barbados','Belarus','Belgien',
         'Belize','Benin','Bhutan','Bolivien','Bosnien und Herzegowina','Botswana','Brasilien','Brunei','Bulgarien','Burkina Faso',
@@ -654,8 +654,10 @@ function alpenia_get_all_countries() {
         'Türkei','Turkmenistan','Tuvalu','Uganda','Ukraine','Ungarn','Uruguay','Usbekistan','Vanuatu','Vatikanstadt','Venezuela',
         'Vereinigte Arabische Emirate','Vereinigte Staaten','Vereinigtes Königreich','Vietnam','Zentralafrikanische Republik','Zypern'
     ];
+}
 
-    $countries_turkish = [
+function alpenia_get_countries_tr() {
+    return [
         'Afganistan','Almanya','Amerika Birleşik Devletleri','Andorra','Angola','Antigua ve Barbuda','Arjantin','Arnavutluk','Avustralya',
         'Avusturya','Azerbaycan','Bahamalar','Bahreyn','Bangladeş','Barbados','Belarus','Belçika','Belize','Benin','Bhutan',
         'Birleşik Arap Emirlikleri','Birleşik Krallık','Bolivya','Bosna Hersek','Botsvana','Brezilya','Brunei','Bulgaristan',
@@ -675,11 +677,20 @@ function alpenia_get_all_countries() {
         'Trinidad ve Tobago','Tunus','Tuvalu','Türkiye','Türkmenistan','Uganda','Ukrayna','Umman','Uruguay','Ürdün','Vanuatu','Vatikan',
         'Venezuela','Vietnam','Yemen','Yeni Zelanda','Yunanistan','Zambiya','Zimbabve'
     ];
+}
 
-    $aliases = array_values(alpenia_get_country_turkish_aliases());
-    $merged = array_values(array_unique(array_merge($countries, $aliases, $countries_turkish)));
-    sort($merged, SORT_NATURAL | SORT_FLAG_CASE);
-    return $merged;
+function alpenia_get_all_countries($lang = null) {
+    $lang = $lang ? sanitize_key((string) $lang) : alpenia_travel_get_language();
+
+    if ($lang === 'tr') {
+        $countries = array_values(array_unique(array_merge(alpenia_get_countries_tr(), array_values(alpenia_get_country_turkish_aliases()))));
+        sort($countries, SORT_NATURAL | SORT_FLAG_CASE);
+        return $countries;
+    }
+
+    $countries = alpenia_get_countries_de();
+    sort($countries, SORT_NATURAL | SORT_FLAG_CASE);
+    return $countries;
 }
 
 function alpenia_get_eu_countries() {
