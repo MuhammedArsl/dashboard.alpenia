@@ -2596,7 +2596,8 @@ function alpenia_dashboard_shortcode() {
                         <div class="overview-card__header">
                             <div>
                                 <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Dokumente')); ?></span>
-                                <h2><?php echo esc_html(sprintf(alpenia_travel_t('%d Fehlende Unterlagen'), $missing_docs_count)); ?></h2>
+                                <h2><?php echo esc_html(alpenia_travel_t('Fehlende Unterlagen im Überblick')); ?></h2>
+                                <p class="overview-card__subtitle"><?php echo esc_html(sprintf(alpenia_travel_t('%d Fehlende Unterlagen'), $missing_docs_count)); ?></p>
                             </div>
                             <span class="overview-card__count"><?php echo esc_html($missing_docs_count); ?></span>
                         </div>
