@@ -2609,7 +2609,6 @@ function alpenia_dashboard_shortcode() {
                                         <div class="overview-list-card__main">
                                             <span class="overview-list-card__trip"><?php echo esc_html($item['trip_title']); ?></span>
                                             <h3><?php echo esc_html($item['participant_name']); ?></h3>
-                                            <span class="overview-list-card__status"><?php echo esc_html(count($missing_doc_labels)); ?> <?php echo esc_html(alpenia_travel_t('Unterlage fehlt')); ?></span>
                                             <span class="overview-list-card__status"><?php echo esc_html(count($missing_doc_labels)); ?> <?php echo esc_html(alpenia_travel_t(count($missing_doc_labels) === 1 ? 'Unterlage fehlt' : 'Unterlagen fehlen')); ?></span>
                                             <details class="overview-info-panel">
                                                 <summary><span><?php echo esc_html(alpenia_travel_t('Info anzeigen')); ?></span></summary>
