@@ -619,8 +619,21 @@ function alpenia_get_visa_entry_country($participant_id) {
     return trim((string) get_post_meta($participant_id, 'visa_status', true));
 }
 
-function alpenia_get_all_countries() {
+function alpenia_get_country_turkish_aliases() {
     return [
+        'Deutschland' => 'Almanya','Österreich' => 'Avusturya','Schweiz' => 'İsviçre','Niederlande' => 'Hollanda',
+        'Vereinigte Staaten' => 'Amerika Birleşik Devletleri','Vereinigtes Königreich' => 'Birleşik Krallık','Griechenland' => 'Yunanistan',
+        'Spanien' => 'İspanya','Tschechien' => 'Çekya','Rumänien' => 'Romanya','Bulgarien' => 'Bulgaristan','Ungarn' => 'Macaristan',
+        'Kroatien' => 'Hırvatistan','Südafrika' => 'Güney Afrika','Südkorea' => 'Güney Kore','Nordkorea' => 'Kuzey Kore',
+        'Saudi-Arabien' => 'Suudi Arabistan','Vereinigte Arabische Emirate' => 'Birleşik Arap Emirlikleri','Elfenbeinküste' => 'Fildişi Sahili',
+        'Weißrussland' => 'Belarus','Bosnien und Herzegowina' => 'Bosna Hersek','Türkei' => 'Türkiye','Ägypten' => 'Mısır',
+        'Schweden' => 'İsveç','Norwegen' => 'Norveç','Dänemark' => 'Danimarka','Finnland' => 'Finlandiya','Frankreich' => 'Fransa',
+        'Italien' => 'İtalya','Polen' => 'Polonya','Portugal' => 'Portekiz','Belgien' => 'Belçika','Irland' => 'İrlanda'
+    ];
+}
+
+function alpenia_get_all_countries() {
+    $countries = [
         'Afghanistan','Ägypten','Albanien','Algerien','Andorra','Angola','Antigua und Barbuda','Äquatorialguinea','Argentinien',
         'Armenien','Aserbaidschan','Äthiopien','Australien','Bahamas','Bahrain','Bangladesch','Barbados','Belarus','Belgien',
         'Belize','Benin','Bhutan','Bolivien','Bosnien und Herzegowina','Botswana','Brasilien','Brunei','Bulgarien','Burkina Faso',
@@ -641,22 +654,29 @@ function alpenia_get_all_countries() {
         'Türkei','Turkmenistan','Tuvalu','Uganda','Ukraine','Ungarn','Uruguay','Usbekistan','Vanuatu','Vatikanstadt','Venezuela',
         'Vereinigte Arabische Emirate','Vereinigte Staaten','Vereinigtes Königreich','Vietnam','Zentralafrikanische Republik','Zypern'
     ];
+
+    $aliases = array_values(alpenia_get_country_turkish_aliases());
+    $merged = array_values(array_unique(array_merge($countries, $aliases)));
+    sort($merged, SORT_NATURAL | SORT_FLAG_CASE);
+    return $merged;
 }
 
 function alpenia_get_eu_countries() {
-    return [
+    $countries = [
         'Belgien','Bulgarien','Dänemark','Deutschland','Estland','Finnland','Frankreich','Griechenland','Irland','Italien',
         'Kroatien','Lettland','Litauen','Luxemburg','Malta','Niederlande','Österreich','Polen','Portugal','Rumänien',
         'Schweden','Slowakei','Slowenien','Spanien','Tschechien','Ungarn','Zypern'
     ];
+    return array_values(array_unique(array_merge($countries, array_values(alpenia_get_country_turkish_aliases()))));
 }
 
 function alpenia_get_schengen_countries() {
-    return [
+    $countries = [
         'Belgien','Bulgarien','Dänemark','Deutschland','Estland','Finnland','Frankreich','Griechenland','Island','Italien',
         'Kroatien','Lettland','Liechtenstein','Litauen','Luxemburg','Malta','Niederlande','Norwegen','Österreich','Polen',
         'Portugal','Rumänien','Schweden','Schweiz','Slowakei','Slowenien','Spanien','Tschechien','Ungarn'
     ];
+    return array_values(array_unique(array_merge($countries, array_values(alpenia_get_country_turkish_aliases()))));
 }
 
 function alpenia_is_eu_nationality($nationality) {
