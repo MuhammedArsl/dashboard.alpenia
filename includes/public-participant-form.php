@@ -439,6 +439,10 @@ function alpenia_public_participant_get_required_fields() {
     $residence_fields = alpenia_public_participant_get_residence_permit_field_keys();
 
     return array_values(array_filter(array_keys(alpenia_public_participant_get_form_fields()), static function ($field_key) use ($residence_fields) {
+        if ($field_key === 'second_first_name') {
+            return false;
+        }
+
         return !in_array($field_key, $residence_fields, true);
     }));
 }
