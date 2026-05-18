@@ -34,12 +34,18 @@ function alpenia_public_participant_form_shortcode($atts = []) {
     $message = '';
     $values = [];
     $consents = [];
+    $submission_token = alpenia_public_participant_generate_submission_token($selected_trip_id);
+
+    if (isset($_GET['submission']) && $_GET['submission'] === 'success') {
+        $message = alpenia_public_participant_message('Vielen Dank. Deine Teilnehmerdaten wurden erfolgreich übermittelt.', 'success');
+    }
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['alpenia_public_participant_submit'])) {
         $nonce = isset($_POST['alpenia_public_participant_nonce']) ? sanitize_text_field(wp_unslash($_POST['alpenia_public_participant_nonce'])) : '';
         $honeypot = isset($_POST['alpenia_company_website']) ? trim((string) wp_unslash($_POST['alpenia_company_website'])) : '';
         $request_token = isset($_POST['trip_token']) ? alpenia_public_participant_sanitize_registration_token(wp_unslash($_POST['trip_token'])) : '';
         $selected_trip_id = alpenia_public_participant_get_trip_id_by_token($request_token);
+        $submitted_token = isset($_POST['alpenia_submission_token']) ? sanitize_text_field(wp_unslash($_POST['alpenia_submission_token'])) : '';
 
         $values = alpenia_public_participant_get_submitted_values();
         $consents = alpenia_public_participant_get_submitted_consents();
@@ -50,6 +56,8 @@ function alpenia_public_participant_form_shortcode($atts = []) {
             $message = alpenia_public_participant_message('Das Formular konnte nicht gesendet werden.', 'error');
         } elseif ($request_token === '' || !alpenia_public_participant_trip_is_available($selected_trip_id)) {
             $message = alpenia_public_participant_message('Dieser Anmeldelink ist ungültig oder die Reise ist nicht öffentlich anmeldbar.', 'error');
+        } elseif (!alpenia_public_participant_consume_submission_token($selected_trip_id, $submitted_token)) {
+            $message = alpenia_public_participant_message('Dieses Formular wurde bereits gesendet oder ist abgelaufen. Bitte Seite neu laden.', 'error');
         } elseif (empty($consents['privacy_consent']) || empty($consents['accuracy_consent'])) {
             $message = alpenia_public_participant_message('Bitte bestätige die Datenschutzerklärung und die Echtheit deiner Angaben.', 'error');
         } else {
@@ -57,10 +65,17 @@ function alpenia_public_participant_form_shortcode($atts = []) {
 
             if (is_wp_error($result)) {
                 $message = alpenia_public_participant_message($result->get_error_message(), 'error');
+                $submission_token = alpenia_public_participant_generate_submission_token($selected_trip_id);
             } else {
-                $message = alpenia_public_participant_message('Vielen Dank. Deine Teilnehmerdaten wurden erfolgreich übermittelt.', 'success');
-                $values = [];
-                $consents = [];
+                $redirect_url = add_query_arg(
+                    [
+                        'trip_token' => $request_token,
+                        'submission' => 'success',
+                    ],
+                    alpenia_public_participant_get_form_page_url()
+                );
+                wp_safe_redirect($redirect_url);
+                exit;
             }
         }
     }
@@ -92,6 +107,7 @@ function alpenia_public_participant_form_shortcode($atts = []) {
                 <?php wp_nonce_field('alpenia_public_participant_form', 'alpenia_public_participant_nonce'); ?>
                 <input type="hidden" name="alpenia_public_participant_submit" value="1">
                 <input type="hidden" name="trip_token" value="<?php echo esc_attr($request_token); ?>">
+                <input type="hidden" name="alpenia_submission_token" value="<?php echo esc_attr($submission_token); ?>">
                 <div class="alpenia-public-hidden" aria-hidden="true">
                     <label for="alpenia_company_website">Website</label>
                     <input type="text" id="alpenia_company_website" name="alpenia_company_website" tabindex="-1" autocomplete="off">
@@ -112,6 +128,34 @@ function alpenia_public_participant_form_shortcode($atts = []) {
     return ob_get_clean();
 }
 add_shortcode('alpenia_participant_form', 'alpenia_public_participant_form_shortcode');
+
+function alpenia_public_participant_generate_submission_token($trip_id) {
+    $trip_id = absint($trip_id);
+    if (!$trip_id) {
+        return '';
+    }
+
+    $token = wp_generate_password(40, false, false);
+    set_transient('alpenia_public_submission_' . $token, $trip_id, 2 * HOUR_IN_SECONDS);
+    return $token;
+}
+
+function alpenia_public_participant_consume_submission_token($trip_id, $token) {
+    $trip_id = absint($trip_id);
+    $token = sanitize_text_field((string) $token);
+    if (!$trip_id || $token === '') {
+        return false;
+    }
+
+    $transient_key = 'alpenia_public_submission_' . $token;
+    $stored_trip_id = (int) get_transient($transient_key);
+    if ($stored_trip_id !== $trip_id) {
+        return false;
+    }
+
+    delete_transient($transient_key);
+    return true;
+}
 
 function alpenia_public_participant_language_switcher($request_token = '') {
     $current_url = home_url(add_query_arg([], isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : ''));
