@@ -99,6 +99,32 @@ function alpenia_dashboard_get_per_page($key, $default = 20, $allowed = [10, 20,
     return in_array($value, $allowed, true) ? $value : (int) $default;
 }
 
+
+function alpenia_dashboard_count_label($count, $singular_label, $plural_label = null) {
+    $count = (int) $count;
+    $label = ($count === 1 || $plural_label === null) ? $singular_label : $plural_label;
+
+    return sprintf('%d %s', $count, alpenia_travel_t($label));
+}
+
+function alpenia_dashboard_participant_count_label($count) {
+    $count = (int) $count;
+    $label = alpenia_travel_get_language() === 'tr' ? 'katılımcı' : alpenia_travel_t('Teilnehmer');
+
+    return sprintf('%d %s', $count, $label);
+}
+
+function alpenia_dashboard_missing_docs_status_label($count) {
+    $count = (int) $count;
+    $template = $count === 1 ? '%d Unterlage fehlt' : '%d Unterlagen fehlen';
+
+    return sprintf(alpenia_travel_t($template), $count);
+}
+
+function alpenia_dashboard_money_label($amount) {
+    return '€ ' . number_format((float) $amount, 2, ',', '.');
+}
+
 function alpenia_dashboard_render_pagination($current_page, $max_pages, $base_args, $page_arg) {
     $current_page = max(1, (int) $current_page);
     $max_pages = max(1, (int) $max_pages);
@@ -2606,15 +2632,19 @@ function alpenia_dashboard_shortcode() {
                     <section class="overview-card overview-card--documents">
                         <div class="overview-card__header">
                             <div>
-                                <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Dokumente')); ?></span>
-                                <h2><?php echo esc_html(alpenia_travel_t('Offene Dokumentaufgaben')); ?></h2>
+                                <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Nachfassen')); ?></span>
+                                <h2><?php echo esc_html(alpenia_travel_t('Fehlende Unterlagen im Blick')); ?></h2>
                                 <p class="overview-card__subtitle">
-                                    <?php echo esc_html(sprintf(alpenia_travel_t('%1$d Teilnehmer mit %2$d fehlenden Unterlagen'), $missing_docs_count, $missing_docs_total_count)); ?>
+                                    <?php echo esc_html(sprintf(
+                                        alpenia_travel_t('%1$s · %2$s fehlen'),
+                                        alpenia_dashboard_participant_count_label($missing_docs_count),
+                                        alpenia_dashboard_count_label($missing_docs_total_count, 'Unterlage', 'Unterlagen')
+                                    )); ?>
                                 </p>
                             </div>
                             <div class="overview-card__metric" aria-label="<?php echo esc_attr(alpenia_travel_t('Fehlende Unterlagen')); ?>">
                                 <span class="overview-card__count"><?php echo esc_html($missing_docs_total_count); ?></span>
-                                <span><?php echo esc_html(alpenia_travel_t('Dokumente')); ?></span>
+                                <span><?php echo esc_html(alpenia_travel_t($missing_docs_total_count === 1 ? 'Unterlage' : 'Unterlagen')); ?></span>
                             </div>
                         </div>
 
@@ -2631,7 +2661,7 @@ function alpenia_dashboard_shortcode() {
                                             <span class="overview-list-card__trip"><?php echo esc_html($item['trip_title']); ?></span>
                                             <div class="overview-list-card__title-row">
                                                 <h3><?php echo esc_html($item['participant_name']); ?></h3>
-                                                <span class="overview-list-card__status"><?php echo esc_html(count($missing_doc_labels)); ?> <?php echo esc_html(alpenia_travel_t(count($missing_doc_labels) === 1 ? 'Unterlage fehlt' : 'Unterlagen fehlen')); ?></span>
+                                                <span class="overview-list-card__status"><?php echo esc_html(alpenia_dashboard_missing_docs_status_label(count($missing_doc_labels))); ?></span>
                                             </div>
                                             <div class="overview-chip-list" aria-label="<?php echo esc_attr(alpenia_travel_t('Fehlende Unterlagen')); ?>">
                                                 <?php foreach ($visible_missing_doc_labels as $missing_doc_label) : ?>
@@ -2643,14 +2673,18 @@ function alpenia_dashboard_shortcode() {
                                             </div>
                                         </div>
                                         <div class="overview-list-card__actions">
-                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
+                                            <a class="table-btn overview-list-card__primary-action" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Zum Teilnehmer')); ?></a>
                                         </div>
                                     </article>
                                 <?php endforeach; ?>
                             </div>
                             <?php if ($missing_docs_count > count($missing_docs_items)) : ?>
                                 <p class="overview-card__hint">
-                                    <?php echo esc_html(sprintf(alpenia_travel_t('Es werden die wichtigsten %1$d von %2$d Teilnehmern angezeigt.'), count($missing_docs_items), $missing_docs_count)); ?>
+                                    <?php echo esc_html(sprintf(
+                                        alpenia_travel_t('%1$s von %2$s sichtbar. Öffne den Teilnehmer direkt über die Karte.'),
+                                        alpenia_dashboard_participant_count_label(count($missing_docs_items)),
+                                        alpenia_dashboard_participant_count_label($missing_docs_count)
+                                    )); ?>
                                 </p>
                             <?php endif; ?>
                         <?php else : ?>
@@ -2663,14 +2697,18 @@ function alpenia_dashboard_shortcode() {
                     <section class="overview-card overview-card--payments">
                         <div class="overview-card__header">
                             <div>
-                                <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Zahlungen')); ?></span>
-                                <h2><?php echo esc_html(alpenia_travel_t('Offene Zahlungsaufgaben')); ?></h2>
+                                <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Nachfassen')); ?></span>
+                                <h2><?php echo esc_html(alpenia_travel_t('Offene Zahlungen im Blick')); ?></h2>
                                 <p class="overview-card__subtitle">
-                                    <?php echo esc_html(sprintf(alpenia_travel_t('%1$d Teilnehmer mit %2$s offen'), $open_payments_count, '€ ' . number_format($open_payments_total_amount, 2, ',', '.'))); ?>
+                                    <?php echo esc_html(sprintf(
+                                        alpenia_travel_t('%1$s · %2$s offen'),
+                                        alpenia_dashboard_participant_count_label($open_payments_count),
+                                        alpenia_dashboard_money_label($open_payments_total_amount)
+                                    )); ?>
                                 </p>
                             </div>
                             <div class="overview-card__metric" aria-label="<?php echo esc_attr(alpenia_travel_t('Offene Zahlungen')); ?>">
-                                <span class="overview-card__amount">€ <?php echo esc_html(number_format($open_payments_total_amount, 2, ',', '.')); ?></span>
+                                <span class="overview-card__amount"><?php echo esc_html(alpenia_dashboard_money_label($open_payments_total_amount)); ?></span>
                                 <span><?php echo esc_html(alpenia_travel_t('offen')); ?></span>
                             </div>
                         </div>
@@ -2683,19 +2721,23 @@ function alpenia_dashboard_shortcode() {
                                             <span class="overview-list-card__trip"><?php echo esc_html($item['trip_title']); ?></span>
                                             <div class="overview-list-card__title-row">
                                                 <h3><?php echo esc_html($item['participant_name']); ?></h3>
-                                                <span class="overview-list-card__status overview-list-card__status--payment">€ <?php echo esc_html(number_format($item['payment_open'], 2, ',', '.')); ?> <?php echo esc_html(alpenia_travel_t('offen')); ?></span>
+                                                <span class="overview-list-card__status overview-list-card__status--payment"><?php echo esc_html(alpenia_dashboard_money_label($item['payment_open'])); ?> <?php echo esc_html(alpenia_travel_t('offen')); ?></span>
                                             </div>
                                             <p class="overview-list-card__meta"><?php echo esc_html(alpenia_travel_t('Zahlungsstatus')); ?>: <?php echo esc_html(alpenia_travel_translate_label($item['payment_status'])); ?></p>
                                         </div>
                                         <div class="overview-list-card__actions">
-                                            <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Teilnehmer öffnen')); ?></a>
+                                            <a class="table-btn overview-list-card__primary-action" href="<?php echo esc_url(alpenia_dashboard_link(['edit_participant' => $item['participant_id']])); ?>"><?php echo esc_html(alpenia_travel_t('Zum Teilnehmer')); ?></a>
                                         </div>
                                     </article>
                                 <?php endforeach; ?>
                             </div>
                             <?php if ($open_payments_count > count($open_payments_items)) : ?>
                                 <p class="overview-card__hint">
-                                    <?php echo esc_html(sprintf(alpenia_travel_t('Es werden die wichtigsten %1$d von %2$d Teilnehmern angezeigt.'), count($open_payments_items), $open_payments_count)); ?>
+                                    <?php echo esc_html(sprintf(
+                                        alpenia_travel_t('%1$s von %2$s sichtbar. Öffne den Teilnehmer direkt über die Karte.'),
+                                        alpenia_dashboard_participant_count_label(count($open_payments_items)),
+                                        alpenia_dashboard_participant_count_label($open_payments_count)
+                                    )); ?>
                                 </p>
                             <?php endif; ?>
                         <?php else : ?>
@@ -4117,26 +4159,38 @@ function alpenia_dashboard_shortcode() {
             position: relative;
             overflow: hidden;
             min-width: 0;
-            padding: 22px;
-            border: 1px solid rgba(23, 75, 61, 0.12);
-            border-radius: 26px;
+            padding: 24px;
+            border: 1px solid rgba(16, 61, 49, 0.11);
+            border-radius: 28px;
             background:
-                linear-gradient(145deg, rgba(255,255,255,0.96), rgba(246,250,248,0.97)),
-                radial-gradient(circle at top right, rgba(217, 154, 43, 0.17), transparent 32%);
+                linear-gradient(155deg, rgba(255,255,255,0.98) 0%, rgba(249,251,250,0.98) 62%, rgba(243,248,246,0.96) 100%);
             color: #123f34;
-            box-shadow: 0 20px 48px rgba(16, 37, 31, 0.11);
+            box-shadow: 0 22px 54px rgba(17, 42, 35, 0.1);
+        }
+
+        .overview-card::before {
+            content: "";
+            position: absolute;
+            inset: 0 0 auto 0;
+            height: 5px;
+            background: linear-gradient(90deg, #1f6d57, #d99a2b);
+            opacity: .95;
         }
 
         .overview-card::after {
             content: "";
             position: absolute;
-            right: -46px;
-            top: -46px;
-            width: 150px;
-            height: 150px;
-            border: 1px solid rgba(217, 154, 43, 0.2);
+            right: -58px;
+            top: -72px;
+            width: 190px;
+            height: 190px;
             border-radius: 50%;
+            background: radial-gradient(circle, rgba(217,154,43,0.16) 0%, rgba(217,154,43,0.08) 44%, transparent 70%);
             pointer-events: none;
+        }
+
+        .overview-card--payments::before {
+            background: linear-gradient(90deg, #1f6d57, #d99a2b);
         }
 
         .overview-card--participants {
@@ -4155,15 +4209,26 @@ function alpenia_dashboard_shortcode() {
 
         .overview-card__eyebrow {
             display: inline-flex;
+            align-items: center;
+            gap: 8px;
             margin-bottom: 10px;
             padding: 6px 10px;
+            border: 1px solid rgba(31, 109, 87, 0.12);
             border-radius: 999px;
-            background: #fff3dc;
-            color: #5f3e05;
+            background: #eef8f4;
+            color: #1f6d57;
             font-size: 12px;
             font-weight: 900;
-            letter-spacing: 0.12em;
+            letter-spacing: 0.1em;
             text-transform: uppercase;
+        }
+
+        .overview-card__eyebrow::before {
+            content: "";
+            width: 7px;
+            height: 7px;
+            border-radius: 999px;
+            background: #d99a2b;
         }
 
         .overview-card h2 {
@@ -4202,17 +4267,17 @@ function alpenia_dashboard_shortcode() {
         .overview-card__amount {
             display: inline-grid;
             place-items: center;
-            min-width: 52px;
-            min-height: 52px;
-            padding: 0 12px;
-            border: 1px solid rgba(217, 154, 43, 0.34);
-            border-radius: 18px;
-            background: #fff9ed;
+            min-width: 56px;
+            min-height: 56px;
+            padding: 0 14px;
+            border: 1px solid rgba(31, 109, 87, 0.16);
+            border-radius: 20px;
+            background: linear-gradient(145deg, #ffffff, #eef8f4);
             color: #123f34;
-            font-size: 24px;
+            font-size: 25px;
             font-weight: 900;
             line-height: 1;
-            box-shadow: 0 12px 28px rgba(123, 90, 32, 0.1);
+            box-shadow: 0 14px 30px rgba(16, 61, 49, 0.1);
         }
 
         .overview-card__amount {
@@ -4253,14 +4318,21 @@ function alpenia_dashboard_shortcode() {
             align-items: center;
             padding: 16px;
             border: 1px solid rgba(47, 125, 99, 0.13);
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.9);
-            box-shadow: 0 10px 24px rgba(16, 37, 31, 0.06);
+            border-radius: 22px;
+            background: rgba(255, 255, 255, 0.94);
+            box-shadow: 0 10px 24px rgba(16, 37, 31, 0.055);
         }
 
         .overview-list-card--actionable {
-            border-color: rgba(47, 125, 99, 0.18);
-            background: linear-gradient(145deg, rgba(255, 255, 255, 0.96), rgba(248, 252, 250, 0.96));
+            border-color: rgba(47, 125, 99, 0.16);
+            background: linear-gradient(145deg, #ffffff 0%, #fbfdfc 100%);
+            transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+        }
+
+        .overview-list-card--actionable:hover {
+            transform: translateY(-2px);
+            border-color: rgba(31, 109, 87, 0.28);
+            box-shadow: 0 16px 34px rgba(16, 37, 31, 0.1);
         }
 
         .overview-list-card--compact {
@@ -4516,6 +4588,20 @@ function alpenia_dashboard_shortcode() {
             min-height: 42px;
             padding: 10px 14px;
             border-radius: 999px;
+        }
+
+        .overview-list-card__primary-action {
+            width: 100%;
+            justify-content: center;
+            border-color: rgba(31, 109, 87, 0.24) !important;
+            background: #123f34 !important;
+            color: #ffffff !important;
+            box-shadow: 0 10px 22px rgba(18, 63, 52, 0.16);
+        }
+
+        .overview-list-card__primary-action:hover {
+            background: #1f6d57 !important;
+            color: #ffffff !important;
         }
 
         .table-btn--ghost {
