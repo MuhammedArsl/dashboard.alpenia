@@ -355,6 +355,7 @@ function alpenia_travel_t($text) {
         'Reise oder Ziel suchen' => 'Seyahat veya hedef ara',
         'Teilnehmer, Passnummer oder E-Mail suchen' => 'Katılımcı, pasaport numarası veya e-posta ara',
         'Alle Reisearten' => 'Tüm seyahat türleri',
+        'Alle Dokumente' => 'Tüm belgeler',
         'Alle Unterlagen' => 'Tüm belgeler',
         'Alle Zahlungen' => 'Tüm ödemeler',
         'Alle Bearbeitungsstatus' => 'Tüm işlem durumları',
