@@ -61,5 +61,11 @@
                 toggleResidencePermit(form, countryList);
             });
         });
+
+        document.querySelectorAll('input[list="alpenia-public-country-list"], input[list="alpenia-country-list"], input[list="alpenia-country-list-edit"]').forEach(function (input) {
+            input.addEventListener('focus', function () {
+                input.select();
+            });
+        });
     });
 }());
