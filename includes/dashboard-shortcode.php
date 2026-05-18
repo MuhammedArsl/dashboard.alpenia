@@ -3056,8 +3056,9 @@ function alpenia_dashboard_shortcode() {
             margin-bottom: 10px;
         }
 
-        .public-registration-panel__header h2 {
+        .panel.public-registration-panel .public-registration-panel__header h2 {
             margin: 4px 0 0;
+            color: #123f34;
         }
 
         .public-registration-panel__eyebrow,
@@ -3073,7 +3074,10 @@ function alpenia_dashboard_shortcode() {
         }
 
         .public-registration-panel__eyebrow {
-            color: #2f7460;
+            color: #123f34;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(47, 125, 99, 0.24);
+            padding: 7px 11px;
         }
 
         .public-registration-panel__badge {
@@ -3087,7 +3091,8 @@ function alpenia_dashboard_shortcode() {
         .public-registration-panel__text {
             max-width: 780px;
             margin: 0 0 16px;
-            color: #4f6b62;
+            color: #123f34;
+            font-weight: 700;
             line-height: 1.6;
         }
 
