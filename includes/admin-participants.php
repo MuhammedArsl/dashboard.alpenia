@@ -10,7 +10,7 @@ if (!defined('ABSPATH')) exit;
  * such as Zapier discover/write those fields through the REST API.
  */
 function alpenia_participant_field_definitions() {
-    return [
+    $fields = [
         'trip_id' => [
             'label' => 'Reise',
             'type' => 'integer',
@@ -291,6 +291,20 @@ function alpenia_participant_field_definitions() {
             'step' => '1',
         ],
     ];
+
+    foreach ($fields as &$field) {
+        $field['label'] = alpenia_travel_t($field['label']);
+        $field['section'] = alpenia_travel_t($field['section']);
+
+        if (!empty($field['options']) && is_array($field['options'])) {
+            foreach ($field['options'] as $option_value => $option_label) {
+                $field['options'][$option_value] = alpenia_travel_t($option_label);
+            }
+        }
+    }
+    unset($field);
+
+    return $fields;
 }
 
 function alpenia_participant_sanitize_field_value($value, $field) {
@@ -390,7 +404,7 @@ add_action('init', 'alpenia_register_participant_meta_for_tools', 20);
 function alpenia_add_participant_admin_metabox() {
     add_meta_box(
         'alpenia_participant_details',
-        'Teilnehmerdaten',
+        alpenia_travel_t('Teilnehmerdaten'),
         'alpenia_render_participant_admin_metabox',
         'trip_participant',
         'normal',
@@ -409,7 +423,7 @@ function alpenia_render_participant_admin_metabox($post) {
     }
 
     echo '<style>.alpenia-admin-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px 18px}.alpenia-admin-field label{display:block;font-weight:600;margin-bottom:4px}.alpenia-admin-field input:not([type=checkbox]),.alpenia-admin-field select{width:100%}.alpenia-admin-section{border-top:1px solid #dcdcde;margin-top:18px;padding-top:12px}.alpenia-admin-section:first-of-type{border-top:0;margin-top:0;padding-top:0}.alpenia-admin-help{color:#646970;margin-top:6px}</style>';
-    echo '<p class="alpenia-admin-help">Diese Felder entsprechen dem Teilnehmerformular im Dashboard und werden zusätzlich in der REST API für Automationen wie Zapier bereitgestellt.</p>';
+    echo '<p class="alpenia-admin-help">' . esc_html(alpenia_travel_t('Diese Felder entsprechen dem Teilnehmerformular im Dashboard und werden zusätzlich in der REST API für Automationen wie Zapier bereitgestellt.')) . '</p>';
 
     foreach ($sections as $section_label => $section_fields) {
         echo '<div class="alpenia-admin-section">';
@@ -435,7 +449,7 @@ function alpenia_render_participant_admin_metabox($post) {
                 ]);
 
                 echo '<select id="' . esc_attr($input_id) . '" name="' . $input_name . '">';
-                echo '<option value="0">Keine Reise zugeordnet</option>';
+                echo '<option value="0">' . esc_html(alpenia_travel_t('Keine Reise zugeordnet')) . '</option>';
                 foreach ($trips as $trip) {
                     echo '<option value="' . esc_attr($trip->ID) . '" ' . selected((int) $value, (int) $trip->ID, false) . '>' . esc_html($trip->post_title) . ' (#' . esc_html($trip->ID) . ')</option>';
                 }
@@ -448,7 +462,7 @@ function alpenia_render_participant_admin_metabox($post) {
                 echo '</select>';
             } elseif (($field['input_type'] ?? '') === 'checkbox') {
                 echo '<input type="hidden" name="' . $input_name . '" value="0">';
-                echo '<label><input type="checkbox" id="' . esc_attr($input_id) . '" name="' . $input_name . '" value="1" ' . checked((bool) $value, true, false) . '> Erledigt</label>';
+                echo '<label><input type="checkbox" id="' . esc_attr($input_id) . '" name="' . $input_name . '" value="1" ' . checked((bool) $value, true, false) . '> ' . esc_html(alpenia_travel_t('Erledigt')) . '</label>';
             } else {
                 $input_type = $field['input_type'] ?? 'text';
                 $step = isset($field['step']) ? ' step="' . esc_attr($field['step']) . '"' : '';
