@@ -2609,6 +2609,7 @@ function alpenia_dashboard_shortcode() {
                                         <div class="overview-list-card__main">
                                             <span class="overview-list-card__trip"><?php echo esc_html($item['trip_title']); ?></span>
                                             <h3><?php echo esc_html($item['participant_name']); ?></h3>
+                                            <span class="overview-list-card__status"><?php echo esc_html(count($missing_doc_labels)); ?> <?php echo esc_html(alpenia_travel_t('Unterlage fehlt')); ?></span>
                                             <span class="overview-list-card__status"><?php echo esc_html(count($missing_doc_labels)); ?> <?php echo esc_html(alpenia_travel_t(count($missing_doc_labels) === 1 ? 'Unterlage fehlt' : 'Unterlagen fehlen')); ?></span>
                                             <details class="overview-info-panel">
                                                 <summary><span><?php echo esc_html(alpenia_travel_t('Info anzeigen')); ?></span></summary>
@@ -4123,6 +4124,59 @@ function alpenia_dashboard_shortcode() {
         .overview-info-panel summary {
             display: inline-flex;
             align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            margin: 10px 10px 0;
+            padding: 10px 14px;
+            border: 1px solid rgba(16, 86, 68, 0.2);
+            border-radius: 12px;
+            background: #ffffff;
+            color: #0f3a30;
+            font-weight: 900;
+            letter-spacing: 0.01em;
+            list-style: none;
+            box-shadow: 0 6px 16px rgba(10, 48, 38, 0.08);
+            transition: background-color .18s ease, border-color .18s ease, box-shadow .18s ease, transform .18s ease;
+        }
+
+        .overview-info-panel summary::-webkit-details-marker { display: none; }
+
+        .overview-info-panel summary::before {
+            content: 'i';
+            display: inline-grid;
+            place-items: center;
+            width: 20px;
+            height: 20px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, #1f6d57 0%, #2d8b71 100%);
+            color: #fff;
+            font-size: 12px;
+            font-weight: 900;
+        }
+
+        .overview-info-panel summary::after {
+            content: '▾';
+            margin-left: 2px;
+            color: #1f6d57;
+            font-size: 12px;
+            transition: transform .18s ease;
+        }
+
+        .overview-info-panel summary:hover {
+            background: #f3fbf7;
+            border-color: rgba(32, 110, 88, 0.35);
+            box-shadow: 0 10px 24px rgba(10, 48, 38, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .overview-info-panel[open] summary {
+            background: #ebf8f2;
+            border-color: rgba(32, 110, 88, 0.42);
+            box-shadow: 0 10px 24px rgba(10, 48, 38, 0.13);
+        }
+
+        .overview-info-panel[open] summary::after {
+            transform: rotate(180deg);
             gap: 8px;
             cursor: pointer;
             margin: 10px 10px 0;
