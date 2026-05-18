@@ -2080,9 +2080,10 @@ function alpenia_dashboard_shortcode() {
                     <div class="trip-meta-grid">
                         <div class="trip-meta-box">
                             <strong><?php echo esc_html(alpenia_travel_t('Individueller Anmeldelink')); ?></strong>
-                            <span>
-                                <input type="text" readonly value="<?php echo esc_attr($public_form_link); ?>" onclick="this.select();" style="width:100%;max-width:640px;">
-                                <a href="<?php echo esc_url($public_form_link); ?>" target="_blank" rel="noopener"><?php echo esc_html(alpenia_travel_t('Formular öffnen')); ?></a>
+                            <span class="public-registration-link">
+                                <input class="public-registration-link__input" type="text" readonly value="<?php echo esc_attr($public_form_link); ?>" onclick="this.select();" aria-label="<?php echo esc_attr(alpenia_travel_t('Individueller Anmeldelink')); ?>">
+                                <button type="button" class="btn-secondary public-registration-link__copy" data-copy-value="<?php echo esc_attr($public_form_link); ?>" data-copy-default="<?php echo esc_attr(alpenia_travel_t('Link kopieren')); ?>" data-copy-success="<?php echo esc_attr(alpenia_travel_t('Link kopiert')); ?>"><?php echo esc_html(alpenia_travel_t('Link kopieren')); ?></button>
+                                <a class="btn-primary public-registration-link__open" href="<?php echo esc_url($public_form_link); ?>" target="_blank" rel="noopener"><?php echo esc_html(alpenia_travel_t('Formular öffnen')); ?></a>
                             </span>
                         </div>
                     </div>
@@ -3030,6 +3031,30 @@ function alpenia_dashboard_shortcode() {
             background: linear-gradient(135deg, #245845, #2f7460);
             color: #fff;
             border: 1px solid rgba(167, 197, 184, 0.45);
+        }
+
+        .public-registration-link {
+            display: grid;
+            grid-template-columns: minmax(240px, 1fr) auto auto;
+            gap: 10px;
+            align-items: stretch;
+            margin-top: 10px;
+        }
+
+        .public-registration-link__input {
+            width: 100%;
+            min-height: 50px;
+            border-radius: 10px;
+            border: 1px solid rgba(167, 197, 184, 0.55);
+            padding: 0 14px;
+            color: #123f34;
+            background: #fff;
+        }
+
+        @media (max-width: 720px) {
+            .public-registration-link {
+                grid-template-columns: 1fr;
+            }
         }
 
         .dashboard-language-switch {
@@ -5146,6 +5171,50 @@ function alpenia_dashboard_shortcode() {
         function normalize(value) {
             return (value || '').trim().toLowerCase();
         }
+
+        document.querySelectorAll('.public-registration-link__copy').forEach(function(button) {
+            button.addEventListener('click', function() {
+                const value = button.getAttribute('data-copy-value') || '';
+                const defaultLabel = button.getAttribute('data-copy-default') || button.textContent;
+                const successLabel = button.getAttribute('data-copy-success') || defaultLabel;
+
+                function showCopied() {
+                    button.textContent = successLabel;
+                    window.setTimeout(function() {
+                        button.textContent = defaultLabel;
+                    }, 1800);
+                }
+
+                function copyWithFallback() {
+                    const textarea = document.createElement('textarea');
+                    textarea.value = value;
+                    textarea.setAttribute('readonly', 'readonly');
+                    textarea.style.position = 'fixed';
+                    textarea.style.opacity = '0';
+                    document.body.appendChild(textarea);
+                    textarea.select();
+
+                    try {
+                        if (document.execCommand('copy')) {
+                            showCopied();
+                        } else {
+                            alert('<?php echo esc_js(alpenia_travel_t('Link konnte nicht automatisch kopiert werden. Bitte den Link markieren und manuell kopieren.')); ?>');
+                        }
+                    } catch (error) {
+                        alert('<?php echo esc_js(alpenia_travel_t('Link konnte nicht automatisch kopiert werden. Bitte den Link markieren und manuell kopieren.')); ?>');
+                    }
+
+                    document.body.removeChild(textarea);
+                }
+
+                if (navigator.clipboard && window.isSecureContext) {
+                    navigator.clipboard.writeText(value).then(showCopied).catch(copyWithFallback);
+                    return;
+                }
+
+                copyWithFallback();
+            });
+        });
 
         function isEuOrSchengenCountry(value) {
             return euOrSchengenCountries.map(normalize).includes(normalize(value));
