@@ -2456,17 +2456,17 @@ function alpenia_dashboard_shortcode() {
 
                         <select name="trip_type_filter">
                             <option value=""><?php echo esc_html(alpenia_travel_t('Alle Reisearten')); ?></option>
-                            <option value="kultur" <?php selected($trip_type_filter, 'kultur'); ?>>Kulturreise</option>
-                            <option value="umrah" <?php selected($trip_type_filter, 'umrah'); ?>>Umrah</option>
-                            <option value="hajj" <?php selected($trip_type_filter, 'hajj'); ?>>Hajj</option>
+                            <option value="kultur" <?php selected($trip_type_filter, 'kultur'); ?>><?php echo esc_html(alpenia_travel_t('Kulturreise')); ?></option>
+                            <option value="umrah" <?php selected($trip_type_filter, 'umrah'); ?>><?php echo esc_html(alpenia_travel_t('Umrah')); ?></option>
+                            <option value="hajj" <?php selected($trip_type_filter, 'hajj'); ?>><?php echo esc_html(alpenia_travel_t('Hajj')); ?></option>
                         </select>
 
                         <select name="trip_status_filter">
                             <option value=""><?php echo esc_html(alpenia_travel_t('Alle Status')); ?></option>
-                            <option value="draft" <?php selected($trip_status_filter, 'draft'); ?>>Entwurf</option>
+                            <option value="draft" <?php selected($trip_status_filter, 'draft'); ?>><?php echo esc_html(alpenia_travel_t('Entwurf')); ?></option>
                             <option value="open" <?php selected($trip_status_filter, 'open'); ?>><?php echo esc_html(alpenia_travel_t("Offen")); ?></option>
-                            <option value="full" <?php selected($trip_status_filter, 'full'); ?>>Voll</option>
-                            <option value="closed" <?php selected($trip_status_filter, 'closed'); ?>>Abgeschlossen</option>
+                            <option value="full" <?php selected($trip_status_filter, 'full'); ?>><?php echo esc_html(alpenia_travel_t('Voll')); ?></option>
+                            <option value="closed" <?php selected($trip_status_filter, 'closed'); ?>><?php echo esc_html(alpenia_travel_t('Abgeschlossen')); ?></option>
                         </select>
 
                         <select name="trip_country_filter">
