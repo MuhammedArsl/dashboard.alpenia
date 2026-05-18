@@ -314,6 +314,11 @@ function alpenia_travel_t($text) {
     $lang = alpenia_travel_get_language();
     $translations = alpenia_travel_get_translations();
     $extra_tr = [
+        'Startseite' => 'Ana sayfa',
+        'Übersicht' => 'Genel bakış',
+        'Reise bearbeiten' => 'Seyahati düzenle',
+        'Öffentliche Anmeldung' => 'Herkese açık kayıt',
+        '%1$d von %2$d Teilnehmern angezeigt' => '%2$d katılımcıdan %1$d tanesi gösteriliyor',
         'Anmeldeformular' => 'Kayıt formu',
         'Fehlende Unterlagen im Überblick' => 'EKSIK BELGE GENEL BAKIS',
         '%d Fehlende Unterlagen' => '%d EKSİK BELGE',
@@ -470,7 +475,10 @@ function alpenia_travel_t($text) {
         'Reisezeitraum' => 'Seyahat tarihleri',
         'z. B. Wien' => 'örn. Viyana',
         'z. B. Vienna International Airport' => 'örn. Viyana Uluslararası Havalimanı',
-        'Formular öffnen' => 'Formu aç',
+        'Formular öffnen' => 'Kayıt formunu aç',
+        'Link kopieren' => 'Bağlantıyı kopyala',
+        'Link kopiert' => 'Bağlantı kopyalandı',
+        'Link konnte nicht automatisch kopiert werden. Bitte den Link markieren und manuell kopieren.' => 'Bağlantı otomatik kopyalanamadı. Lütfen bağlantıyı seçip elle kopyalayın.',
         'Schrittweise Erfassung' => 'Adım adım kayıt',
         'Teilnehmer einzeln bearbeiten' => 'Katılımcıları tek tek düzenle',
         'Damit nichts durcheinandergerät, wird immer nur eine Person geöffnet. Die Übersicht zeigt dir, bei welchem Teilnehmer du gerade bist.' => 'Karışıklık olmaması için aynı anda yalnızca bir kişi açık olur. Genel bakış hangi katılımcıda olduğunuzu gösterir.',
