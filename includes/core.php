@@ -330,6 +330,7 @@ function alpenia_travel_t($text) {
         'Neues Passwort (mind. 12 Zeichen)' => 'Yeni şifre (en az 12 karakter)',
         'Passwort speichern' => 'Şifreyi kaydet',
         'Passwort vergessen?' => 'Şifrenizi mi unuttunuz?',
+        'Bereits bezahlt' => 'Ödenen tutar',
         'Reisepassnummer' => 'Pasaport numarası',
         'Anmeldung für' => 'Kayıt',
         'Prüfe bitte vor dem Absenden die wichtigsten Reisedetails und halte die benötigten Dokumente bereit.' => 'Lütfen göndermeden önce en önemli seyahat bilgilerini kontrol edin ve gerekli belgeleri hazır bulundurun.',
