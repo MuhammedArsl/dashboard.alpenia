@@ -3039,7 +3039,7 @@ function alpenia_dashboard_shortcode() {
             border: 1px solid rgba(167, 197, 184, 0.45);
         }
 
-        .public-registration-panel {
+        .panel.public-registration-panel {
             margin-top: 20px;
             overflow: hidden;
             border: 1px solid rgba(167, 197, 184, 0.34);
