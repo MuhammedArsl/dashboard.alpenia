@@ -436,7 +436,11 @@ function alpenia_public_participant_get_form_fields() {
 }
 
 function alpenia_public_participant_get_required_fields() {
-    return ['gender', 'first_name', 'last_name', 'nationality', 'passport_no', 'passport_valid_from_date', 'passport_expiry_date', 'email_address'];
+    $residence_fields = alpenia_public_participant_get_residence_permit_field_keys();
+
+    return array_values(array_filter(array_keys(alpenia_public_participant_get_form_fields()), static function ($field_key) use ($residence_fields) {
+        return !in_array($field_key, $residence_fields, true);
+    }));
 }
 
 function alpenia_public_participant_get_submitted_values() {
