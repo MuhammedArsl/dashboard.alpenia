@@ -1641,6 +1641,26 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group">
+                                        <label for="phone_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
+                                        <input type="text" id="phone_number_<?php echo $i; ?>" name="phone_number_<?php echo $i; ?>" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="email_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
+                                        <input type="email" id="email_address_<?php echo $i; ?>" name="email_address_<?php echo $i; ?>" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="emergency_contact_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
+                                        <input type="text" id="emergency_contact_name_<?php echo $i; ?>" name="emergency_contact_name_<?php echo $i; ?>" required>
+                                    </div>
+
+                                    <div class="form-group">
+                                        <label for="emergency_contact_phone_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
+                                        <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>" required>
+                                    </div>
+
+                                    <div class="form-group">
                                         <label for="nationality_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
                                         <input type="text" id="nationality_<?php echo $i; ?>" name="nationality_<?php echo $i; ?>" list="alpenia-country-list" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
                                     </div>
@@ -1745,27 +1765,6 @@ function alpenia_dashboard_shortcode() {
                                             <label class="checkbox-line"><input type="checkbox" name="check_payment_<?php echo $i; ?>" value="1" required> <?php echo esc_html(alpenia_travel_t('Zahlung geprüft')); ?></label>
                                         </div>
                                     </div>
-
-                                    <div class="form-group">
-                                        <label for="phone_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
-                                        <input type="text" id="phone_number_<?php echo $i; ?>" name="phone_number_<?php echo $i; ?>" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="email_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
-                                        <input type="email" id="email_address_<?php echo $i; ?>" name="email_address_<?php echo $i; ?>" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="emergency_contact_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
-                                        <input type="text" id="emergency_contact_name_<?php echo $i; ?>" name="emergency_contact_name_<?php echo $i; ?>" required>
-                                    </div>
-
-                                    <div class="form-group">
-                                        <label for="emergency_contact_phone_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
-                                        <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>" required>
-                                    </div>
-
 
                                 </div>
 
@@ -1901,6 +1900,26 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
+                                <label for="phone_number"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
+                                <input type="text" id="phone_number" name="phone_number" value="<?php echo esc_attr($phone_number); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="email_address"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
+                                <input type="email" id="email_address" name="email_address" value="<?php echo esc_attr($email_address); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergency_contact_name"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
+                                <input type="text" id="emergency_contact_name" name="emergency_contact_name" value="<?php echo esc_attr($emergency_contact_name); ?>">
+                            </div>
+
+                            <div class="form-group">
+                                <label for="emergency_contact_phone"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
+                                <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" value="<?php echo esc_attr($emergency_contact_phone); ?>">
+                            </div>
+
+                            <div class="form-group">
                                 <label for="nationality"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
                                 <input type="text" id="nationality" name="nationality" value="<?php echo esc_attr($nationality); ?>" list="alpenia-country-list-edit" required>
                                 <datalist id="alpenia-country-list-edit">
@@ -2015,27 +2034,6 @@ function alpenia_dashboard_shortcode() {
                                     <label class="checkbox-line"><input type="checkbox" name="check_payment" value="1" <?php checked($check_payment, 1); ?>> <?php echo esc_html(alpenia_travel_t('Zahlung geprüft')); ?></label>
                                 </div>
                             </div>
-
-                            <div class="form-group">
-                                <label for="phone_number"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
-                                <input type="text" id="phone_number" name="phone_number" value="<?php echo esc_attr($phone_number); ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="email_address"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
-                                <input type="email" id="email_address" name="email_address" value="<?php echo esc_attr($email_address); ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="emergency_contact_name"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
-                                <input type="text" id="emergency_contact_name" name="emergency_contact_name" value="<?php echo esc_attr($emergency_contact_name); ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="emergency_contact_phone"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
-                                <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" value="<?php echo esc_attr($emergency_contact_phone); ?>">
-                            </div>
-
 
                         </div>
 
