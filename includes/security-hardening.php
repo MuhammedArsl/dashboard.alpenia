@@ -325,7 +325,7 @@ function alpenia_create_private_upload_guard($base_dir) {
     }
 }
 
-function alpenia_get_secure_download_url($attachment_id) {
+function alpenia_get_secure_download_url($attachment_id, $force_download = false) {
     $attachment_id = (int) $attachment_id;
     if ($attachment_id <= 0) {
         return '';
@@ -333,7 +333,8 @@ function alpenia_get_secure_download_url($attachment_id) {
 
     $exp = time() + (5 * MINUTE_IN_SECONDS);
     $uid = get_current_user_id();
-    $payload = $attachment_id . '|' . $exp . '|' . $uid;
+    $dl = $force_download ? 1 : 0;
+    $payload = $attachment_id . '|' . $exp . '|' . $uid . '|' . $dl;
     $sig = hash_hmac('sha256', $payload, alpenia_get_signing_key());
 
     return add_query_arg([
@@ -341,6 +342,7 @@ function alpenia_get_secure_download_url($attachment_id) {
         'exp' => $exp,
         'uid' => $uid,
         'sig' => $sig,
+        'dl' => $dl,
     ], home_url('/'));
 }
 
@@ -384,13 +386,14 @@ function alpenia_handle_secure_download() {
     $exp = (int) $_GET['exp'];
     $uid = (int) $_GET['uid'];
     $sig = sanitize_text_field(wp_unslash($_GET['sig']));
+    $dl = isset($_GET['dl']) ? (int) $_GET['dl'] : 0;
 
     if ($attachment_id <= 0 || $exp < time() || $uid !== get_current_user_id()) {
         status_header(403);
         exit('Access denied');
     }
 
-    $expected = hash_hmac('sha256', $attachment_id . '|' . $exp . '|' . $uid, alpenia_get_signing_key());
+    $expected = hash_hmac('sha256', $attachment_id . '|' . $exp . '|' . $uid . '|' . $dl, alpenia_get_signing_key());
     if (!hash_equals($expected, $sig) || !alpenia_user_can_access_attachment($attachment_id)) {
         alpenia_security_log('download_denied', ['attachment_id' => $attachment_id]);
         status_header(403);
@@ -407,7 +410,8 @@ function alpenia_handle_secure_download() {
     nocache_headers();
     header('Content-Type: ' . (string) get_post_mime_type($attachment_id));
     header('Content-Length: ' . filesize($file));
-    header('Content-Disposition: inline; filename="' . basename($file) . '"');
+    $disposition = $dl === 1 ? 'attachment' : 'inline';
+    header('Content-Disposition: ' . $disposition . '; filename="' . basename($file) . '"');
     readfile($file);
     exit;
 }

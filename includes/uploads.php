@@ -163,3 +163,8 @@ function alpenia_attachment_link($attachment_id) {
     if (!$attachment_id) return '';
     return esc_url(alpenia_get_secure_download_url((int) $attachment_id));
 }
+
+function alpenia_attachment_download_link($attachment_id) {
+    if (!$attachment_id) return '';
+    return esc_url(alpenia_get_secure_download_url((int) $attachment_id, true));
+}
