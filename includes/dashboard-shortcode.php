@@ -202,7 +202,14 @@ function alpenia_dashboard_shortcode() {
 
     $current_user = wp_get_current_user();
     $message = '';
+    $auto_return_home = false;
     $logo_url = 'HIER_DEINE_LOGO_URL_EINFÜGEN';
+
+    if (isset($_GET['participant_saved']) && $_GET['participant_saved'] === '1') {
+        $saved_count = isset($_GET['saved_count']) ? max(1, (int) $_GET['saved_count']) : 1;
+        $message = '<div class="alpenia-success" data-alpenia-success-message="1">' . esc_html(sprintf(alpenia_travel_t('%d Teilnehmer erfolgreich gespeichert.'), $saved_count)) . '</div>';
+        $auto_return_home = true;
+    }
 
     if (isset($_GET['export_trip_csv'])) {
         alpenia_export_trip_csv((int) $_GET['export_trip_csv']);
@@ -498,7 +505,12 @@ function alpenia_dashboard_shortcode() {
 
                 if ($all_ok) {
                     alpenia_send_notification('Neue Teilnehmer erfasst', $saved_count . ' Teilnehmer wurden für eine Reise gespeichert.');
-                    $message = '<div class="alpenia-success">' . (int) $saved_count . ' ' . esc_html(alpenia_travel_t('Teilnehmer erfolgreich gespeichert.')) . '</div>';
+                    $redirect_url = alpenia_dashboard_link([
+                        'participant_saved' => 1,
+                        'saved_count' => (int) $saved_count,
+                    ]);
+                    wp_safe_redirect($redirect_url);
+                    exit;
                 } elseif ($message === '') {
                     $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' ' . esc_html(alpenia_travel_t('Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.')) . '</div>';
                 }
@@ -1273,6 +1285,22 @@ function alpenia_dashboard_shortcode() {
             <?php endif; ?>
 
             <?php echo $message; ?>
+            <?php if ($auto_return_home) : ?>
+                <script>
+                    (function () {
+                        const successMessage = document.querySelector('[data-alpenia-success-message="1"]');
+                        if (successMessage) {
+                            successMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                        } else {
+                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                        }
+
+                        window.setTimeout(function () {
+                            window.location.href = <?php echo wp_json_encode(alpenia_dashboard_link()); ?>;
+                        }, 2200);
+                    }());
+                </script>
+            <?php endif; ?>
 
 
             <form id="alpenia-idle-logout-form" method="post" style="display:none;">
