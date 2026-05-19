@@ -2212,7 +2212,7 @@ function alpenia_dashboard_shortcode() {
                                             <td><?php echo esc_html(alpenia_display_value(alpenia_travel_t($gender))); ?></td>
                                             <td>
                                                 <strong><?php echo esc_html(alpenia_display_value(trim($first_name . ' ' . $last_name))); ?></strong><br>
-                                                <small><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_no', true))); ?></small>
+                                                <small><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'second_first_name', true))); ?></small>
                                             </td>
                                             <td><?php echo wp_kses_post(alpenia_get_participant_doc_badge($participant->ID)); ?></td>
                                             <?php if ($view_is_pilgrimage_trip) : ?>
