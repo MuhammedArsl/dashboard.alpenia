@@ -567,7 +567,7 @@ function alpenia_dashboard_shortcode() {
         $item_id = (int) $_GET['restore_item'];
         if (wp_verify_nonce($_GET['_restore_nonce'], 'alpenia_restore_item_' . $item_id)) {
             wp_untrash_post($item_id);
-            $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Eintrag wurde wiederhergestellt.')) . '</div>';
+            $message = '<div class="alpenia-success" data-alpenia-feedback-popup="item_restored">' . esc_html(alpenia_travel_t('Kayıt geri yüklendi.')) . '</div>';
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.')) . '</div>';
         }
@@ -577,7 +577,7 @@ function alpenia_dashboard_shortcode() {
         $item_id = (int) $_GET['delete_item_permanently'];
         if (wp_verify_nonce($_GET['_hard_delete_nonce'], 'alpenia_hard_delete_item_' . $item_id)) {
             wp_delete_post($item_id, true);
-            $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Eintrag wurde dauerhaft gelöscht.')) . '</div>';
+            $message = '<div class="alpenia-success" data-alpenia-feedback-popup="item_deleted">' . esc_html(alpenia_travel_t('Kayıt kalıcı olarak silindi.')) . '</div>';
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.')) . '</div>';
         }
@@ -1342,10 +1342,12 @@ function alpenia_dashboard_shortcode() {
 
                     const popupType = deleteMessage.getAttribute('data-alpenia-delete-popup') || deleteMessage.getAttribute('data-alpenia-feedback-popup');
                     const titleMap = {
-                        trip: <?php echo wp_json_encode(alpenia_travel_t('Reise gelöscht')); ?>,
-                        participant: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gelöscht')); ?>,
-                        trip_created: <?php echo wp_json_encode(alpenia_travel_t('Reise erstellt')); ?>,
-                        participant_created: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gespeichert')); ?>
+                        trip: <?php echo wp_json_encode(alpenia_travel_t('Seyahat silindi')); ?>,
+                        participant: <?php echo wp_json_encode(alpenia_travel_t('Katılımcı silindi')); ?>,
+                        trip_created: <?php echo wp_json_encode(alpenia_travel_t('Seyahat oluşturuldu')); ?>,
+                        participant_created: <?php echo wp_json_encode(alpenia_travel_t('Katılımcı kaydedildi')); ?>,
+                        item_restored: <?php echo wp_json_encode(alpenia_travel_t('Kayıt geri yüklendi')); ?>,
+                        item_deleted: <?php echo wp_json_encode(alpenia_travel_t('Kayıt kalıcı olarak silindi')); ?>
                     };
 
                     const overlay = document.createElement('div');
@@ -1361,7 +1363,7 @@ function alpenia_dashboard_shortcode() {
 
                     const title = document.createElement('h3');
                     title.className = 'alpenia-delete-popup-title';
-                    title.textContent = titleMap[popupType] || <?php echo wp_json_encode(alpenia_travel_t('Erfolgreich')); ?>;
+                    title.textContent = titleMap[popupType] || <?php echo wp_json_encode(alpenia_travel_t('Başarılı')); ?>;
 
                     const text = document.createElement('p');
                     text.className = 'alpenia-delete-popup-text';
@@ -1370,7 +1372,7 @@ function alpenia_dashboard_shortcode() {
                     const closeButton = document.createElement('button');
                     closeButton.type = 'button';
                     closeButton.className = 'btn-primary';
-                    closeButton.textContent = <?php echo wp_json_encode(alpenia_travel_t('Schließen')); ?>;
+                    closeButton.textContent = <?php echo wp_json_encode(alpenia_travel_t('Kapat')); ?>;
 
                     const closePopup = function () { overlay.remove(); };
                     closeButton.addEventListener('click', closePopup);
@@ -2584,8 +2586,8 @@ function alpenia_dashboard_shortcode() {
                     <div class="trash-filters">
                         <?php
                         $trash_filter_links = [
-                            'all' => alpenia_travel_t('Alle'),
-                            'trip_participant' => alpenia_travel_t('Katilimci'),
+                            'all' => alpenia_travel_t('Tümü'),
+                            'trip_participant' => alpenia_travel_t('Katılımcılar'),
                             'group_trip' => alpenia_travel_t('Seyahatler'),
                         ];
                         foreach ($trash_filter_links as $trash_filter_key => $trash_filter_label) :
@@ -3191,7 +3193,7 @@ function alpenia_dashboard_shortcode() {
             margin-right: calc(50% - 50vw);
             margin-top: 0 !important;
             padding-top: 0 !important;
-            background: linear-gradient(150deg, #f5f5f3 0%, #efefea 45%, #eaeae6 100%);
+            background: linear-gradient(150deg, #f5faf8 0%, #edf6f2 45%, #e8f2ee 100%);
             overflow-x: hidden;
             position: relative;
             isolation: isolate;
@@ -3752,7 +3754,7 @@ function alpenia_dashboard_shortcode() {
         }
 
         .table-btn {
-            background: rgba(255,255,255,0.12);
+            background: linear-gradient(135deg, #1d4d3f, #2d6a57);
             color: #fff;
             padding: 10px 14px;
             font-size: 14px;
@@ -5650,8 +5652,8 @@ function alpenia_dashboard_shortcode() {
             text-decoration: none;
         }
         .trash-panel {
-            border: 1px solid rgba(74, 119, 180, 0.24);
-            background: linear-gradient(150deg, #f5f5f3 0%, #efefea 45%, #eaeae6 100%);
+            border: 1px solid rgba(47, 116, 96, 0.24);
+            background: linear-gradient(150deg, #f5faf8 0%, #edf6f2 45%, #e8f2ee 100%);
         }
         .trash-panel__header {
             display: flex;
@@ -5691,23 +5693,23 @@ function alpenia_dashboard_shortcode() {
             padding: 6px 14px;
             border-radius: 999px;
             text-decoration: none;
-            color: #1d446c;
+            color: #1b4f40;
             background: rgba(255,255,255,0.76);
-            border: 1px solid rgba(85, 133, 191, 0.25);
+            border: 1px solid rgba(61, 129, 108, 0.32);
             font-weight: 700;
             transition: all .2s ease;
         }
         .trash-filter-chip:hover,
         .trash-filter-chip:focus-visible {
-            color: #0f2f52;
-            border-color: rgba(50, 108, 175, 0.46);
+            color: #123d31;
+            border-color: rgba(47, 116, 96, 0.52);
             background: #ffffff;
         }
         .trash-filter-chip.is-active {
             color: #ffffff;
-            background: linear-gradient(180deg, #2f8be8, #246fbe);
-            border-color: #2063aa;
-            box-shadow: 0 6px 16px rgba(25, 85, 148, 0.3);
+            background: linear-gradient(180deg, #2f7460, #245845);
+            border-color: #1f4f40;
+            box-shadow: 0 6px 16px rgba(25, 85, 68, 0.28);
         }
         .trash-type-badge {
             display: inline-flex;
