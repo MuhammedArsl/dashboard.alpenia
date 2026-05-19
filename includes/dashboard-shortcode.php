@@ -212,9 +212,6 @@ function alpenia_dashboard_shortcode() {
     $guide_filter = isset($_GET['guide_filter']) ? (int) $_GET['guide_filter'] : '';
     $trip_page = isset($_GET['trip_page']) ? max(1, (int) $_GET['trip_page']) : 1;
     $trips_per_page = alpenia_dashboard_get_per_page('trips_per_page', 20, [10, 20, 50, 100]);
-    $overview_page = isset($_GET['overview_page']) ? max(1, (int) $_GET['overview_page']) : 1;
-    $overview_payments_page = isset($_GET['overview_payments_page']) ? max(1, (int) $_GET['overview_payments_page']) : 1;
-    $overview_items_per_page = alpenia_dashboard_get_per_page('overview_items_per_page', 6, [6, 12, 24, 50]);
     $create_trip_requested = isset($_GET['create_trip']) && $_GET['create_trip'] == '1';
     $edit_trip_id = isset($_GET['edit_trip']) ? (int) $_GET['edit_trip'] : 0;
     $edit_trip_requested = $edit_trip_id > 0;
@@ -905,6 +902,7 @@ function alpenia_dashboard_shortcode() {
         'vollstaendig' => 0,
         'other' => 0,
     ];
+    $overview_item_limit = 6;
     $business_revenue_total = 0.0;
     $business_revenue_paid = 0.0;
     $business_revenue_open = 0.0;
@@ -1010,16 +1008,18 @@ function alpenia_dashboard_shortcode() {
             if (isset($trip_growth_stats[$trip_id])) {
                 $trip_growth_stats[$trip_id]['missing_docs']++;
             }
-            $missing_docs_items[] = [
-                'trip_id' => $trip_id,
-                'trip_title' => get_the_title($trip_id),
-                'participant_name' => trim(
-                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                    alpenia_get_secure_meta($participant_id, 'last_name', true)
-                ),
-                'missing_docs' => $missing_details,
-                'participant_id' => $participant_id,
-            ];
+            if (count($missing_docs_items) < $overview_item_limit) {
+                $missing_docs_items[] = [
+                    'trip_id' => $trip_id,
+                    'trip_title' => get_the_title($trip_id),
+                    'participant_name' => trim(
+                        alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
+                        alpenia_get_secure_meta($participant_id, 'last_name', true)
+                    ),
+                    'missing_docs' => $missing_details,
+                    'participant_id' => $participant_id,
+                ];
+            }
         }
 
         if ($payment_open > 0) {
@@ -1040,7 +1040,9 @@ function alpenia_dashboard_shortcode() {
                 'participant_id' => $participant_id,
             ];
             $priority_payment_items[] = $payment_item;
-            $open_payments_items[] = $payment_item;
+            if (count($open_payments_items) < $overview_item_limit) {
+                $open_payments_items[] = $payment_item;
+            }
         }
 
         $operation_reasons = [];
@@ -1106,20 +1108,6 @@ function alpenia_dashboard_shortcode() {
         return $b['payment_open'] <=> $a['payment_open'];
     });
     $priority_payment_items = array_slice($priority_payment_items, 0, 6);
-
-    $missing_docs_total_items = count($missing_docs_items);
-    $missing_docs_max_pages = max(1, (int) ceil($missing_docs_total_items / $overview_items_per_page));
-    if ($missing_docs_total_items > 0 && $overview_page > $missing_docs_max_pages) {
-        $overview_page = $missing_docs_max_pages;
-    }
-    $missing_docs_items = array_slice($missing_docs_items, ($overview_page - 1) * $overview_items_per_page, $overview_items_per_page);
-
-    $open_payments_total_items = count($open_payments_items);
-    $open_payments_max_pages = max(1, (int) ceil($open_payments_total_items / $overview_items_per_page));
-    if ($open_payments_total_items > 0 && $overview_payments_page > $open_payments_max_pages) {
-        $overview_payments_page = $open_payments_max_pages;
-    }
-    $open_payments_items = array_slice($open_payments_items, ($overview_payments_page - 1) * $overview_items_per_page, $overview_items_per_page);
 
     $finance_trip_summaries = array_values(array_filter($trip_growth_stats, function($stats) {
         return $stats['revenue_total'] > 0 || $stats['revenue_open'] > 0;
@@ -1237,20 +1225,6 @@ function alpenia_dashboard_shortcode() {
         return $b['payment_open'] <=> $a['payment_open'];
     });
     $priority_payment_items = array_slice($priority_payment_items, 0, 6);
-
-    $missing_docs_total_items = count($missing_docs_items);
-    $missing_docs_max_pages = max(1, (int) ceil($missing_docs_total_items / $overview_items_per_page));
-    if ($missing_docs_total_items > 0 && $overview_page > $missing_docs_max_pages) {
-        $overview_page = $missing_docs_max_pages;
-    }
-    $missing_docs_items = array_slice($missing_docs_items, ($overview_page - 1) * $overview_items_per_page, $overview_items_per_page);
-
-    $open_payments_total_items = count($open_payments_items);
-    $open_payments_max_pages = max(1, (int) ceil($open_payments_total_items / $overview_items_per_page));
-    if ($open_payments_total_items > 0 && $overview_payments_page > $open_payments_max_pages) {
-        $overview_payments_page = $open_payments_max_pages;
-    }
-    $open_payments_items = array_slice($open_payments_items, ($overview_payments_page - 1) * $overview_items_per_page, $overview_items_per_page);
 
     $finance_trip_summaries = array_values(array_filter($trip_growth_stats, function($stats) {
         return $stats['revenue_total'] > 0 || $stats['revenue_open'] > 0;
@@ -2674,23 +2648,6 @@ function alpenia_dashboard_shortcode() {
                             </div>
                         </div>
 
-
-                            <form method="get" class="dashboard-filters overview-card__filters">
-                                <?php foreach ($_GET as $key => $value) : ?>
-                                    <?php if (in_array($key, ['overview_items_per_page', 'overview_page'], true)) continue; ?>
-                                    <input type="hidden" name="<?php echo esc_attr($key); ?>" value="<?php echo esc_attr(is_array($value) ? implode(',', $value) : $value); ?>">
-                                <?php endforeach; ?>
-                                <label>
-                                    <?php echo esc_html(alpenia_travel_t('pro Seite')); ?>
-                                    <select name="overview_items_per_page" onchange="this.form.submit()">
-                                        <option value="6" <?php selected($overview_items_per_page, 6); ?>>6</option>
-                                        <option value="12" <?php selected($overview_items_per_page, 12); ?>>12</option>
-                                        <option value="24" <?php selected($overview_items_per_page, 24); ?>>24</option>
-                                        <option value="50" <?php selected($overview_items_per_page, 50); ?>>50</option>
-                                    </select>
-                                </label>
-                            </form>
-
                         <?php if (!empty($missing_docs_items)) : ?>
                             <div class="overview-list overview-list--compact">
                                 <?php foreach ($missing_docs_items as $item) : ?>
@@ -2721,7 +2678,7 @@ function alpenia_dashboard_shortcode() {
                                     </article>
                                 <?php endforeach; ?>
                             </div>
-                            <?php if ($missing_docs_total_items > count($missing_docs_items)) : ?>
+                            <?php if ($missing_docs_count > count($missing_docs_items)) : ?>
                                 <p class="overview-card__hint">
                                     <?php echo esc_html(sprintf(
                                         alpenia_travel_t('%1$s von %2$s sichtbar. Öffne den Teilnehmer direkt über die Karte.'),
@@ -2730,19 +2687,6 @@ function alpenia_dashboard_shortcode() {
                                     )); ?>
                                 </p>
                             <?php endif; ?>
-
-                            <?php echo alpenia_dashboard_render_pagination($overview_page, $missing_docs_max_pages, [
-                                'trip_search' => $trip_search,
-                                'trip_type_filter' => $trip_type_filter,
-                                'trip_status_filter' => $trip_status_filter,
-                                'trip_country_filter' => $trip_country_filter,
-                                'trip_city_filter' => $trip_city_filter,
-                                'guide_filter' => $guide_filter,
-                                'trips_per_page' => $trips_per_page,
-                                'overview_items_per_page' => $overview_items_per_page,
-                                'overview_payments_page' => $overview_payments_page,
-                            ], 'overview_page'); ?>
-
                         <?php else : ?>
                             <div class="overview-empty-state">
                                 <strong><?php echo esc_html(alpenia_travel_t('Aktuell keine fehlenden Unterlagen.')); ?></strong>
@@ -2787,7 +2731,7 @@ function alpenia_dashboard_shortcode() {
                                     </article>
                                 <?php endforeach; ?>
                             </div>
-                            <?php if ($open_payments_total_items > count($open_payments_items)) : ?>
+                            <?php if ($open_payments_count > count($open_payments_items)) : ?>
                                 <p class="overview-card__hint">
                                     <?php echo esc_html(sprintf(
                                         alpenia_travel_t('%1$s von %2$s sichtbar. Öffne den Teilnehmer direkt über die Karte.'),
@@ -2796,19 +2740,6 @@ function alpenia_dashboard_shortcode() {
                                     )); ?>
                                 </p>
                             <?php endif; ?>
-
-                            <?php echo alpenia_dashboard_render_pagination($overview_payments_page, $open_payments_max_pages, [
-                                'trip_search' => $trip_search,
-                                'trip_type_filter' => $trip_type_filter,
-                                'trip_status_filter' => $trip_status_filter,
-                                'trip_country_filter' => $trip_country_filter,
-                                'trip_city_filter' => $trip_city_filter,
-                                'guide_filter' => $guide_filter,
-                                'trips_per_page' => $trips_per_page,
-                                'overview_items_per_page' => $overview_items_per_page,
-                                'overview_page' => $overview_page,
-                            ], 'overview_payments_page'); ?>
-
                         <?php else : ?>
                             <div class="overview-empty-state">
                                 <strong><?php echo esc_html(alpenia_travel_t('Aktuell keine offenen Zahlungen.')); ?></strong>
