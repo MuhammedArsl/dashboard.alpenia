@@ -210,7 +210,7 @@ function alpenia_dashboard_shortcode() {
         $saved_message = $saved_count === 1
             ? alpenia_travel_t('1 Teilnehmer erfolgreich gespeichert.')
             : sprintf(alpenia_travel_t('%d Teilnehmer erfolgreich gespeichert.'), $saved_count);
-        $message = '<div class="alpenia-success" data-alpenia-success-message="1">' . esc_html($saved_message) . '</div>';
+        $message = '<div class="alpenia-success" data-alpenia-success-message="1" data-alpenia-feedback-popup="participant_created">' . esc_html($saved_message) . '</div>';
         $auto_return_home = true;
     }
 
@@ -316,7 +316,7 @@ function alpenia_dashboard_shortcode() {
                         $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise erfolgreich aktualisiert.')) . '</div>';
                     } else {
                         alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
-                        $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
+                        $message = '<div class="alpenia-success" data-alpenia-feedback-popup="trip_created">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
                     }
                 } else {
                     $message = '<div class="alpenia-message">' . esc_html($is_editing_trip ? alpenia_travel_t('Fehler beim Aktualisieren der Reise.') : alpenia_travel_t('Fehler beim Erstellen der Reise.')) . '</div>';
@@ -1307,15 +1307,17 @@ function alpenia_dashboard_shortcode() {
             <?php echo $message; ?>
             <script>
                 (function () {
-                    const deleteMessage = document.querySelector('[data-alpenia-delete-popup]');
+                    const deleteMessage = document.querySelector('[data-alpenia-delete-popup], [data-alpenia-feedback-popup]');
                     if (!deleteMessage) {
                         return;
                     }
 
-                    const deleteType = deleteMessage.getAttribute('data-alpenia-delete-popup');
+                    const popupType = deleteMessage.getAttribute('data-alpenia-delete-popup') || deleteMessage.getAttribute('data-alpenia-feedback-popup');
                     const titleMap = {
                         trip: <?php echo wp_json_encode(alpenia_travel_t('Reise gelöscht')); ?>,
-                        participant: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gelöscht')); ?>
+                        participant: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gelöscht')); ?>,
+                        trip_created: <?php echo wp_json_encode(alpenia_travel_t('Reise erstellt')); ?>,
+                        participant_created: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gespeichert')); ?>
                     };
 
                     const overlay = document.createElement('div');
@@ -1331,7 +1333,7 @@ function alpenia_dashboard_shortcode() {
 
                     const title = document.createElement('h3');
                     title.className = 'alpenia-delete-popup-title';
-                    title.textContent = titleMap[deleteType] || <?php echo wp_json_encode(alpenia_travel_t('Erfolgreich gelöscht')); ?>;
+                    title.textContent = titleMap[popupType] || <?php echo wp_json_encode(alpenia_travel_t('Erfolgreich')); ?>;
 
                     const text = document.createElement('p');
                     text.className = 'alpenia-delete-popup-text';
@@ -1369,9 +1371,6 @@ function alpenia_dashboard_shortcode() {
             </script>
             <script>
                 (function () {
-                    const deleteLinks = document.querySelectorAll('a[data-delete-type]');
-                    if (!deleteLinks.length) return;
-
                     const labels = {
                         title: <?php echo wp_json_encode(alpenia_travel_t('Löschoption wählen')); ?>,
                         description: <?php echo wp_json_encode(alpenia_travel_t('Möchtest du zuerst in den Papierkorb verschieben oder direkt dauerhaft löschen?')); ?>,
@@ -1433,11 +1432,14 @@ function alpenia_dashboard_shortcode() {
                         document.body.appendChild(overlay);
                     }
 
-                    deleteLinks.forEach(function (link) {
-                        link.addEventListener('click', function (event) {
-                            event.preventDefault();
-                            openDeleteChooser(link.href);
-                        });
+                    document.addEventListener('click', function (event) {
+                        const link = event.target.closest('a[data-delete-type]');
+                        if (!link) {
+                            return;
+                        }
+
+                        event.preventDefault();
+                        openDeleteChooser(link.href);
                     });
                 }());
             </script>
