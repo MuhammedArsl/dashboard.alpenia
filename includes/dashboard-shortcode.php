@@ -363,7 +363,7 @@ function alpenia_dashboard_shortcode() {
                 $message = '<div class="alpenia-success" data-alpenia-delete-popup="trip">' . esc_html(alpenia_travel_t('Reise wurde dauerhaft gelöscht.')) . '</div>';
             } else {
                 wp_trash_post($trip_id);
-                $message = '<div class="alpenia-success" data-alpenia-delete-popup="trip">' . esc_html(alpenia_travel_t('Seyahat çöp kutusuna taşındı.')) . '</div>';
+                $message = '<div class="alpenia-success" data-alpenia-delete-popup="trip">' . esc_html(alpenia_travel_t('Reise wurde in den Papierkorb verschoben.')) . '</div>';
             }
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Löschen nicht erlaubt.')) . '</div>';
@@ -556,7 +556,7 @@ function alpenia_dashboard_shortcode() {
                 $message = '<div class="alpenia-success" data-alpenia-delete-popup="participant">' . esc_html(alpenia_travel_t('Teilnehmer wurde dauerhaft gelöscht.')) . '</div>';
             } else {
                 wp_trash_post($participant_id);
-                $message = '<div class="alpenia-success" data-alpenia-delete-popup="participant">' . esc_html(alpenia_travel_t('Katılımcı çöp kutusuna taşındı.')) . '</div>';
+                $message = '<div class="alpenia-success" data-alpenia-delete-popup="participant">' . esc_html(alpenia_travel_t('Teilnehmer wurde in den Papierkorb verschoben.')) . '</div>';
             }
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Löschen nicht erlaubt.')) . '</div>';
@@ -567,7 +567,7 @@ function alpenia_dashboard_shortcode() {
         $item_id = (int) $_GET['restore_item'];
         if (wp_verify_nonce($_GET['_restore_nonce'], 'alpenia_restore_item_' . $item_id)) {
             wp_untrash_post($item_id);
-            $message = '<div class="alpenia-success" data-alpenia-feedback-popup="item_restored">' . esc_html(alpenia_travel_t('Kayıt geri yüklendi.')) . '</div>';
+            $message = '<div class="alpenia-success" data-alpenia-feedback-popup="item_restored">' . esc_html(alpenia_travel_t('Eintrag wurde wiederhergestellt.')) . '</div>';
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.')) . '</div>';
         }
@@ -577,7 +577,7 @@ function alpenia_dashboard_shortcode() {
         $item_id = (int) $_GET['delete_item_permanently'];
         if (wp_verify_nonce($_GET['_hard_delete_nonce'], 'alpenia_hard_delete_item_' . $item_id)) {
             wp_delete_post($item_id, true);
-            $message = '<div class="alpenia-success" data-alpenia-feedback-popup="item_deleted">' . esc_html(alpenia_travel_t('Kayıt kalıcı olarak silindi.')) . '</div>';
+            $message = '<div class="alpenia-success" data-alpenia-feedback-popup="item_deleted">' . esc_html(alpenia_travel_t('Eintrag wurde dauerhaft gelöscht.')) . '</div>';
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.')) . '</div>';
         }
@@ -1342,12 +1342,12 @@ function alpenia_dashboard_shortcode() {
 
                     const popupType = deleteMessage.getAttribute('data-alpenia-delete-popup') || deleteMessage.getAttribute('data-alpenia-feedback-popup');
                     const titleMap = {
-                        trip: <?php echo wp_json_encode(alpenia_travel_t('Seyahat silindi')); ?>,
-                        participant: <?php echo wp_json_encode(alpenia_travel_t('Katılımcı silindi')); ?>,
-                        trip_created: <?php echo wp_json_encode(alpenia_travel_t('Seyahat oluşturuldu')); ?>,
-                        participant_created: <?php echo wp_json_encode(alpenia_travel_t('Katılımcı kaydedildi')); ?>,
-                        item_restored: <?php echo wp_json_encode(alpenia_travel_t('Kayıt geri yüklendi')); ?>,
-                        item_deleted: <?php echo wp_json_encode(alpenia_travel_t('Kayıt kalıcı olarak silindi')); ?>
+                        trip: <?php echo wp_json_encode(alpenia_travel_t('Reise gelöscht')); ?>,
+                        participant: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gelöscht')); ?>,
+                        trip_created: <?php echo wp_json_encode(alpenia_travel_t('Reise erstellt')); ?>,
+                        participant_created: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gespeichert')); ?>,
+                        item_restored: <?php echo wp_json_encode(alpenia_travel_t('Eintrag wiederhergestellt')); ?>,
+                        item_deleted: <?php echo wp_json_encode(alpenia_travel_t('Eintrag dauerhaft gelöscht')); ?>
                     };
 
                     const overlay = document.createElement('div');
@@ -1363,7 +1363,7 @@ function alpenia_dashboard_shortcode() {
 
                     const title = document.createElement('h3');
                     title.className = 'alpenia-delete-popup-title';
-                    title.textContent = titleMap[popupType] || <?php echo wp_json_encode(alpenia_travel_t('Başarılı')); ?>;
+                    title.textContent = titleMap[popupType] || <?php echo wp_json_encode(alpenia_travel_t('Erfolgreich')); ?>;
 
                     const text = document.createElement('p');
                     text.className = 'alpenia-delete-popup-text';
@@ -1372,7 +1372,7 @@ function alpenia_dashboard_shortcode() {
                     const closeButton = document.createElement('button');
                     closeButton.type = 'button';
                     closeButton.className = 'btn-primary';
-                    closeButton.textContent = <?php echo wp_json_encode(alpenia_travel_t('Kapat')); ?>;
+                    closeButton.textContent = <?php echo wp_json_encode(alpenia_travel_t('Schließen')); ?>;
 
                     const closePopup = function () { overlay.remove(); };
                     closeButton.addEventListener('click', closePopup);
