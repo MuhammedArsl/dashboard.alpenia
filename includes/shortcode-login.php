@@ -84,6 +84,9 @@ function alpenia_login_shortcode() {
         }
         .alpenia-login-nav-pill{
             border:none;
+            text-decoration:none;
+            color:#ffffff;
+
             border-radius:999px;
             background:rgba(9,39,30,0.92);
             color:#ffffff;
@@ -94,7 +97,10 @@ function alpenia_login_shortcode() {
             box-shadow:inset 0 1px 0 rgba(255,255,255,0.2),0 8px 16px rgba(5,23,18,0.25);
             transition:all 0.25s ease;
         }
-        .alpenia-login-nav-pill:hover{
+        .alpenia-login-nav-pill:hover,
+        .alpenia-login-nav-pill:focus{
+            color:#ffffff;
+            background:rgba(12,63,48,0.96);
             transform:translateY(-1px);
             box-shadow:inset 0 1px 0 rgba(255,255,255,0.2),0 0 0 1px rgba(43,212,163,0.45),0 0 16px rgba(43,212,163,0.32);
         }
@@ -445,8 +451,8 @@ function alpenia_login_shortcode() {
             <ul class="alpenia-login-nav-list">
                 <li><span class="alpenia-login-nav-pill is-active"><?php echo esc_html($mode === 'reset_request' ? alpenia_travel_t('Passwort vergessen') : ($mode === 'reset' ? alpenia_travel_t('Passwort ändern') : alpenia_travel_t('Login'))); ?></span></li>
                 <li><span class="alpenia-login-nav-pill"><?php echo esc_html(alpenia_travel_t('Kulturreisen')); ?></span></li>
-                <li><span class="alpenia-login-nav-pill">Umrah</span></li>
-                <li><span class="alpenia-login-nav-pill">Hajj</span></li>
+                <li><span class="alpenia-login-nav-pill"><?php echo esc_html(alpenia_travel_t('Umrah')); ?></span></li>
+                <li><span class="alpenia-login-nav-pill"><?php echo esc_html(alpenia_travel_t('Hajj')); ?></span></li>
             </ul>
         </nav>
         <div class="alpenia-login-card">
