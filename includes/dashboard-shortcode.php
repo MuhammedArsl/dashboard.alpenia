@@ -2149,7 +2149,7 @@ function alpenia_dashboard_shortcode() {
                         <?php $view_trip_type = (string) get_post_meta($view_trip_id, 'trip_type', true); ?>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><span><?php echo esc_html($view_trip_type === 'umrah' ? alpenia_travel_t('Umrah') : $view_trip_type); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Status')); ?></strong><span><?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($view_trip_id, 'trip_status', true))); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'destination', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(alpenia_display_value(alpenia_destination_to_display_language(get_post_meta($view_trip_id, 'destination', true)))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'country', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'city', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'departure_city', true))); ?></span></div>
@@ -2643,7 +2643,7 @@ function alpenia_dashboard_shortcode() {
                                         <div class="trip-info-grid">
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Ziel')); ?></span>
-                                                <strong><?php echo esc_html(alpenia_display_value(get_post_meta($trip->ID, 'destination', true))); ?></strong>
+                                                <strong><?php echo esc_html(alpenia_display_value(alpenia_destination_to_display_language(get_post_meta($trip->ID, 'destination', true)))); ?></strong>
                                             </div>
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Land / Stadt')); ?></span>

@@ -668,6 +668,51 @@ function alpenia_get_visa_entry_country($participant_id) {
     return trim((string) get_post_meta($participant_id, 'visa_status', true));
 }
 
+
+function alpenia_get_destination_aliases() {
+    return [
+        'Mekka & Medina' => 'Mekke ve Medine',
+        'Mekka und Medina' => 'Mekke ve Medine',
+        'Mecca & Medina' => 'Mekke ve Medine',
+        'Mecca and Medina' => 'Mekke ve Medine',
+        'Mekke ve Medine' => 'Mekke ve Medine',
+    ];
+}
+
+function alpenia_destination_to_display_language($destination, $lang = null) {
+    $destination = trim((string) $destination);
+    if ($destination === '') {
+        return '';
+    }
+
+    $aliases = alpenia_get_destination_aliases();
+    $canonical = $destination;
+
+    if (!isset($aliases[$destination])) {
+        $destination_folded = function_exists('mb_strtolower') ? mb_strtolower($destination, 'UTF-8') : strtolower($destination);
+        foreach ($aliases as $alias => $canonical_name) {
+            $alias_folded = function_exists('mb_strtolower') ? mb_strtolower((string) $alias, 'UTF-8') : strtolower((string) $alias);
+            if ($destination_folded === $alias_folded) {
+                $canonical = $canonical_name;
+                break;
+            }
+        }
+    } else {
+        $canonical = $aliases[$destination];
+    }
+
+    $lang = $lang ? sanitize_key((string) $lang) : alpenia_travel_get_language();
+    if ($lang === 'tr') {
+        return $canonical;
+    }
+
+    if ($canonical === 'Mekke ve Medine') {
+        return 'Mekka & Medina';
+    }
+
+    return $destination;
+}
+
 function alpenia_get_country_turkish_aliases() {
     return [
         'Deutschland' => 'Almanya','Österreich' => 'Avusturya','Schweiz' => 'İsviçre','Niederlande' => 'Hollanda',
