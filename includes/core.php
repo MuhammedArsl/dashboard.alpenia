@@ -330,6 +330,8 @@ function alpenia_travel_t($text) {
         'Unterlage' => 'belge',
         'Unterlagen' => 'belge',
         'Zum Teilnehmer' => 'Katılımcıya git',
+        '1 Teilnehmer erfolgreich gespeichert.' => '1 Katılımcı başarıyla kaydedildi.',
+        '%d Teilnehmer erfolgreich gespeichert.' => '%d Katılımcı başarıyla kaydedildi.',
         '%d Unterlage fehlt' => '%d belge eksik',
         '%d Unterlagen fehlen' => '%d belge eksik',
         '%1$s · %2$s fehlen' => '%1$s · %2$s eksik',

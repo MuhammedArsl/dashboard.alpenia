@@ -207,7 +207,10 @@ function alpenia_dashboard_shortcode() {
 
     if (isset($_GET['participant_saved']) && $_GET['participant_saved'] === '1') {
         $saved_count = isset($_GET['saved_count']) ? max(1, (int) $_GET['saved_count']) : 1;
-        $message = '<div class="alpenia-success" data-alpenia-success-message="1">' . esc_html(sprintf(alpenia_travel_t('%d Teilnehmer erfolgreich gespeichert.'), $saved_count)) . '</div>';
+        $saved_message = $saved_count === 1
+            ? alpenia_travel_t('1 Teilnehmer erfolgreich gespeichert.')
+            : sprintf(alpenia_travel_t('%d Teilnehmer erfolgreich gespeichert.'), $saved_count);
+        $message = '<div class="alpenia-success" data-alpenia-success-message="1">' . esc_html($saved_message) . '</div>';
         $auto_return_home = true;
     }
 
