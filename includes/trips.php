@@ -282,9 +282,14 @@ function alpenia_travel_translate_label($value) {
         'nicht bezahlt' => alpenia_travel_t('nicht bezahlt'),
         'teilweise bezahlt' => alpenia_travel_t('teilweise bezahlt'),
         'vollstaendig' => alpenia_travel_t('Vollständig'),
+        'umrah' => alpenia_travel_t('Umrah'),
+        'hajj' => alpenia_travel_t('Hajj'),
+        'kultur' => alpenia_travel_t('Kulturreise'),
     ];
 
-    return $labels[$value] ?? $value;
+    $normalized = strtolower(trim((string) $value));
+
+    return $labels[$normalized] ?? $value;
 }
 
 /**
