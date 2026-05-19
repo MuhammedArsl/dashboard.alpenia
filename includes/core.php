@@ -411,6 +411,7 @@ function alpenia_travel_t($text) {
         'Notfallkontakt Telefon' => 'Acil durum iletişim telefonu',
         'Straße' => 'Sokak / Cadde',
         'PLZ / Ort' => 'Posta Kodu / Şehir',
+        'Postleitzahl / Stadt' => 'Posta Kodu / Şehir',
         'Für die Anmeldung erforderlich' => 'Kayıt için gerekli',
         'Vollständige Kontaktdaten und Notfallkontakt' => 'Eksiksiz iletişim bilgileri ve acil durum iletişim bilgisi',
         'Gültige Reisepassdaten mit gut lesbarer Datei' => 'Geçerli pasaport bilgileri ve okunaklı dosya',

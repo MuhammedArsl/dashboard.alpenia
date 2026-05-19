@@ -404,6 +404,10 @@ function alpenia_dashboard_shortcode() {
                         empty($first_name) ||
                         empty($last_name) ||
                         empty($nationality) ||
+                        empty($phone_number) ||
+                        empty($email_address) ||
+                        empty($emergency_contact_name) ||
+                        empty($emergency_contact_phone) ||
                         empty($passport_valid_from) ||
                         empty($passport_expiry) ||
                         $passport_missing ||
@@ -562,7 +566,6 @@ function alpenia_dashboard_shortcode() {
             $visa_expiry_date   = sanitize_text_field($_POST['visa_expiry_date'] ?? '');
             $participant_status = sanitize_text_field($_POST['participant_status'] ?? '');
             $room_assignment    = sanitize_text_field($_POST['room_assignment'] ?? '');
-            $subgroup           = sanitize_text_field($_POST['subgroup'] ?? '');
             $payment_total      = (float) ($_POST['payment_total'] ?? 0);
             $payment_deposit    = (float) ($_POST['payment_deposit'] ?? 0);
             $payment_paid       = (float) ($_POST['payment_paid'] ?? 0);
@@ -609,7 +612,6 @@ function alpenia_dashboard_shortcode() {
                 alpenia_update_secure_meta($participant_id, 'visa_expiry_date', $visa_expiry_date);
                 update_post_meta($participant_id, 'participant_status', $participant_status);
                 alpenia_update_secure_meta($participant_id, 'room_assignment', $room_assignment);
-                alpenia_update_secure_meta($participant_id, 'subgroup', $subgroup);
                 update_post_meta($participant_id, 'payment_total', $payment_total);
                 update_post_meta($participant_id, 'payment_deposit', $payment_deposit);
                 update_post_meta($participant_id, 'payment_paid', $payment_paid);
@@ -1627,7 +1629,7 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="form-group">
-                                        <label for="postal_city_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('PLZ/Stadt')); ?></label>
+                                        <label for="postal_city_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Postleitzahl / Stadt')); ?></label>
                                         <input type="text" id="postal_city_<?php echo $i; ?>" name="postal_city_<?php echo $i; ?>">
                                     </div>
 
@@ -1739,22 +1741,22 @@ function alpenia_dashboard_shortcode() {
 
                                     <div class="form-group">
                                         <label for="phone_number_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Telefonnummer')); ?></label>
-                                        <input type="text" id="phone_number_<?php echo $i; ?>" name="phone_number_<?php echo $i; ?>">
+                                        <input type="text" id="phone_number_<?php echo $i; ?>" name="phone_number_<?php echo $i; ?>" required>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="email_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('E-Mail Adresse')); ?></label>
-                                        <input type="email" id="email_address_<?php echo $i; ?>" name="email_address_<?php echo $i; ?>">
+                                        <input type="email" id="email_address_<?php echo $i; ?>" name="email_address_<?php echo $i; ?>" required>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="emergency_contact_name_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Name')); ?></label>
-                                        <input type="text" id="emergency_contact_name_<?php echo $i; ?>" name="emergency_contact_name_<?php echo $i; ?>">
+                                        <input type="text" id="emergency_contact_name_<?php echo $i; ?>" name="emergency_contact_name_<?php echo $i; ?>" required>
                                     </div>
 
                                     <div class="form-group">
                                         <label for="emergency_contact_phone_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Notfallkontakt Telefonnummer')); ?></label>
-                                        <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>">
+                                        <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>" required>
                                     </div>
 
 
@@ -1883,7 +1885,7 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
-                                <label for="postal_city"><?php echo esc_html(alpenia_travel_t('PLZ/Stadt')); ?></label>
+                                <label for="postal_city"><?php echo esc_html(alpenia_travel_t('Postleitzahl / Stadt')); ?></label>
                                 <input type="text" id="postal_city" name="postal_city" value="<?php echo esc_attr($postal_city); ?>">
                             </div>
 
@@ -1955,11 +1957,6 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="room_assignment"><?php echo esc_html(alpenia_travel_t('Zimmer')); ?></label>
                                 <input type="text" id="room_assignment" name="room_assignment" value="<?php echo esc_attr($room_assignment); ?>">
-                            </div>
-
-                            <div class="form-group">
-                                <label for="subgroup"><?php echo esc_html(alpenia_travel_t('Untergruppe / Busgruppe')); ?></label>
-                                <input type="text" id="subgroup" name="subgroup" value="<?php echo esc_attr($subgroup); ?>">
                             </div>
 
                             <div class="form-group">
