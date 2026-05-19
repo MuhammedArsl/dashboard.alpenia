@@ -344,7 +344,7 @@ function alpenia_dashboard_shortcode() {
             }
 
             wp_delete_post($trip_id, true);
-            $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise wurde gelöscht.')) . '</div>';
+            $message = '<div class="alpenia-success" data-alpenia-delete-popup="trip">' . esc_html(alpenia_travel_t('Reise wurde gelöscht.')) . '</div>';
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Löschen nicht erlaubt.')) . '</div>';
         }
@@ -531,7 +531,7 @@ function alpenia_dashboard_shortcode() {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Kein Zugriff.')) . '</div>';
         } elseif (wp_verify_nonce($_GET['_delete_nonce'], 'alpenia_delete_participant_' . $participant_id)) {
             wp_delete_post($participant_id, true);
-            $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Teilnehmer wurde gelöscht.')) . '</div>';
+            $message = '<div class="alpenia-success" data-alpenia-delete-popup="participant">' . esc_html(alpenia_travel_t('Teilnehmer wurde gelöscht.')) . '</div>';
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Löschen nicht erlaubt.')) . '</div>';
         }
@@ -1287,6 +1287,68 @@ function alpenia_dashboard_shortcode() {
             <?php endif; ?>
 
             <?php echo $message; ?>
+            <script>
+                (function () {
+                    const deleteMessage = document.querySelector('[data-alpenia-delete-popup]');
+                    if (!deleteMessage) {
+                        return;
+                    }
+
+                    const deleteType = deleteMessage.getAttribute('data-alpenia-delete-popup');
+                    const titleMap = {
+                        trip: <?php echo wp_json_encode(alpenia_travel_t('Reise gelöscht')); ?>,
+                        participant: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gelöscht')); ?>
+                    };
+
+                    const overlay = document.createElement('div');
+                    overlay.className = 'alpenia-delete-popup-overlay';
+                    const dialog = document.createElement('div');
+                    dialog.className = 'alpenia-delete-popup-dialog';
+                    dialog.setAttribute('role', 'alertdialog');
+                    dialog.setAttribute('aria-modal', 'true');
+
+                    const badge = document.createElement('span');
+                    badge.className = 'alpenia-delete-popup-badge';
+                    badge.textContent = '✓';
+
+                    const title = document.createElement('h3');
+                    title.className = 'alpenia-delete-popup-title';
+                    title.textContent = titleMap[deleteType] || <?php echo wp_json_encode(alpenia_travel_t('Erfolgreich gelöscht')); ?>;
+
+                    const text = document.createElement('p');
+                    text.className = 'alpenia-delete-popup-text';
+                    text.textContent = deleteMessage.textContent.trim();
+
+                    const closeButton = document.createElement('button');
+                    closeButton.type = 'button';
+                    closeButton.className = 'btn-primary';
+                    closeButton.textContent = <?php echo wp_json_encode(alpenia_travel_t('Schließen')); ?>;
+
+                    const closePopup = function () { overlay.remove(); };
+                    closeButton.addEventListener('click', closePopup);
+
+                    overlay.addEventListener('click', function (event) {
+                        if (event.target === overlay) {
+                            closePopup();
+                        }
+                    });
+
+                    document.addEventListener('keydown', function onEsc(event) {
+                        if (event.key === 'Escape') {
+                            closePopup();
+                            document.removeEventListener('keydown', onEsc);
+                        }
+                    });
+
+                    dialog.appendChild(badge);
+                    dialog.appendChild(title);
+                    dialog.appendChild(text);
+                    dialog.appendChild(closeButton);
+                    overlay.appendChild(dialog);
+                    document.body.appendChild(overlay);
+                    deleteMessage.style.display = 'none';
+                }());
+            </script>
             <?php if ($auto_return_home) : ?>
                 <script>
                     (function () {
@@ -2947,6 +3009,70 @@ function alpenia_dashboard_shortcode() {
 
         .alpenia-message { background: #3a1212; color: #fff; }
         .alpenia-success { background: #123a24; color: #fff; }
+
+        .alpenia-delete-popup-overlay {
+            position: fixed;
+            inset: 0;
+            background: rgba(7, 16, 26, 0.6);
+            backdrop-filter: blur(4px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            animation: alpeniaPopupFade 180ms ease-out;
+        }
+
+        .alpenia-delete-popup-dialog {
+            background: linear-gradient(160deg, #ffffff 0%, #f5faf8 100%);
+            color: #17362d;
+            border: 1px solid rgba(30, 94, 73, 0.15);
+            border-radius: 18px;
+            padding: 24px;
+            width: min(440px, 100%);
+            box-shadow: 0 24px 60px rgba(7, 16, 26, 0.28);
+            text-align: center;
+            animation: alpeniaPopupRise 240ms ease-out;
+        }
+
+        .alpenia-delete-popup-badge {
+            width: 44px;
+            height: 44px;
+            margin: 0 auto 12px;
+            border-radius: 999px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: #fff;
+            background: linear-gradient(135deg, #1e7a5f, #2aa17d);
+            box-shadow: 0 8px 18px rgba(30, 122, 95, 0.35);
+        }
+
+        .alpenia-delete-popup-title {
+            margin: 0 0 8px;
+            font-size: 24px;
+            line-height: 1.2;
+            color: #103d30;
+        }
+
+        .alpenia-delete-popup-text {
+            margin: 0 0 18px;
+            font-size: 15px;
+            color: #355b50;
+            font-weight: 500;
+        }
+
+        @keyframes alpeniaPopupFade {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        @keyframes alpeniaPopupRise {
+            from { opacity: 0; transform: translateY(12px) scale(0.98); }
+            to { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
 
         .dashboard-top {
             display: flex;
