@@ -3336,12 +3336,12 @@ function alpenia_dashboard_shortcode() {
         .table-btn-danger:hover,
         .table-btn-danger:focus,
         .table-btn-danger:active { background: linear-gradient(135deg, #8f1d1d, #af2f2f) !important; }
-        a[href*="export_trip_csv"].btn-primary,
-        a[href*="print_trip"].btn-primary { background: linear-gradient(135deg, #0f7566, #15967f); }
+        a[href*="export_trip_csv"].btn-primary { background: linear-gradient(135deg, #0f7566, #15967f); }
         a[href*="export_trip_csv"].btn-primary:hover,
+        a[href*="export_trip_csv"].btn-primary:focus { background: linear-gradient(135deg, #0c6356, #117a67); }
+        a[href*="print_trip"].btn-primary { background: linear-gradient(135deg, #3557b7, #4f74db); }
         a[href*="print_trip"].btn-primary:hover,
-        a[href*="export_trip_csv"].btn-primary:focus,
-        a[href*="print_trip"].btn-primary:focus { background: linear-gradient(135deg, #0c6356, #117a67); }
+        a[href*="print_trip"].btn-primary:focus { background: linear-gradient(135deg, #2c4aa0, #4366c8); }
         a[href*="delete_trip"].btn-secondary,
         a[href*="delete_participant"].table-btn-danger,
         .delete-link { color: #ffd9d9 !important; }
