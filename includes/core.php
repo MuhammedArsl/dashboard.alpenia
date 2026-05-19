@@ -356,6 +356,8 @@ function alpenia_travel_t($text) {
         'Passwort speichern' => 'Şifreyi kaydet',
         'Passwort vergessen?' => 'Şifrenizi mi unuttunuz?',
         'Bereits bezahlt' => 'Ödenen tutar',
+        'Status & Zahlung' => 'Durum ve ödeme',
+        'Dokumente & Checkliste' => 'Belgeler ve kontrol listesi',
         'Reisepassnummer' => 'Pasaport numarası',
         'Anmeldung für' => 'Kayıt',
         'Prüfe bitte vor dem Absenden die wichtigsten Reisedetails und halte die benötigten Dokumente bereit.' => 'Göndermeden önce seyahat detaylarını hızlıca doğrulayın; zorunlu belgelerin güncel ve okunaklı olduğundan emin olun.',
