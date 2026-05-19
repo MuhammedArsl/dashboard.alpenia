@@ -61,18 +61,19 @@
         }
 
         var countryList = getEuSchengenCountries();
-        document.querySelectorAll('.alpenia-public-form form').forEach(function (form) {
+        var forms = document.querySelectorAll('.alpenia-public-form form');
+
+        forms.forEach(function (form) {
             var nationalityField = form.querySelector('[data-alpenia-nationality]');
             if (!nationalityField) {
                 return;
             }
 
             toggleResidencePermit(form, countryList);
-            nationalityField.addEventListener('input', function () {
-                toggleResidencePermit(form, countryList);
-            });
-            nationalityField.addEventListener('change', function () {
-                toggleResidencePermit(form, countryList);
+            ['input', 'change'].forEach(function (eventName) {
+                nationalityField.addEventListener(eventName, function () {
+                    toggleResidencePermit(form, countryList);
+                });
             });
         });
 
@@ -83,7 +84,7 @@
         });
 
         var messages = getMessages();
-        document.querySelectorAll('.alpenia-public-form form').forEach(function (form) {
+        forms.forEach(function (form) {
             var privacyConsent = form.querySelector('input[name="privacy_consent"]');
             var accuracyConsent = form.querySelector('input[name="accuracy_consent"]');
             if (!privacyConsent || !accuracyConsent) {
