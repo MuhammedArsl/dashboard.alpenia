@@ -3376,6 +3376,10 @@ function alpenia_dashboard_shortcode() {
         .lang-link.active {
             box-shadow: 0 0 0 2px rgba(43,212,163,0.7);
         }
+
+        @media print {
+            a[href]::after { content: "" !important; }
+        }
         .btn-logout {
             background: linear-gradient(135deg, #a12626, #c94a4a) !important;
             color: #fff !important;
