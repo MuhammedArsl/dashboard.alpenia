@@ -276,6 +276,8 @@ function alpenia_travel_translate_label($value) {
     $labels = [
         'offen' => alpenia_travel_t('offen'),
         'neu' => alpenia_travel_t('neu'),
+        'in_pruefung' => alpenia_travel_t('In Prüfung'),
+        'in prüfung' => alpenia_travel_t('In Prüfung'),
         'bezahlt' => alpenia_travel_t('bezahlt'),
         'nicht bezahlt' => alpenia_travel_t('nicht bezahlt'),
         'teilweise bezahlt' => alpenia_travel_t('teilweise bezahlt'),

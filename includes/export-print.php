@@ -157,7 +157,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             body { font-family: Arial, sans-serif; padding: 28px; color: #17211d; background: #fff; }
             .header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
             .logo { width:72px; height:auto; }
-            .meta { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0 24px; }
+            .meta { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:20px 0 24px; }
             .box { border:1px solid #ddd; padding:12px; border-radius:10px; }
             table { width:100%; border-collapse:collapse; table-layout:fixed; page-break-inside:auto; }
             th, td { border:1px solid #ddd; padding:8px 6px; text-align:left; font-size:12px; vertical-align:top; text-decoration:none; overflow-wrap:anywhere; word-break:break-word; }
@@ -205,7 +205,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
         <table>
             <?php if ($is_pilgrimage_trip) : ?>
                 <colgroup>
-                    <col span="8" style="width:9.125%;">
+                    <col span="7" style="width:10.43%;">
                     <col class="visa-col">
                     <col class="visa-col">
                     <col class="visa-col">
@@ -219,14 +219,13 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                     <th><?php echo esc_html(alpenia_travel_pdf_label('gender')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('nationality')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('passport_number')); ?></th>
-                    <th><?php echo esc_html(alpenia_travel_pdf_label('passport_issue_date')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('passport_expiry_date')); ?></th>
                     <?php if ($is_pilgrimage_trip) : ?>
                         <th colspan="3" class="visa-group-title"><?php echo esc_html(alpenia_travel_pdf_label('visa_information')); ?></th>
                     <?php endif; ?>
                 </tr>
                 <tr>
-                    <th colspan="8"></th>
+                    <th colspan="7"></th>
                     <?php if ($is_pilgrimage_trip) : ?>
                         <th><?php echo esc_html(alpenia_travel_pdf_label('visa_entry_country')); ?></th>
                         <th><?php echo esc_html(alpenia_travel_pdf_label('visa_number')); ?></th>
@@ -249,7 +248,6 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                         <td><?php echo esc_html(alpenia_display_value(alpenia_gender_code(get_post_meta($participant->ID, 'gender', true)))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_country_to_english(alpenia_get_secure_meta($participant->ID, 'nationality', true)))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_no', true))); ?></td>
-                        <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true))); ?></td>
                         <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true))); ?></td>
                         <?php if ($is_pilgrimage_trip) : ?>
                             <td><?php echo esc_html(alpenia_display_value(alpenia_country_to_english(alpenia_get_visa_entry_country($participant->ID)))); ?></td>
@@ -258,7 +256,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; else : ?>
-                    <tr><td colspan="<?php echo $is_pilgrimage_trip ? 11 : 8; ?>"><?php echo esc_html(alpenia_travel_pdf_label('no_participants')); ?></td></tr>
+                    <tr><td colspan="<?php echo $is_pilgrimage_trip ? 10 : 7; ?>"><?php echo esc_html(alpenia_travel_pdf_label('no_participants')); ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>
