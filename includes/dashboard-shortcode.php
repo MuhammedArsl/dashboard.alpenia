@@ -1462,14 +1462,85 @@ function alpenia_dashboard_shortcode() {
                         document.body.appendChild(overlay);
                     }
 
+                    function openTrashActionConfirm(targetUrl, actionType) {
+                        const popupLabels = {
+                            restore: {
+                                title: <?php echo wp_json_encode(alpenia_travel_t('Wiederherstellen')); ?>,
+                                description: <?php echo wp_json_encode(alpenia_travel_t('Soll dieser Eintrag wirklich wiederhergestellt werden?')); ?>,
+                                confirm: <?php echo wp_json_encode(alpenia_travel_t('Wiederherstellen')); ?>
+                            },
+                            hardDelete: {
+                                title: <?php echo wp_json_encode(alpenia_travel_t('Dauerhaft löschen')); ?>,
+                                description: <?php echo wp_json_encode(alpenia_travel_t('Soll dieser Eintrag wirklich dauerhaft gelöscht werden?')); ?>,
+                                confirm: <?php echo wp_json_encode(alpenia_travel_t('Dauerhaft löschen')); ?>
+                            }
+                        };
+
+                        const selected = popupLabels[actionType];
+                        if (!selected) {
+                            window.location.href = targetUrl;
+                            return;
+                        }
+
+                        const overlay = document.createElement('div');
+                        overlay.className = 'alpenia-delete-popup-overlay';
+                        const dialog = document.createElement('div');
+                        dialog.className = 'alpenia-delete-popup-dialog';
+
+                        const title = document.createElement('h3');
+                        title.className = 'alpenia-delete-popup-title';
+                        title.textContent = selected.title;
+
+                        const text = document.createElement('p');
+                        text.className = 'alpenia-delete-popup-text';
+                        text.textContent = selected.description;
+
+                        const actions = document.createElement('div');
+                        actions.className = 'alpenia-delete-popup-actions';
+
+                        const confirmBtn = document.createElement('button');
+                        confirmBtn.type = 'button';
+                        confirmBtn.className = actionType === 'hardDelete' ? 'btn-secondary table-btn-danger' : 'btn-primary';
+                        confirmBtn.textContent = selected.confirm;
+
+                        const cancelBtn = document.createElement('button');
+                        cancelBtn.type = 'button';
+                        cancelBtn.className = 'btn-secondary';
+                        cancelBtn.textContent = labels.cancel;
+
+                        const close = () => overlay.remove();
+                        cancelBtn.addEventListener('click', close);
+                        overlay.addEventListener('click', function (e) { if (e.target === overlay) close(); });
+
+                        confirmBtn.addEventListener('click', function () {
+                            window.location.href = targetUrl;
+                        });
+
+                        actions.appendChild(confirmBtn);
+                        actions.appendChild(cancelBtn);
+                        dialog.appendChild(title);
+                        dialog.appendChild(text);
+                        dialog.appendChild(actions);
+                        overlay.appendChild(dialog);
+                        document.body.appendChild(overlay);
+                    }
+
                     document.addEventListener('click', function (event) {
-                        const link = event.target.closest('a[data-delete-type]');
-                        if (!link) {
+                        const deleteLink = event.target.closest('a[data-delete-type]');
+                        if (deleteLink) {
+                            event.preventDefault();
+                            openDeleteChooser(deleteLink.href);
+                            return;
+                        }
+
+                        const trashLink = event.target.closest('a[data-trash-action]');
+                        if (!trashLink) {
                             return;
                         }
 
                         event.preventDefault();
-                        openDeleteChooser(link.href);
+                        const action = trashLink.getAttribute('data-trash-action') === 'hard-delete' ? 'hardDelete' : 'restore';
+                        openTrashActionConfirm(trashLink.href, action);
                     });
                 }());
             </script>
@@ -2632,8 +2703,8 @@ function alpenia_dashboard_shortcode() {
                                             <td><strong><?php echo esc_html($item->post_title); ?></strong></td>
                                             <td><?php echo esc_html(get_the_modified_date('d.m.Y H:i', $item->ID)); ?></td>
                                             <td class="trash-actions">
-                                                <a class="table-btn" href="<?php echo esc_url($restore_url); ?>"><?php echo esc_html(alpenia_travel_t('Wiederherstellen')); ?></a>
-                                                <a class="table-btn table-btn-danger" href="<?php echo esc_url($hard_delete_url); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Dauerhaft löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Dauerhaft löschen')); ?></a>
+                                                <a class="table-btn" href="<?php echo esc_url($restore_url); ?>" data-trash-action="restore"><?php echo esc_html(alpenia_travel_t('Wiederherstellen')); ?></a>
+                                                <a class="table-btn table-btn-danger" href="<?php echo esc_url($hard_delete_url); ?>" data-trash-action="hard-delete"><?php echo esc_html(alpenia_travel_t('Dauerhaft löschen')); ?></a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
