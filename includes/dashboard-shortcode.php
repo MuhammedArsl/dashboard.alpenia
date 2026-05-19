@@ -1284,12 +1284,12 @@ function alpenia_dashboard_shortcode() {
 
             <div id="alpenia-idle-timeout-modal" class="alpenia-idle-timeout-modal" aria-hidden="true">
                 <div class="alpenia-idle-timeout-card" role="dialog" aria-modal="true" aria-labelledby="alpenia-idle-timeout-title">
-                    <h2 id="alpenia-idle-timeout-title">Bist du noch da?</h2>
-                    <p>Du warst 15 Minuten inaktiv. Klicke auf „Weiterarbeiten“, sonst wirst du automatisch ausgeloggt.</p>
-                    <p class="alpenia-idle-timeout-countdown">Automatischer Logout in <span id="alpenia-idle-timeout-seconds">60</span> Sekunden.</p>
+                    <h2 id="alpenia-idle-timeout-title">Hâlâ burada mısın?</h2>
+                    <p>15 dakikadır işlem yapılmadı. “Devam et” butonuna tıklamazsan otomatik olarak çıkış yapılacak.</p>
+                    <p class="alpenia-idle-timeout-countdown">Otomatik çıkışa kalan süre: <span id="alpenia-idle-timeout-seconds">60</span> saniye.</p>
                     <div class="alpenia-idle-timeout-actions">
-                        <button type="button" id="alpenia-idle-stay-btn" class="btn-secondary">Weiterarbeiten</button>
-                        <button type="button" id="alpenia-idle-logout-btn" class="btn-primary btn-logout">Jetzt ausloggen</button>
+                        <button type="button" id="alpenia-idle-stay-btn" class="btn-secondary">Devam et</button>
+                        <button type="button" id="alpenia-idle-logout-btn" class="btn-primary btn-logout">Şimdi çıkış yap</button>
                     </div>
                 </div>
             </div>
@@ -5309,6 +5309,7 @@ function alpenia_dashboard_shortcode() {
         .alpenia-idle-timeout-card h2 {
             margin: 0 0 10px;
             font-size: 24px;
+            color: #ffffff;
         }
 
         .alpenia-idle-timeout-card p {
