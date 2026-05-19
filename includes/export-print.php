@@ -154,25 +154,27 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
         <meta charset="utf-8">
         <title><?php echo esc_html($trip->post_title); ?> - <?php echo esc_html(alpenia_travel_pdf_label('trip_participant_list')); ?></title>
         <style>
-            body { font-family: Arial, sans-serif; padding: 28px; color: #17211d; background: #fff; }
-            .header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
-            .logo { width:72px; height:auto; }
-            .meta { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin:20px 0 24px; }
-            .box { border:1px solid #ddd; padding:12px; border-radius:10px; }
+            body { font-family: Arial, sans-serif; padding: 24px; color: #17211d; background: #fff; font-size: 13px; line-height: 1.3; }
+            .header { display:flex; align-items:center; gap:14px; margin-bottom:20px; }
+            .logo { width:64px; height:auto; }
+            .meta { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; margin:16px 0 20px; }
+            .box { border:1px solid #ddd; padding:10px; border-radius:10px; font-size:11px; line-height:1.25; }
             table { width:100%; border-collapse:collapse; table-layout:fixed; page-break-inside:auto; }
-            th, td { border:1px solid #ddd; padding:8px 6px; text-align:left; font-size:12px; vertical-align:top; text-decoration:none; overflow-wrap:anywhere; word-break:break-word; }
-            th { background:#e8f1ed; color:#103a2d; font-size:12px; white-space:normal; }
+            th, td { border:1px solid #ddd; padding:6px 4px; text-align:left; font-size:10px; vertical-align:top; text-decoration:none; overflow-wrap:anywhere; word-break:break-word; }
+            th { background:#e8f1ed; color:#103a2d; font-size:10px; white-space:normal; }
             thead { display:table-header-group; }
             tr { page-break-inside:avoid; break-inside:avoid; }
             .visa-group-title { text-align:center; }
             .visa-col { width:9%; }
-            h1 { margin:0; color:#103a2d; font-size:28px; }
+            h1 { margin:0; color:#103a2d; font-size:24px; }
             a { color:#103a2d; text-decoration:none; }
             .actions { margin-bottom:20px; }
             @media print {
                 .actions { display:none; }
-                body { padding:0; }
-                th, td { padding:6px 4px; font-size:11px; }
+                body { padding:0; font-size:12px; line-height:1.25; }
+                h1 { font-size:20px; }
+                .box { font-size:10px; }
+                th, td { padding:5px 3px; font-size:9px; }
             }
         </style>
     </head>
