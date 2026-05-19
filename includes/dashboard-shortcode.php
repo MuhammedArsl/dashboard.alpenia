@@ -1358,7 +1358,7 @@ function alpenia_dashboard_shortcode() {
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <option value="kultur" <?php selected($trip_form_values['trip_type'], 'kultur'); ?>><?php echo esc_html(alpenia_travel_t('Kulturreise')); ?></option>
                                     <option value="umrah" <?php selected($trip_form_values['trip_type'], 'umrah'); ?>>Umrah</option>
-                                    <option value="hajj" <?php selected($trip_form_values['trip_type'], 'hajj'); ?>>Hajj</option>
+                                    <option value="hajj" <?php selected($trip_form_values['trip_type'], 'hajj'); ?>><?php echo esc_html(alpenia_travel_t('Hadsch')); ?></option>
                                 </select>
                             </div>
 
@@ -2500,7 +2500,7 @@ function alpenia_dashboard_shortcode() {
                             <option value=""><?php echo esc_html(alpenia_travel_t('Alle Reisearten')); ?></option>
                             <option value="kultur" <?php selected($trip_type_filter, 'kultur'); ?>><?php echo esc_html(alpenia_travel_t('Kulturreise')); ?></option>
                             <option value="umrah" <?php selected($trip_type_filter, 'umrah'); ?>><?php echo esc_html(alpenia_travel_t('Umrah')); ?></option>
-                            <option value="hajj" <?php selected($trip_type_filter, 'hajj'); ?>><?php echo esc_html(alpenia_travel_t('Hajj')); ?></option>
+                            <option value="hajj" <?php selected($trip_type_filter, 'hajj'); ?>><?php echo esc_html(alpenia_travel_t('Hadsch')); ?></option>
                         </select>
 
                         <select name="trip_status_filter">
