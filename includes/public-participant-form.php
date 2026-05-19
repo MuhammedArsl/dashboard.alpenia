@@ -158,7 +158,8 @@ function alpenia_public_participant_consume_submission_token($trip_id, $token) {
 }
 
 function alpenia_public_participant_language_switcher($request_token = '') {
-    $current_url = home_url(add_query_arg([], isset($_SERVER['REQUEST_URI']) ? wp_unslash($_SERVER['REQUEST_URI']) : ''));
+    $request_uri = isset($_SERVER['REQUEST_URI']) ? sanitize_text_field(wp_unslash($_SERVER['REQUEST_URI'])) : '';
+    $current_url = home_url(add_query_arg([], $request_uri));
     $args = ['ui_lang' => 'de'];
     if ($request_token !== '') {
         $args['trip_token'] = $request_token;
@@ -173,8 +174,8 @@ function alpenia_public_participant_language_switcher($request_token = '') {
     ?>
     <div class="alpenia-public-language-switch" role="group" aria-label="<?php echo esc_attr(alpenia_travel_t('Formularsprache wechseln')); ?>">
         <span><?php echo esc_html(alpenia_travel_t('Sprache')); ?></span>
-        <a class="<?php echo $current_lang === 'de' ? 'is-active' : ''; ?>" href="<?php echo esc_url($de_url); ?>" aria-label="Deutsch">DE</a>
-        <a class="<?php echo $current_lang === 'tr' ? 'is-active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" aria-label="Türkçe">TR</a>
+        <a class="<?php echo $current_lang === 'de' ? 'is-active' : ''; ?>" href="<?php echo esc_url($de_url); ?>" aria-label="<?php echo esc_attr(alpenia_travel_t('Deutsch')); ?>">DE</a>
+        <a class="<?php echo $current_lang === 'tr' ? 'is-active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" aria-label="<?php echo esc_attr(alpenia_travel_t('Türkçe')); ?>">TR</a>
     </div>
     <?php
     return ob_get_clean();

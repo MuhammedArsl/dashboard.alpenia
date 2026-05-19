@@ -94,6 +94,8 @@
             var consentSection = privacyConsent.closest('.alpenia-public-section--consent');
             var errorBox = document.createElement('div');
             errorBox.className = 'alpenia-public-message alpenia-public-error';
+            errorBox.setAttribute('role', 'alert');
+            errorBox.setAttribute('aria-live', 'polite');
             errorBox.hidden = true;
             if (consentSection) {
                 consentSection.prepend(errorBox);
@@ -102,6 +104,9 @@
             function clearConsentError() {
                 errorBox.hidden = true;
                 errorBox.textContent = '';
+                [privacyConsent, accuracyConsent].forEach(function (input) {
+                    input.removeAttribute('aria-invalid');
+                });
             }
 
             function validateConsents() {
@@ -120,6 +125,13 @@
 
                 errorBox.textContent = messages.consentErrorIntro + ' ' + missing.join(' • ');
                 errorBox.hidden = false;
+                [privacyConsent, accuracyConsent].forEach(function (input) {
+                    if (!input.checked) {
+                        input.setAttribute('aria-invalid', 'true');
+                    } else {
+                        input.removeAttribute('aria-invalid');
+                    }
+                });
                 return false;
             }
 
@@ -132,6 +144,10 @@
                 if (!validateConsents()) {
                     event.preventDefault();
                     event.stopPropagation();
+                    var firstMissing = !privacyConsent.checked ? privacyConsent : (!accuracyConsent.checked ? accuracyConsent : null);
+                    if (firstMissing) {
+                        firstMissing.focus();
+                    }
                 }
             });
         });
