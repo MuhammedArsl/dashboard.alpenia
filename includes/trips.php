@@ -63,7 +63,7 @@ function alpenia_get_trip_query_args($search = '', $type = '', $status = '', $co
 
     $args = [
         'post_type'   => 'group_trip',
-        'post_status' => 'publish',
+        'post_status' => ['publish', 'draft', 'pending', 'private'],
         'numberposts' => -1,
         'orderby'     => 'date',
         'order'       => 'DESC',
@@ -136,7 +136,7 @@ function alpenia_get_trip_participants($trip_id) {
 
     return get_posts([
         'post_type'   => 'trip_participant',
-        'post_status' => 'publish',
+        'post_status' => ['publish', 'draft', 'pending', 'private'],
         'numberposts' => -1,
         'meta_key'    => 'trip_id',
         'meta_value'  => $trip_id,
@@ -152,7 +152,7 @@ function alpenia_count_trip_participants($trip_id) {
 
     $query = new WP_Query([
         'post_type'      => 'trip_participant',
-        'post_status'    => 'publish',
+        'post_status'    => ['publish', 'draft', 'pending', 'private'],
         'posts_per_page' => 1,
         'fields'         => 'ids',
         'meta_key'       => 'trip_id',
