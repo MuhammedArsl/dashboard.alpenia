@@ -49,7 +49,7 @@ function alpenia_dashboard_sidebar_nav() {
     ];
 
     $items[] = [
-        'label' => alpenia_travel_t('Çöp Kutusu'),
+        'label' => alpenia_travel_t('Papierkorb'),
         'url' => alpenia_dashboard_link(['trash_bin' => 1]),
         'active' => isset($_GET['trash_bin']),
         'icon' => '🗑',
@@ -5673,9 +5673,9 @@ function alpenia_dashboard_shortcode() {
             text-align: center;
             border-radius: 12px;
             padding: 10px 12px;
-            background: rgba(110, 171, 238, 0.2);
-            border: 1px solid rgba(90, 146, 212, 0.45);
-            color: #14395e;
+            background: rgba(255,255,255,0.82);
+            border: 1px solid rgba(61, 129, 108, 0.32);
+            color: #1b4f40;
         }
         .trash-panel__count span { display: block; font-size: 24px; font-weight: 800; line-height: 1; }
         .trash-panel__count small { opacity: .85; }
