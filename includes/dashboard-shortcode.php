@@ -5670,7 +5670,65 @@ function alpenia_dashboard_shortcode() {
             border-color: rgba(96, 230, 145, 0.45);
             background: rgba(43, 145, 88, 0.18);
         }
-        .trash-actions { white-space: nowrap; }
+        .alpenia-table--trash {
+            min-width: 0;
+            table-layout: fixed;
+        }
+        .alpenia-table--trash th,
+        .alpenia-table--trash td {
+            vertical-align: middle;
+            word-break: break-word;
+        }
+        .alpenia-table--trash th:nth-child(1),
+        .alpenia-table--trash td:nth-child(1) { width: 120px; }
+        .alpenia-table--trash th:nth-child(3),
+        .alpenia-table--trash td:nth-child(3) { width: 170px; }
+        .alpenia-table--trash th:nth-child(4),
+        .alpenia-table--trash td:nth-child(4) { width: 220px; }
+        .trash-actions {
+            white-space: nowrap;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        @media (max-width: 900px) {
+            .trash-panel__header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .trash-panel__count {
+                min-width: 0;
+            }
+            .alpenia-table--trash,
+            .alpenia-table--trash thead,
+            .alpenia-table--trash tbody,
+            .alpenia-table--trash th,
+            .alpenia-table--trash td,
+            .alpenia-table--trash tr {
+                display: block;
+                width: 100%;
+            }
+            .alpenia-table--trash thead {
+                display: none;
+            }
+            .alpenia-table--trash tr {
+                border: 1px solid rgba(255,255,255,0.1);
+                border-radius: 12px;
+                margin-bottom: 12px;
+                padding: 10px 12px;
+                background: rgba(255,255,255,0.02);
+            }
+            .alpenia-table--trash td {
+                border-bottom: 0;
+                padding: 8px 0;
+            }
+            .alpenia-table--trash td:last-child {
+                padding-bottom: 0;
+            }
+            .trash-actions {
+                white-space: normal;
+            }
+        }
         .alpenia-dashboard-shell h1.entry-title,
         .alpenia-dashboard-shell .page-title,
         .alpenia-dashboard-shell .elementor-heading-title,
