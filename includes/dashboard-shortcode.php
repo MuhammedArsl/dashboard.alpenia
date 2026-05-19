@@ -1409,7 +1409,12 @@ function alpenia_dashboard_shortcode() {
 
                             <div class="form-group">
                                 <label for="country"><?php echo esc_html(alpenia_travel_t('Land')); ?></label>
-                                <input type="text" id="country" name="country" value="<?php echo esc_attr($trip_form_values['country']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
+                                <select id="country" name="country" required>
+                                    <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
+                                    <?php foreach (alpenia_get_all_countries() as $country_name) : ?>
+                                        <option value="<?php echo esc_attr($country_name); ?>" <?php selected($trip_form_values['country'], $country_name); ?>><?php echo esc_html($country_name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
 
                             <div class="form-group">
@@ -1551,12 +1556,6 @@ function alpenia_dashboard_shortcode() {
                 </div>
 
                 <div class="panel">
-                    <datalist id="alpenia-country-list">
-                        <?php foreach ($all_countries_list as $country_name) : ?>
-                            <option value="<?php echo esc_attr($country_name); ?>">
-                        <?php endforeach; ?>
-                    </datalist>
-
                     <form method="post" enctype="multipart/form-data" class="alpenia-form" data-pilgrimage-trip="<?php echo $selected_is_pilgrimage_trip ? '1' : '0'; ?>">
                         <?php wp_nonce_field('alpenia_save_participants_batch', 'alpenia_participant_batch_nonce'); ?>
                         <input type="hidden" name="trip_id" value="<?php echo esc_attr($selected_trip_id); ?>">
@@ -1667,7 +1666,12 @@ function alpenia_dashboard_shortcode() {
 
                                     <div class="form-group">
                                         <label for="nationality_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
-                                        <input type="text" id="nationality_<?php echo $i; ?>" name="nationality_<?php echo $i; ?>" list="alpenia-country-list" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
+                                        <select id="nationality_<?php echo $i; ?>" name="nationality_<?php echo $i; ?>" required>
+                                            <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
+                                            <?php foreach ($all_countries_list as $country_name) : ?>
+                                                <option value="<?php echo esc_attr($country_name); ?>"><?php echo esc_html($country_name); ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
 
                                     <div class="form-group">
@@ -1710,7 +1714,12 @@ function alpenia_dashboard_shortcode() {
 
                                     <div class="form-group pilgrimage-visa-field pilgrimage-visa-field-<?php echo $i; ?>">
                                         <label for="visa_entry_country_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></label>
-                                        <input type="text" id="visa_entry_country_<?php echo $i; ?>" name="visa_entry_country_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien')); ?>">
+                                        <select id="visa_entry_country_<?php echo $i; ?>" name="visa_entry_country_<?php echo $i; ?>">
+                                            <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
+                                            <?php foreach ($all_countries_list as $country_name) : ?>
+                                                <option value="<?php echo esc_attr($country_name); ?>"><?php echo esc_html($country_name); ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
                                     </div>
 
                                     <div class="form-group pilgrimage-visa-field pilgrimage-visa-field-<?php echo $i; ?>">
@@ -1945,12 +1954,12 @@ function alpenia_dashboard_shortcode() {
 
                             <div class="form-group">
                                 <label for="nationality"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
-                                <input type="text" id="nationality" name="nationality" value="<?php echo esc_attr($nationality); ?>" list="alpenia-country-list-edit" required>
-                                <datalist id="alpenia-country-list-edit">
+                                <select id="nationality" name="nationality" required>
+                                    <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <?php foreach (alpenia_get_all_countries() as $country_name) : ?>
-                                        <option value="<?php echo esc_attr($country_name); ?>">
+                                        <option value="<?php echo esc_attr($country_name); ?>" <?php selected($nationality, $country_name); ?>><?php echo esc_html($country_name); ?></option>
                                     <?php endforeach; ?>
-                                </datalist>
+                                </select>
                             </div>
 
                             <div class="form-group">
@@ -1993,7 +2002,12 @@ function alpenia_dashboard_shortcode() {
 
                             <div class="form-group edit-visa-field">
                                 <label for="visa_entry_country"><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></label>
-                                <input type="text" id="visa_entry_country" name="visa_entry_country" value="<?php echo esc_attr($visa_entry_country); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien')); ?>">
+                                <select id="visa_entry_country" name="visa_entry_country">
+                                    <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
+                                    <?php foreach (alpenia_get_all_countries() as $country_name) : ?>
+                                        <option value="<?php echo esc_attr($country_name); ?>" <?php selected($visa_entry_country, $country_name); ?>><?php echo esc_html($country_name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
                             </div>
 
                             <div class="form-group edit-visa-field">
