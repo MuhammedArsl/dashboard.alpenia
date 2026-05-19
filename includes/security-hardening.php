@@ -323,6 +323,11 @@ function alpenia_create_private_upload_guard($base_dir) {
     if (!file_exists($htaccess)) {
         file_put_contents($htaccess, "Deny from all\n");
     }
+
+    $web_config = trailingslashit($base_dir) . 'web.config';
+    if (!file_exists($web_config)) {
+        file_put_contents($web_config, "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<configuration>\n  <system.webServer>\n    <authorization>\n      <deny users=\"*\" />\n    </authorization>\n  </system.webServer>\n</configuration>\n");
+    }
 }
 
 function alpenia_get_secure_download_url($attachment_id, $force_download = false) {
@@ -453,7 +458,7 @@ function alpenia_auto_enable_mfa_for_privileged_user($user_id) {
         return;
     }
 
-    $created_by_admin = is_user_logged_in() && current_user_can('administrator');
+    $created_by_admin = is_user_logged_in() && current_user_can('create_users');
     $requires_mfa_by_role = alpenia_roles_require_mfa((array) $user->roles);
 
     if (!$created_by_admin && !$requires_mfa_by_role) {

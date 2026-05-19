@@ -101,6 +101,22 @@ function alpenia_validate_upload_type($field_name) {
         return new WP_Error('invalid_file_type', alpenia_travel_t('Ungültiger Dateityp. Nur erlaubte Formate sind zulässig.'));
     }
 
+    if (function_exists('finfo_open')) {
+        $finfo = finfo_open(FILEINFO_MIME_TYPE);
+        if ($finfo !== false) {
+            $real_mime = (string) finfo_file($finfo, $tmp_name);
+            finfo_close($finfo);
+            if ($real_mime !== '' && !in_array($real_mime, $allowed_mimes, true)) {
+                return new WP_Error('invalid_file_signature', alpenia_travel_t('Dateisignatur passt nicht zu den erlaubten Formaten.'));
+            }
+        }
+    }
+
+    $raw = @file_get_contents($tmp_name, false, null, 0, 4096);
+    if (is_string($raw) && preg_match('/<\?(php|=)|<script\b/i', $raw) === 1) {
+        return new WP_Error('invalid_file_content', alpenia_travel_t('Die Datei enthält potenziell unsicheren Code.'));
+    }
+
     return $mime;
 }
 
@@ -134,6 +150,7 @@ function alpenia_handle_file_upload($field_name) {
 
     $uploaded = wp_handle_upload($_FILES[$field_name], [
         'test_form' => false,
+        'test_type' => true,
         'mimes' => alpenia_allowed_mimes_by_field($field_name),
     ]);
 
