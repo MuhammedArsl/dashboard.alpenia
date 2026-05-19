@@ -49,7 +49,7 @@ function alpenia_dashboard_sidebar_nav() {
     ];
 
     $items[] = [
-        'label' => alpenia_travel_t('Papierkorb'),
+        'label' => alpenia_travel_t('Çöp Kutusu'),
         'url' => alpenia_dashboard_link(['trash_bin' => 1]),
         'active' => isset($_GET['trash_bin']),
         'icon' => '🗑',
@@ -363,7 +363,7 @@ function alpenia_dashboard_shortcode() {
                 $message = '<div class="alpenia-success" data-alpenia-delete-popup="trip">' . esc_html(alpenia_travel_t('Reise wurde dauerhaft gelöscht.')) . '</div>';
             } else {
                 wp_trash_post($trip_id);
-                $message = '<div class="alpenia-success" data-alpenia-delete-popup="trip">' . esc_html(alpenia_travel_t('Reise wurde in den Papierkorb verschoben.')) . '</div>';
+                $message = '<div class="alpenia-success" data-alpenia-delete-popup="trip">' . esc_html(alpenia_travel_t('Seyahat çöp kutusuna taşındı.')) . '</div>';
             }
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Löschen nicht erlaubt.')) . '</div>';
@@ -556,7 +556,7 @@ function alpenia_dashboard_shortcode() {
                 $message = '<div class="alpenia-success" data-alpenia-delete-popup="participant">' . esc_html(alpenia_travel_t('Teilnehmer wurde dauerhaft gelöscht.')) . '</div>';
             } else {
                 wp_trash_post($participant_id);
-                $message = '<div class="alpenia-success" data-alpenia-delete-popup="participant">' . esc_html(alpenia_travel_t('Teilnehmer wurde in den Papierkorb verschoben.')) . '</div>';
+                $message = '<div class="alpenia-success" data-alpenia-delete-popup="participant">' . esc_html(alpenia_travel_t('Katılımcı çöp kutusuna taşındı.')) . '</div>';
             }
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Löschen nicht erlaubt.')) . '</div>';
@@ -1401,9 +1401,9 @@ function alpenia_dashboard_shortcode() {
                 (function () {
                     const labels = {
                         title: <?php echo wp_json_encode(alpenia_travel_t('Löschoption wählen')); ?>,
-                        description: <?php echo wp_json_encode(alpenia_travel_t('Möchtest du zuerst in den Papierkorb verschieben oder direkt dauerhaft löschen?')); ?>,
-                        trash: <?php echo wp_json_encode(alpenia_travel_t('In Papierkorb')); ?>,
-                        hard: <?php echo wp_json_encode(alpenia_travel_t('Dauerhaft löschen')); ?>,
+                        description: <?php echo wp_json_encode(alpenia_travel_t('Önce çöp kutusuna mı taşımak istersin, yoksa kalıcı olarak silmek mi?')); ?>,
+                        trash: <?php echo wp_json_encode(alpenia_travel_t('Çöp kutusuna taşı')); ?>,
+                        hard: <?php echo wp_json_encode(alpenia_travel_t('Kalıcı olarak sil')); ?>,
                         cancel: <?php echo wp_json_encode(alpenia_travel_t('Abbrechen')); ?>
                     };
 
@@ -2560,8 +2560,8 @@ function alpenia_dashboard_shortcode() {
                 <div class="dashboard-top">
                     <div class="dashboard-brand">
                         <div class="dashboard-brand-text">
-                            <h1><?php echo esc_html(alpenia_travel_t("Papierkorb")); ?></h1>
-                            <p><?php echo esc_html(alpenia_travel_t('Gelöschte Reisen und Teilnehmer verwalten')); ?></p>
+                            <h1><?php echo esc_html(alpenia_travel_t("Çöp Kutusu")); ?></h1>
+                            <p><?php echo esc_html(alpenia_travel_t('Silinen seyahatleri ve katılımcıları yönetin')); ?></p>
                         </div>
                     </div>
                     <div class="actions">
@@ -2573,12 +2573,12 @@ function alpenia_dashboard_shortcode() {
                 <div class="panel trash-panel">
                     <div class="trash-panel__header">
                         <div>
-                            <h2><?php echo esc_html(alpenia_travel_t('Papierkorb Übersicht')); ?></h2>
-                            <p><?php echo esc_html(alpenia_travel_t('Verwalte gelöschte Reisen und Teilnehmer zentral an einem Ort.')); ?></p>
+                            <h2><?php echo esc_html(alpenia_travel_t('Çöp Kutusu Özeti')); ?></h2>
+                            <p><?php echo esc_html(alpenia_travel_t('Silinen seyahatleri ve katılımcıları tek bir yerden yönetin.')); ?></p>
                         </div>
                         <div class="trash-panel__count">
                             <span><?php echo esc_html(count($trashed_items)); ?></span>
-                            <small><?php echo esc_html(alpenia_travel_t('Einträge')); ?></small>
+                            <small><?php echo esc_html(alpenia_travel_t('Kayıt')); ?></small>
                         </div>
                     </div>
                     <div class="trash-filters">
@@ -2604,10 +2604,10 @@ function alpenia_dashboard_shortcode() {
                             <table class="alpenia-table alpenia-table--trash">
                                 <thead>
                                     <tr>
-                                        <th><?php echo esc_html(alpenia_travel_t('Typ')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Tür')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Name')); ?></th>
-                                        <th><?php echo esc_html(alpenia_travel_t('Gelöscht am')); ?></th>
-                                        <th><?php echo esc_html(alpenia_travel_t('Aktion')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Silinme tarihi')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('İşlem')); ?></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -2630,8 +2630,8 @@ function alpenia_dashboard_shortcode() {
                                             <td><strong><?php echo esc_html($item->post_title); ?></strong></td>
                                             <td><?php echo esc_html(get_the_modified_date('d.m.Y H:i', $item->ID)); ?></td>
                                             <td class="trash-actions">
-                                                <a class="table-btn" href="<?php echo esc_url($restore_url); ?>"><?php echo esc_html(alpenia_travel_t('Wiederherstellen')); ?></a>
-                                                <a class="table-btn table-btn-danger" href="<?php echo esc_url($hard_delete_url); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Dauerhaft löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Dauerhaft löschen')); ?></a>
+                                                <a class="table-btn" href="<?php echo esc_url($restore_url); ?>"><?php echo esc_html(alpenia_travel_t('Geri yükle')); ?></a>
+                                                <a class="table-btn table-btn-danger" href="<?php echo esc_url($hard_delete_url); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Kalıcı olarak silinsin mi?')); ?>');"><?php echo esc_html(alpenia_travel_t('Kalıcı olarak sil')); ?></a>
                                             </td>
                                         </tr>
                                     <?php endforeach; ?>
@@ -2639,7 +2639,7 @@ function alpenia_dashboard_shortcode() {
                             </table>
                         </div>
                     <?php else : ?>
-                        <p><?php echo esc_html(alpenia_travel_t('Papierkorb ist leer.')); ?></p>
+                        <p><?php echo esc_html(alpenia_travel_t('Çöp kutusu boş.')); ?></p>
                     <?php endif; ?>
                 </div>
 
@@ -5720,14 +5720,14 @@ function alpenia_dashboard_shortcode() {
             background: rgba(255,255,255,0.06);
         }
         .trash-type-badge--group_trip {
-            color: #bfe3ff;
-            border-color: rgba(131, 196, 255, 0.45);
-            background: rgba(68, 136, 206, 0.2);
+            color: #0f375d;
+            border-color: rgba(67, 136, 205, 0.55);
+            background: rgba(143, 196, 242, 0.38);
         }
         .trash-type-badge--trip_participant {
-            color: #c7ffd9;
-            border-color: rgba(96, 230, 145, 0.45);
-            background: rgba(43, 145, 88, 0.18);
+            color: #12462c;
+            border-color: rgba(56, 154, 98, 0.55);
+            background: rgba(166, 230, 191, 0.4);
         }
         .alpenia-table--trash {
             min-width: 0;
