@@ -2233,20 +2233,20 @@ function alpenia_dashboard_shortcode() {
                                             </td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($passport_file_id, false)); ?>
-                                                <?php if ($passport_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($passport_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
+                                                <?php if ($passport_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($passport_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a> · <a href="<?php echo alpenia_attachment_download_link($passport_file_id); ?>"><?php echo esc_html(alpenia_travel_t('İndir')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($photo_file_id, false)); ?>
-                                                <?php if ($photo_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($photo_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
+                                                <?php if ($photo_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($photo_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a> · <a href="<?php echo alpenia_attachment_download_link($photo_file_id); ?>"><?php echo esc_html(alpenia_travel_t('İndir')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($meldezettel_file_id, false)); ?>
-                                                <?php if ($meldezettel_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($meldezettel_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
+                                                <?php if ($meldezettel_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($meldezettel_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a> · <a href="<?php echo alpenia_attachment_download_link($meldezettel_file_id); ?>"><?php echo esc_html(alpenia_travel_t('İndir')); ?></a><?php endif; ?>
                                             </td>
                                             <td><?php echo esc_html(alpenia_display_value($residence_permit_number)); ?></td>
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($visa_photo_file_id, true)); ?>
-                                                <?php if ($visa_photo_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($visa_photo_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
+                                                <?php if ($visa_photo_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($visa_photo_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a> · <a href="<?php echo alpenia_attachment_download_link($visa_photo_file_id); ?>"><?php echo esc_html(alpenia_travel_t('İndir')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
                                                 <div class="row-actions">
