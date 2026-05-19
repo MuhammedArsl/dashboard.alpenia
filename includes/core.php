@@ -433,6 +433,7 @@ function alpenia_travel_t($text) {
         'Zahlung geprüft' => 'Ödeme kontrol edildi',
         'Alle Teilnehmer speichern' => 'Tüm katılımcıları kaydet',
         'Kulturreise' => 'Kültür seyahati',
+        'Hadsch' => 'Hac',
         'Öffnen' => 'Aç',
         'Kein Zugriff auf diese Reise.' => 'Bu seyahate erişim yok.',
         'Bitte Name, E-Mail und Passwort ausfüllen.' => 'Lütfen ad, e-posta ve şifre alanlarını doldurun.',
