@@ -2237,7 +2237,7 @@ function alpenia_dashboard_shortcode() {
                                                 <?php if ($photo_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($photo_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
-                                                <?php echo wp_kses_post(alpenia_doc_status_label($meldezettel_file_id, true)); ?>
+                                                <?php echo wp_kses_post(alpenia_doc_status_label($meldezettel_file_id, false)); ?>
                                                 <?php if ($meldezettel_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($meldezettel_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
