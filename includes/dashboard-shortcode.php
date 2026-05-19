@@ -566,7 +566,16 @@ function alpenia_dashboard_shortcode() {
     if (isset($_GET['restore_item']) && isset($_GET['_restore_nonce'])) {
         $item_id = (int) $_GET['restore_item'];
         if (wp_verify_nonce($_GET['_restore_nonce'], 'alpenia_restore_item_' . $item_id)) {
-            wp_untrash_post($item_id);
+            $restored_id = wp_untrash_post($item_id);
+            if ($restored_id) {
+                $restored_post = get_post($item_id);
+                if ($restored_post && in_array($restored_post->post_type, ['group_trip', 'trip_participant'], true) && $restored_post->post_status !== 'publish') {
+                    wp_update_post([
+                        'ID' => $item_id,
+                        'post_status' => 'publish',
+                    ]);
+                }
+            }
             $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Eintrag wurde wiederhergestellt.')) . '</div>';
         } else {
             $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler. Bitte erneut versuchen.')) . '</div>';
