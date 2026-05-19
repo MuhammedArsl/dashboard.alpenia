@@ -2830,6 +2830,7 @@ function alpenia_dashboard_shortcode() {
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
                             <h1><?php echo esc_html(alpenia_travel_t("Alpenia Travel")); ?></h1>
+                            <p class="dashboard-welcome-text"><?php echo esc_html(sprintf(alpenia_travel_t('Merhaba, %s!'), $current_user->display_name ?: $current_user->user_login)); ?></p>
                         </div>
                     </div>
 
