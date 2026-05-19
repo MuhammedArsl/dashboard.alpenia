@@ -175,6 +175,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                 h1 { font-size:20px; }
                 .box { font-size:10px; }
                 th, td { padding:5px 3px; font-size:9px; }
+                a[href]::after { content: "" !important; }
             }
         </style>
     </head>
