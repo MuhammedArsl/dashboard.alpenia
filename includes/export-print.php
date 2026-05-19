@@ -159,13 +159,19 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             .logo { width:72px; height:auto; }
             .meta { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0 24px; }
             .box { border:1px solid #ddd; padding:12px; border-radius:10px; }
-            table { width:100%; border-collapse:collapse; }
-            th, td { border:1px solid #ddd; padding:10px; text-align:left; font-size:13px; vertical-align:top; text-decoration:none; }
-            th { background:#e8f1ed; color:#103a2d; font-size:13px; white-space:nowrap; }
+            table { width:100%; border-collapse:collapse; table-layout:fixed; }
+            th, td { border:1px solid #ddd; padding:8px 6px; text-align:left; font-size:12px; vertical-align:top; text-decoration:none; overflow-wrap:anywhere; word-break:break-word; }
+            th { background:#e8f1ed; color:#103a2d; font-size:12px; white-space:normal; }
+            .visa-group-title { text-align:center; }
+            .visa-col { width:9%; }
             h1 { margin:0; color:#103a2d; font-size:28px; }
             a { color:#103a2d; text-decoration:none; }
             .actions { margin-bottom:20px; }
-            @media print { .actions { display:none; } body { padding:0; } }
+            @media print {
+                .actions { display:none; }
+                body { padding:0; }
+                th, td { padding:6px 4px; font-size:11px; }
+            }
         </style>
     </head>
     <body>
@@ -195,6 +201,14 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
         </div>
 
         <table>
+            <?php if ($is_pilgrimage_trip) : ?>
+                <colgroup>
+                    <col span="8" style="width:9.125%;">
+                    <col class="visa-col">
+                    <col class="visa-col">
+                    <col class="visa-col">
+                </colgroup>
+            <?php endif; ?>
             <thead>
                 <tr>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('first_name')); ?></th>
@@ -206,7 +220,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                     <th><?php echo esc_html(alpenia_travel_pdf_label('passport_issue_date')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('passport_expiry_date')); ?></th>
                     <?php if ($is_pilgrimage_trip) : ?>
-                        <th colspan="3"><?php echo esc_html(alpenia_travel_pdf_label('visa_information')); ?></th>
+                        <th colspan="3" class="visa-group-title"><?php echo esc_html(alpenia_travel_pdf_label('visa_information')); ?></th>
                     <?php endif; ?>
                 </tr>
                 <tr>
