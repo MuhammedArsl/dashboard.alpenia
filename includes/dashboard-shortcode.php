@@ -1537,6 +1537,7 @@ function alpenia_dashboard_shortcode() {
 
                 $all_countries_list = alpenia_get_all_countries();
                 $selected_is_pilgrimage_trip = alpenia_is_pilgrimage_trip($selected_trip_id);
+                $selected_trip_price = (float) get_post_meta($selected_trip_id, 'price', true);
                 ?>
 
                 <div class="dashboard-top">
@@ -1748,7 +1749,7 @@ function alpenia_dashboard_shortcode() {
 
                                     <div class="form-group">
                                         <label for="payment_total_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Gesamtpreis (€)')); ?></label>
-                                        <input type="number" step="0.01" min="0" id="payment_total_<?php echo $i; ?>" name="payment_total_<?php echo $i; ?>">
+                                        <input type="number" step="0.01" min="0" id="payment_total_<?php echo $i; ?>" name="payment_total_<?php echo $i; ?>" value="<?php echo esc_attr(number_format((float) $selected_trip_price, 2, '.', '')); ?>">
                                     </div>
 
                                     <div class="form-group">
