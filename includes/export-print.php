@@ -188,7 +188,6 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                 <img src="<?php echo esc_url($logo_url); ?>" alt="Logo" class="logo">
             <?php endif; ?>
             <div>
-                <h1>Alpenia Travel Dashboard</h1>
                 <div><?php echo esc_html($trip->post_title); ?> – <?php echo esc_html(alpenia_travel_pdf_label('trip_participant_list')); ?></div>
             </div>
         </div>
