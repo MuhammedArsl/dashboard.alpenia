@@ -452,7 +452,7 @@ function alpenia_login_shortcode() {
                 <li><span class="alpenia-login-nav-pill is-active"><?php echo esc_html($mode === 'reset_request' ? alpenia_travel_t('Passwort vergessen') : ($mode === 'reset' ? alpenia_travel_t('Passwort ändern') : alpenia_travel_t('Login'))); ?></span></li>
                 <li><span class="alpenia-login-nav-pill"><?php echo esc_html(alpenia_travel_t('Kulturreisen')); ?></span></li>
                 <li><span class="alpenia-login-nav-pill"><?php echo esc_html(alpenia_travel_t('Umrah')); ?></span></li>
-                <li><span class="alpenia-login-nav-pill"><?php echo esc_html(alpenia_travel_t('Hajj')); ?></span></li>
+                <li><span class="alpenia-login-nav-pill"><?php echo esc_html(alpenia_travel_t('Hadsch')); ?></span></li>
             </ul>
         </nav>
         <div class="alpenia-login-card">
