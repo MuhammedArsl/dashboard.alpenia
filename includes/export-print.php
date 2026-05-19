@@ -104,7 +104,7 @@ function alpenia_export_trip_csv($trip_id) {
             alpenia_get_secure_meta($participant->ID, 'first_name', true),
             alpenia_get_secure_meta($participant->ID, 'last_name', true),
             alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'birth_date', true)),
-            alpenia_get_secure_meta($participant->ID, 'nationality', true),
+            alpenia_country_to_english(alpenia_get_secure_meta($participant->ID, 'nationality', true)),
             alpenia_get_secure_meta($participant->ID, 'passport_no', true),
             alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true)),
             alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true)),
@@ -122,7 +122,7 @@ function alpenia_export_trip_csv($trip_id) {
             get_post_meta($participant->ID, 'passport_file_id', true) ? 'Available' : 'Missing',
             get_post_meta($participant->ID, 'photo_file_id', true) ? 'Available' : 'Missing',
             get_post_meta($participant->ID, 'visa_photo_file_id', true) ? 'Available' : 'Missing',
-            get_post_meta($participant->ID, 'meldezettel_file_id', true) ? 'Available' : 'Optional / Missing',
+            get_post_meta($participant->ID, 'meldezettel_file_id', true) ? 'Available' : 'Missing',
         ], ';');
     }
 

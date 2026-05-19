@@ -679,7 +679,7 @@ function alpenia_get_country_turkish_aliases() {
 
 function alpenia_get_country_english_aliases() {
     return [
-        'Afghanistan' => 'Afghanistan','Aegypt' => 'Egypt','Ägypten' => 'Egypt','Almanya' => 'Germany','Deutschland' => 'Germany',
+        'Afghanistan' => 'Afghanistan','Afganistan' => 'Afghanistan','Aegypt' => 'Egypt','Ägypten' => 'Egypt','Almanya' => 'Germany','Deutschland' => 'Germany',
         'Avusturya' => 'Austria','Österreich' => 'Austria','İsviçre' => 'Switzerland','Schweiz' => 'Switzerland','Hollanda' => 'Netherlands','Niederlande' => 'Netherlands',
         'Amerika Birleşik Devletleri' => 'United States','Vereinigte Staaten' => 'United States','Birleşik Krallık' => 'United Kingdom','İngiltere' => 'United Kingdom','Vereinigtes Königreich' => 'United Kingdom',
         'Yunanistan' => 'Greece','Griechenland' => 'Greece','İspanya' => 'Spain','Spanien' => 'Spain','Çekya' => 'Czechia','Tschechien' => 'Czechia',
