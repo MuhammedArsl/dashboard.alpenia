@@ -724,17 +724,6 @@ function alpenia_public_participant_render_upload_field($name, $label, $hint, $r
     </div>
     <?php
 }
-
-function alpenia_public_participant_get_trips() {
-    return get_posts([
-        'post_type' => 'group_trip',
-        'post_status' => 'publish',
-        'numberposts' => -1,
-        'orderby' => 'title',
-        'order' => 'ASC',
-    ]);
-}
-
 function alpenia_public_participant_trip_is_available($trip_id) {
     if (!$trip_id) {
         return false;
@@ -789,8 +778,4 @@ function alpenia_public_participant_get_trip_form_url($trip_id) {
     }
 
     return add_query_arg('trip_token', rawurlencode($token), alpenia_public_participant_get_form_page_url());
-}
-
-function alpenia_public_participant_get_trip_shortcode($trip_id) {
-    return '[alpenia_participant_form]';
 }
