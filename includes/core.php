@@ -705,7 +705,7 @@ function alpenia_destination_to_display_language($destination, $lang = null) {
         return 'Mekka & Medina';
     }
 
-    return $destination;
+    return $canonical;
 }
 
 function alpenia_get_country_turkish_aliases() {
