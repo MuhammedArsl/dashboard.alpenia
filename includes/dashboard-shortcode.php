@@ -2812,7 +2812,7 @@ function alpenia_dashboard_shortcode() {
             margin-right: calc(50% - 50vw);
             margin-top: 0 !important;
             padding-top: 0 !important;
-            background: linear-gradient(150deg, #f5f5f3 0%, #efefea 45%, #eaeae6 100%);
+            background: #f3f5f7;
             overflow-x: hidden;
             position: relative;
             isolation: isolate;
@@ -2833,10 +2833,10 @@ function alpenia_dashboard_shortcode() {
             width: 100%;
             max-width: none;
             background: transparent;
-            color: #fff;
+            color: #1f2937;
             padding: 24px 40px 40px 40px;
             min-height: 100vh;
-            font-family: Arial, sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
             box-sizing: border-box;
             position: relative;
             z-index: 1;
@@ -2916,13 +2916,11 @@ function alpenia_dashboard_shortcode() {
             position: sticky;
             top: 18px;
             overflow: hidden;
-            background:
-                radial-gradient(circle at 16% 0%, rgba(217, 154, 43, 0.2), transparent 30%),
-                linear-gradient(145deg, rgba(255,255,255,0.96), rgba(244,251,248,0.95));
+            background: #ffffff;
             border: 1px solid rgba(23, 75, 61, 0.14);
             border-radius: 28px;
             padding: 16px;
-            box-shadow: 0 24px 58px rgba(16, 37, 31, 0.14);
+            box-shadow: 0 10px 30px rgba(15, 23, 42, 0.08);
         }
 
         .dashboard-sidebar::after {
@@ -2943,7 +2941,7 @@ function alpenia_dashboard_shortcode() {
             margin-bottom: 14px;
             padding: 16px;
             border-radius: 22px;
-            background: linear-gradient(135deg, #123f34 0%, #22634f 58%, #2f7d63 100%);
+            background: #0f172a;
             color: #ffffff;
             box-shadow: 0 16px 34px rgba(16, 37, 31, 0.16);
         }
@@ -2987,9 +2985,9 @@ function alpenia_dashboard_shortcode() {
             min-height: 64px;
             padding: 10px;
             border-radius: 18px;
-            background: rgba(255,255,255,0.74);
+            background: #f8fafc;
             border: 1px solid rgba(23, 75, 61, 0.1);
-            color: #123f34 !important;
+            color: #0f172a !important;
             text-decoration: none;
             box-shadow: 0 10px 24px rgba(16, 37, 31, 0.06);
             transition: transform 0.18s ease, box-shadow 0.18s ease, border-color 0.18s ease, background 0.18s ease;
@@ -3033,15 +3031,15 @@ function alpenia_dashboard_shortcode() {
         .dashboard-sidebar__link:focus,
         .dashboard-sidebar__link.is-active {
             transform: translateY(-1px);
-            background: linear-gradient(135deg, #fff9ed, #ffffff);
-            border-color: rgba(217, 154, 43, 0.42);
-            box-shadow: 0 16px 34px rgba(123, 90, 32, 0.12);
-            color: #123f34 !important;
+            background: #eef2f7;
+            border-color: #cbd5e1;
+            box-shadow: 0 8px 20px rgba(15, 23, 42, 0.12);
+            color: #0f172a !important;
             outline: none;
         }
 
         .dashboard-sidebar__link.is-active .dashboard-sidebar__icon {
-            background: linear-gradient(135deg, #d99a2b, #f1c66a);
+            background: #1e293b;
             color: #123f34;
             border-color: rgba(217, 154, 43, 0.48);
         }
@@ -3080,13 +3078,13 @@ function alpenia_dashboard_shortcode() {
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #245fa8, #3f7fd3);
+            background: #1d4ed8;
             color: #fff;
             box-shadow: 0 10px 24px rgba(35, 88, 159, 0.22);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #2d6bb2, #4b8ad8);
+            background: #334155;
             color: #fff;
             border: 1px solid rgba(116, 151, 200, 0.5);
         }
@@ -3293,7 +3291,7 @@ function alpenia_dashboard_shortcode() {
         }
 
         .table-btn {
-            background: rgba(255,255,255,0.12);
+            background: #475569;
             color: #fff;
             padding: 10px 14px;
             font-size: 14px;
@@ -3319,10 +3317,10 @@ function alpenia_dashboard_shortcode() {
         }
         .btn-primary:hover,
         .btn-primary:focus,
-        .btn-primary:active { background: linear-gradient(135deg, #1f5495, #356fba); }
+        .btn-primary:active { background: #1e40af; }
         .btn-secondary:hover,
         .btn-secondary:focus,
-        .btn-secondary:active { background: linear-gradient(135deg, #265d9e, #3f78bd); }
+        .btn-secondary:active { background: #1f2937; }
         .btn-logout:hover,
         .btn-logout:focus,
         .btn-logout:active,
@@ -3330,11 +3328,11 @@ function alpenia_dashboard_shortcode() {
         .table-btn-danger:focus,
         .table-btn-danger:active { background: linear-gradient(135deg, #8f1d1d, #af2f2f) !important; }
         a[href*="export_trip_csv"].btn-primary,
-        a[href*="print_trip"].btn-primary { background: linear-gradient(135deg, #0f7566, #15967f); }
+        a[href*="print_trip"].btn-primary { background: #0f766e; }
         a[href*="export_trip_csv"].btn-primary:hover,
         a[href*="print_trip"].btn-primary:hover,
         a[href*="export_trip_csv"].btn-primary:focus,
-        a[href*="print_trip"].btn-primary:focus { background: linear-gradient(135deg, #0c6356, #117a67); }
+        a[href*="print_trip"].btn-primary:focus { background: #0f5f59; }
         a[href*="delete_trip"].btn-secondary,
         a[href*="delete_participant"].table-btn-danger,
         .delete-link { color: #ffd9d9 !important; }
