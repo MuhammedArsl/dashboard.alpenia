@@ -1626,6 +1626,10 @@ function alpenia_dashboard_shortcode() {
                                         <input type="date" id="birth_date_<?php echo $i; ?>" name="birth_date_<?php echo $i; ?>">
                                     </div>
 
+                                    <div class="form-group full">
+                                        <strong><?php echo esc_html(alpenia_travel_t('Adresse & Kontakt')); ?></strong>
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="street_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Straße')); ?></label>
                                         <input type="text" id="street_address_<?php echo $i; ?>" name="street_address_<?php echo $i; ?>">
@@ -1880,6 +1884,10 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="birth_date"><?php echo esc_html(alpenia_travel_t('Geburtsdatum')); ?></label>
                                 <input type="date" id="birth_date" name="birth_date" value="<?php echo esc_attr($birth_date); ?>">
+                            </div>
+
+                            <div class="form-group full">
+                                <strong><?php echo esc_html(alpenia_travel_t('Adresse & Kontakt')); ?></strong>
                             </div>
 
                             <div class="form-group">
