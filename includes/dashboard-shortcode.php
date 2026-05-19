@@ -1390,12 +1390,12 @@ function alpenia_dashboard_shortcode() {
 
                             <div class="form-group">
                                 <label for="departure_city"><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></label>
-                                <input type="text" id="departure_city" name="departure_city" value="<?php echo esc_attr($trip_form_values['departure_city']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Wien')); ?>">
+                                <input type="text" id="departure_city" name="departure_city" value="<?php echo esc_attr($trip_form_values['departure_city']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt')); ?>">
                             </div>
 
                             <div class="form-group">
                                 <label for="departure_airport"><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></label>
-                                <input type="text" id="departure_airport" name="departure_airport" value="<?php echo esc_attr($trip_form_values['departure_airport']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Vienna International Airport')); ?>">
+                                <input type="text" id="departure_airport" name="departure_airport" value="<?php echo esc_attr($trip_form_values['departure_airport']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt Airport')); ?>">
                             </div>
 
                             <div class="form-group">
