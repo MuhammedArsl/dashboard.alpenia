@@ -297,7 +297,7 @@ function alpenia_public_participant_get_trip_type_label($trip_type) {
     $labels = [
         'kultur' => 'Kulturreise',
         'umrah' => 'Umrah',
-        'hajj' => 'Hajj',
+        'hajj' => 'Hadsch',
     ];
 
     return $labels[$trip_type] ?? $trip_type;
