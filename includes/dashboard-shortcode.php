@@ -5651,7 +5651,7 @@ function alpenia_dashboard_shortcode() {
         }
         .trash-panel {
             border: 1px solid rgba(74, 119, 180, 0.24);
-            background: linear-gradient(180deg, rgba(236, 244, 255, 0.96), rgba(226, 237, 252, 0.98));
+            background: linear-gradient(180deg, #fffdf8 0%, #fff8ea 100%);
         }
         .trash-panel__header {
             display: flex;
