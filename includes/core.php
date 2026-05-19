@@ -362,6 +362,8 @@ function alpenia_travel_t($text) {
         'Teilnehmer wurde in den Papierkorb verschoben.' => 'Katılımcı çöp kutusuna taşındı.',
         'Eintrag wurde wiederhergestellt.' => 'Kayıt geri yüklendi.',
         'Eintrag wurde dauerhaft gelöscht.' => 'Kayıt kalıcı olarak silindi.',
+        'Reise wurde dauerhaft gelöscht.' => 'Seyahat kalıcı olarak silindi.',
+        'Teilnehmer wurde dauerhaft gelöscht.' => 'Katılımcı kalıcı olarak silindi.',
         'Reise gelöscht' => 'Seyahat silindi',
         'Teilnehmer gelöscht' => 'Katılımcı silindi',
         'Reise erstellt' => 'Seyahat oluşturuldu',
