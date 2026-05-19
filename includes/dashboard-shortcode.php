@@ -2190,6 +2190,8 @@ function alpenia_dashboard_shortcode() {
                                         <th><?php echo esc_html(alpenia_travel_t('Reisepass')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Foto')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Meldezettel')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel Nummer')); ?></th>
+                                        <th><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Aktionen')); ?></th>
                                     </tr>
                                 </thead>
@@ -2202,6 +2204,7 @@ function alpenia_dashboard_shortcode() {
                                         $photo_file_id = (int) get_post_meta($participant->ID, 'photo_file_id', true);
                                         $visa_photo_file_id = (int) get_post_meta($participant->ID, 'visa_photo_file_id', true);
                                         $meldezettel_file_id = (int) get_post_meta($participant->ID, 'meldezettel_file_id', true);
+                                        $residence_permit_number = alpenia_get_secure_meta($participant->ID, 'residence_permit_number', true);
                                         $delete_nonce = wp_create_nonce('alpenia_delete_participant_' . $participant->ID);
                                         $payment_open = alpenia_get_participant_payment_open($participant->ID);
                                     ?>
@@ -2239,6 +2242,11 @@ function alpenia_dashboard_shortcode() {
                                             <td>
                                                 <?php echo wp_kses_post(alpenia_doc_status_label($meldezettel_file_id, false)); ?>
                                                 <?php if ($meldezettel_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($meldezettel_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
+                                            </td>
+                                            <td><?php echo esc_html(alpenia_display_value($residence_permit_number)); ?></td>
+                                            <td>
+                                                <?php echo wp_kses_post(alpenia_doc_status_label($visa_photo_file_id, true)); ?>
+                                                <?php if ($visa_photo_file_id) : ?><br><a href="<?php echo alpenia_attachment_link($visa_photo_file_id); ?>" target="_blank"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a><?php endif; ?>
                                             </td>
                                             <td>
                                                 <div class="row-actions">
