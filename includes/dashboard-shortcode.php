@@ -1403,8 +1403,8 @@ function alpenia_dashboard_shortcode() {
                 (function () {
                     const labels = {
                         title: <?php echo wp_json_encode(alpenia_travel_t('Löschoption wählen')); ?>,
-                        description: <?php echo wp_json_encode(alpenia_travel_t('Önce çöp kutusuna mı taşımak istersin, yoksa kalıcı olarak silmek mi?')); ?>,
-                        trash: <?php echo wp_json_encode(alpenia_travel_t('Çöp kutusuna taşı')); ?>,
+                        description: <?php echo wp_json_encode(alpenia_travel_t('Möchtest du zuerst in den Papierkorb verschieben oder dauerhaft löschen?')); ?>,
+                        trash: <?php echo wp_json_encode(alpenia_travel_t('In den Papierkorb verschieben')); ?>,
                         hard: <?php echo wp_json_encode(alpenia_travel_t('Dauerhaft löschen')); ?>,
                         cancel: <?php echo wp_json_encode(alpenia_travel_t('Abbrechen')); ?>
                     };
