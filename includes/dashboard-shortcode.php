@@ -2538,8 +2538,7 @@ function alpenia_dashboard_shortcode() {
                             <img src="<?php echo esc_url($logo_url); ?>" alt="Alpenia Travel Logo" class="dashboard-logo">
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
-                            <h1><?php echo esc_html(alpenia_travel_t("Alpenia Travel Dashboard")); ?></h1>
-                            <p><?php echo esc_html($current_user->display_name); ?>, <?php echo esc_html(alpenia_travel_t('willkommen im Dashboard')); ?></p>
+                            <h1><?php echo esc_html(alpenia_travel_t("Alpenia Travel")); ?></h1>
                         </div>
                     </div>
 
