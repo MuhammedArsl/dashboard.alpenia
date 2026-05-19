@@ -159,9 +159,11 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             .logo { width:72px; height:auto; }
             .meta { display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin:20px 0 24px; }
             .box { border:1px solid #ddd; padding:12px; border-radius:10px; }
-            table { width:100%; border-collapse:collapse; table-layout:fixed; }
+            table { width:100%; border-collapse:collapse; table-layout:fixed; page-break-inside:auto; }
             th, td { border:1px solid #ddd; padding:8px 6px; text-align:left; font-size:12px; vertical-align:top; text-decoration:none; overflow-wrap:anywhere; word-break:break-word; }
             th { background:#e8f1ed; color:#103a2d; font-size:12px; white-space:normal; }
+            thead { display:table-header-group; }
+            tr { page-break-inside:avoid; break-inside:avoid; }
             .visa-group-title { text-align:center; }
             .visa-col { width:9%; }
             h1 { margin:0; color:#103a2d; font-size:28px; }
@@ -193,7 +195,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('trip_type')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'trip_type', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('status')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'trip_status', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('destination')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'destination', true))); ?></div>
-            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('country')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'country', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('country')); ?></strong><br><?php echo esc_html(alpenia_display_value(alpenia_country_to_english(get_post_meta($trip_id, 'country', true)))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('city')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'city', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('departure_city')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'departure_city', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('airport')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'departure_airport', true))); ?></div>
@@ -245,12 +247,12 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'last_name', true))); ?></td>
                         <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'birth_date', true))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_gender_code(get_post_meta($participant->ID, 'gender', true)))); ?></td>
-                        <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'nationality', true))); ?></td>
+                        <td><?php echo esc_html(alpenia_display_value(alpenia_country_to_english(alpenia_get_secure_meta($participant->ID, 'nationality', true)))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_no', true))); ?></td>
                         <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true))); ?></td>
                         <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true))); ?></td>
                         <?php if ($is_pilgrimage_trip) : ?>
-                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_visa_entry_country($participant->ID))); ?></td>
+                            <td><?php echo esc_html(alpenia_display_value(alpenia_country_to_english(alpenia_get_visa_entry_country($participant->ID)))); ?></td>
                             <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'visa_number', true))); ?></td>
                             <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'visa_expiry_date', true))); ?></td>
                         <?php endif; ?>

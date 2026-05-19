@@ -676,6 +676,35 @@ function alpenia_get_country_turkish_aliases() {
     ];
 }
 
+
+function alpenia_get_country_english_aliases() {
+    return [
+        'Afghanistan' => 'Afghanistan','Aegypt' => 'Egypt','Ägypten' => 'Egypt','Almanya' => 'Germany','Deutschland' => 'Germany',
+        'Avusturya' => 'Austria','Österreich' => 'Austria','İsviçre' => 'Switzerland','Schweiz' => 'Switzerland','Hollanda' => 'Netherlands','Niederlande' => 'Netherlands',
+        'Amerika Birleşik Devletleri' => 'United States','Vereinigte Staaten' => 'United States','Birleşik Krallık' => 'United Kingdom','İngiltere' => 'United Kingdom','Vereinigtes Königreich' => 'United Kingdom',
+        'Yunanistan' => 'Greece','Griechenland' => 'Greece','İspanya' => 'Spain','Spanien' => 'Spain','Çekya' => 'Czechia','Tschechien' => 'Czechia',
+        'Romanya' => 'Romania','Rumänien' => 'Romania','Bulgaristan' => 'Bulgaria','Bulgarien' => 'Bulgaria','Macaristan' => 'Hungary','Ungarn' => 'Hungary',
+        'Hırvatistan' => 'Croatia','Kroatien' => 'Croatia','Güney Afrika' => 'South Africa','Südafrika' => 'South Africa','Güney Kore' => 'South Korea','Südkorea' => 'South Korea',
+        'Kuzey Kore' => 'North Korea','Nordkorea' => 'North Korea','Suudi Arabistan' => 'Saudi Arabia','Saudi-Arabien' => 'Saudi Arabia',
+        'Birleşik Arap Emirlikleri' => 'United Arab Emirates','Vereinigte Arabische Emirate' => 'United Arab Emirates','Fildişi Sahili' => "Côte d'Ivoire",'Elfenbeinküste' => "Côte d'Ivoire",
+        'Belarus' => 'Belarus','Weißrussland' => 'Belarus','Bosna Hersek' => 'Bosnia and Herzegovina','Bosnien und Herzegowina' => 'Bosnia and Herzegovina',
+        'Türkiye' => 'Turkey','Türkei' => 'Turkey','Mısır' => 'Egypt','İsveç' => 'Sweden','Schweden' => 'Sweden','Norveç' => 'Norway','Norwegen' => 'Norway',
+        'Danimarka' => 'Denmark','Dänemark' => 'Denmark','Finlandiya' => 'Finland','Finnland' => 'Finland','Fransa' => 'France','Frankreich' => 'France',
+        'İtalya' => 'Italy','Italien' => 'Italy','Polonya' => 'Poland','Polen' => 'Poland','Portekiz' => 'Portugal','Portugal' => 'Portugal',
+        'Belçika' => 'Belgium','Belgien' => 'Belgium','İrlanda' => 'Ireland','Irland' => 'Ireland'
+    ];
+}
+
+function alpenia_country_to_english($country) {
+    $country = trim((string) $country);
+    if ($country === '') {
+        return '';
+    }
+
+    $aliases = alpenia_get_country_english_aliases();
+    return $aliases[$country] ?? $country;
+}
+
 function alpenia_get_countries_de() {
     return [
         'Afghanistan','Ägypten','Albanien','Algerien','Andorra','Angola','Antigua und Barbuda','Äquatorialguinea','Argentinien',
