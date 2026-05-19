@@ -3080,14 +3080,15 @@ function alpenia_dashboard_shortcode() {
         }
 
         .btn-primary {
-            background: linear-gradient(135deg, #1d4d3f, #2d6a57);
+            background: linear-gradient(135deg, #245fa8, #3f7fd3);
             color: #fff;
+            box-shadow: 0 10px 24px rgba(35, 88, 159, 0.22);
         }
 
         .btn-secondary {
-            background: linear-gradient(135deg, #245845, #2f7460);
+            background: linear-gradient(135deg, #2d6bb2, #4b8ad8);
             color: #fff;
-            border: 1px solid rgba(167, 197, 184, 0.45);
+            border: 1px solid rgba(116, 151, 200, 0.5);
         }
 
         .panel.public-registration-panel {
@@ -3318,10 +3319,10 @@ function alpenia_dashboard_shortcode() {
         }
         .btn-primary:hover,
         .btn-primary:focus,
-        .btn-primary:active { background: linear-gradient(135deg, #163e32, #225a49); }
+        .btn-primary:active { background: linear-gradient(135deg, #1f5495, #356fba); }
         .btn-secondary:hover,
         .btn-secondary:focus,
-        .btn-secondary:active { background: linear-gradient(135deg, #1d4a3a, #275f4e); }
+        .btn-secondary:active { background: linear-gradient(135deg, #265d9e, #3f78bd); }
         .btn-logout:hover,
         .btn-logout:focus,
         .btn-logout:active,
@@ -4135,17 +4136,18 @@ function alpenia_dashboard_shortcode() {
         }
 
         .panel {
-            background: rgba(18,46,38,0.9);
-            padding: 20px;
-            border-radius: 14px;
-            border: 1px solid rgba(120,180,150,0.22);
+            background: linear-gradient(150deg, rgba(255,255,255,0.98) 0%, rgba(248,251,255,0.98) 55%, rgba(244,249,255,0.96) 100%);
+            padding: 22px;
+            border-radius: 18px;
+            border: 1px solid rgba(146, 177, 212, 0.28);
+            box-shadow: 0 16px 36px rgba(28, 64, 109, 0.08);
             overflow: hidden;
         }
 
         .panel h2 {
             margin-top: 0;
             font-size: 28px;
-            color: #ffffff;
+            color: #163c68;
         }
 
         .overview-card-grid {
