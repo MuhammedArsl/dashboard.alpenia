@@ -283,7 +283,7 @@ function alpenia_travel_translate_label($value) {
         'teilweise bezahlt' => alpenia_travel_t('teilweise bezahlt'),
         'vollstaendig' => alpenia_travel_t('Vollständig'),
         'umrah' => alpenia_travel_t('Umrah'),
-        'hajj' => alpenia_travel_t('Hajj'),
+        'hajj' => alpenia_travel_t('Hadsch'),
         'kultur' => alpenia_travel_t('Kulturreise'),
     ];
 
