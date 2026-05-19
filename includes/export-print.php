@@ -220,8 +220,14 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             </thead>
             <tbody>
                 <?php if ($participants) : foreach ($participants as $participant) : ?>
+                    <?php
+                    $participant_first_name = trim(
+                        alpenia_get_secure_meta($participant->ID, 'first_name', true) . ' ' .
+                        alpenia_get_secure_meta($participant->ID, 'second_first_name', true)
+                    );
+                    ?>
                     <tr>
-                        <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'first_name', true))); ?></td>
+                        <td><?php echo esc_html(alpenia_display_value($participant_first_name)); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'last_name', true))); ?></td>
                         <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'birth_date', true))); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_gender_code(get_post_meta($participant->ID, 'gender', true)))); ?></td>
