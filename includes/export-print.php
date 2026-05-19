@@ -149,10 +149,10 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
     $is_pilgrimage_trip = alpenia_is_pilgrimage_trip($trip_id);
     ?>
     <!doctype html>
-    <html lang="<?php echo esc_attr(alpenia_travel_get_language()); ?>">
+    <html lang="en">
     <head>
         <meta charset="utf-8">
-        <title><?php echo esc_html($trip->post_title); ?> - <?php echo esc_html(alpenia_travel_t('Teilnehmerliste dieser Reise')); ?></title>
+        <title><?php echo esc_html($trip->post_title); ?> - <?php echo esc_html(alpenia_travel_pdf_label('trip_participant_list')); ?></title>
         <style>
             body { font-family: Arial, sans-serif; padding: 28px; color: #17211d; background: #fff; }
             .header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
@@ -170,7 +170,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
     </head>
     <body>
         <div class="actions">
-            <button onclick="window.print()"><?php echo esc_html(alpenia_travel_t('PDF erstellen')); ?></button>
+            <button onclick="window.print()"><?php echo esc_html(alpenia_travel_pdf_label('create_pdf')); ?></button>
         </div>
 
         <div class="header">
@@ -179,29 +179,29 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             <?php endif; ?>
             <div>
                 <h1>Alpenia Travel Dashboard</h1>
-                <div><?php echo esc_html($trip->post_title); ?> – <?php echo esc_html(alpenia_travel_t('Teilnehmerliste dieser Reise')); ?></div>
+                <div><?php echo esc_html($trip->post_title); ?> – <?php echo esc_html(alpenia_travel_pdf_label('trip_participant_list')); ?></div>
             </div>
         </div>
 
         <div class="meta">
-            <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'trip_type', true))); ?></div>
-            <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Status')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'trip_status', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('trip_type')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'trip_type', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('status')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'trip_status', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('destination')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'destination', true))); ?></div>
-            <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'country', true))); ?></div>
-            <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'city', true))); ?></div>
-            <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'departure_city', true))); ?></div>
-            <div class="box"><strong><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'departure_airport', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('country')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'country', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('city')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'city', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('departure_city')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'departure_city', true))); ?></div>
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('airport')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'departure_airport', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('travel_dates')); ?></strong><br><?php echo esc_html(alpenia_date_range_display(get_post_meta($trip_id, 'start_date', true), get_post_meta($trip_id, 'end_date', true))); ?></div>
         </div>
 
         <table>
             <thead>
                 <tr>
-                    <th><?php echo esc_html(alpenia_travel_t('Vorname')); ?></th>
-                    <th><?php echo esc_html(alpenia_travel_t('Nachname')); ?></th>
-                    <th><?php echo esc_html(alpenia_travel_t('Geburtsdatum')); ?></th>
-                    <th><?php echo esc_html(alpenia_travel_t('Anrede')); ?></th>
-                    <th><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_pdf_label('first_name')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_pdf_label('last_name')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_pdf_label('birth_date')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_pdf_label('gender')); ?></th>
+                    <th><?php echo esc_html(alpenia_travel_pdf_label('nationality')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('passport_number')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('passport_issue_date')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('passport_expiry_date')); ?></th>
@@ -236,7 +236,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                         <?php endif; ?>
                     </tr>
                 <?php endforeach; else : ?>
-                    <tr><td colspan="<?php echo $is_pilgrimage_trip ? 11 : 8; ?>"><?php echo esc_html(alpenia_travel_t('Noch keine Teilnehmer vorhanden.')); ?></td></tr>
+                    <tr><td colspan="<?php echo $is_pilgrimage_trip ? 11 : 8; ?>"><?php echo esc_html(alpenia_travel_pdf_label('no_participants')); ?></td></tr>
                 <?php endif; ?>
             </tbody>
         </table>

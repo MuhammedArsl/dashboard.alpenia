@@ -617,15 +617,29 @@ function alpenia_date_range_display($start, $end) {
 
 function alpenia_travel_pdf_label($key) {
     $labels = [
-        'destination' => 'Reiseziel',
-        'travel_dates' => 'Reisezeitraum',
-        'passport_number' => 'Reisepassnummer',
-        'passport_issue_date' => 'Reisepass gültig von',
-        'passport_expiry_date' => 'Reisepass gültig bis',
-        'visa_information' => 'Visum-Informationen',
-        'visa_entry_country' => 'Visum-Einreiseland',
-        'visa_number' => 'Visum Nummer',
-        'visa_expiry_date' => 'Visum gültig bis',
+        'trip_participant_list' => 'Participant list for this trip',
+        'create_pdf' => 'Create PDF',
+        'trip_type' => 'Trip type',
+        'status' => 'Status',
+        'destination' => 'Destination',
+        'country' => 'Country',
+        'city' => 'City',
+        'departure_city' => 'Departure city',
+        'airport' => 'Airport',
+        'travel_dates' => 'Travel dates',
+        'first_name' => 'First name',
+        'last_name' => 'Last name',
+        'birth_date' => 'Date of birth',
+        'gender' => 'Gender',
+        'nationality' => 'Nationality',
+        'passport_number' => 'Passport number',
+        'passport_issue_date' => 'Passport valid from',
+        'passport_expiry_date' => 'Passport valid until',
+        'visa_information' => 'Visa information',
+        'visa_entry_country' => 'Visa entry country',
+        'visa_number' => 'Visa number',
+        'visa_expiry_date' => 'Visa valid until',
+        'no_participants' => 'No participants yet.',
     ];
 
     return $labels[$key] ?? alpenia_travel_t($key);
