@@ -2541,8 +2541,16 @@ function alpenia_dashboard_shortcode() {
             <?php elseif (isset($_GET['trash_bin'])) : ?>
 
                 <?php
+                $trash_type_filter = isset($_GET['trash_type']) ? sanitize_key(wp_unslash((string) $_GET['trash_type'])) : 'all';
+                $trash_post_types = ['group_trip', 'trip_participant'];
+                if (in_array($trash_type_filter, $trash_post_types, true)) {
+                    $trash_post_types = [$trash_type_filter];
+                } else {
+                    $trash_type_filter = 'all';
+                }
+
                 $trashed_items = get_posts([
-                    'post_type' => ['group_trip', 'trip_participant'],
+                    'post_type' => $trash_post_types,
                     'post_status' => 'trash',
                     'numberposts' => -1,
                     'orderby' => 'modified',
@@ -2572,6 +2580,24 @@ function alpenia_dashboard_shortcode() {
                             <span><?php echo esc_html(count($trashed_items)); ?></span>
                             <small><?php echo esc_html(alpenia_travel_t('Einträge')); ?></small>
                         </div>
+                    </div>
+                    <div class="trash-filters">
+                        <?php
+                        $trash_filter_links = [
+                            'all' => alpenia_travel_t('Alle'),
+                            'trip_participant' => alpenia_travel_t('Katilimci'),
+                            'group_trip' => alpenia_travel_t('Seyahatler'),
+                        ];
+                        foreach ($trash_filter_links as $trash_filter_key => $trash_filter_label) :
+                            $trash_filter_url = alpenia_dashboard_link(['trash_bin' => 1], ['trash_type']);
+                            if ($trash_filter_key !== 'all') {
+                                $trash_filter_url = alpenia_dashboard_link(['trash_bin' => 1, 'trash_type' => $trash_filter_key], ['trash_type']);
+                            }
+                        ?>
+                            <a class="trash-filter-chip<?php echo $trash_type_filter === $trash_filter_key ? ' is-active' : ''; ?>" href="<?php echo esc_url($trash_filter_url); ?>">
+                                <?php echo esc_html($trash_filter_label); ?>
+                            </a>
+                        <?php endforeach; ?>
                     </div>
                     <?php if ($trashed_items) : ?>
                         <div class="table-wrap">
@@ -5624,8 +5650,8 @@ function alpenia_dashboard_shortcode() {
             text-decoration: none;
         }
         .trash-panel {
-            border: 1px solid rgba(120, 174, 255, 0.22);
-            background: linear-gradient(180deg, rgba(16, 22, 37, 0.92), rgba(11, 15, 27, 0.95));
+            border: 1px solid rgba(74, 119, 180, 0.24);
+            background: linear-gradient(180deg, rgba(236, 244, 255, 0.96), rgba(226, 237, 252, 0.98));
         }
         .trash-panel__header {
             display: flex;
@@ -5635,21 +5661,54 @@ function alpenia_dashboard_shortcode() {
             margin-bottom: 16px;
             padding: 14px 16px;
             border-radius: 14px;
-            background: rgba(255,255,255,0.03);
-            border: 1px solid rgba(255,255,255,0.08);
+            background: rgba(255,255,255,0.68);
+            border: 1px solid rgba(96, 133, 181, 0.2);
         }
-        .trash-panel__header h2 { margin: 0 0 4px; font-size: 18px; }
-        .trash-panel__header p { margin: 0; opacity: .82; }
+        .trash-panel__header h2 { margin: 0 0 4px; font-size: 18px; color: #16314f; }
+        .trash-panel__header p { margin: 0; opacity: .88; color: #32506f; }
         .trash-panel__count {
             min-width: 92px;
             text-align: center;
             border-radius: 12px;
             padding: 10px 12px;
-            background: rgba(108, 182, 255, 0.14);
-            border: 1px solid rgba(108, 182, 255, 0.4);
+            background: rgba(110, 171, 238, 0.2);
+            border: 1px solid rgba(90, 146, 212, 0.45);
+            color: #14395e;
         }
         .trash-panel__count span { display: block; font-size: 24px; font-weight: 800; line-height: 1; }
         .trash-panel__count small { opacity: .85; }
+        .trash-filters {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+            margin-bottom: 14px;
+        }
+        .trash-filter-chip {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 34px;
+            padding: 6px 14px;
+            border-radius: 999px;
+            text-decoration: none;
+            color: #1d446c;
+            background: rgba(255,255,255,0.76);
+            border: 1px solid rgba(85, 133, 191, 0.25);
+            font-weight: 700;
+            transition: all .2s ease;
+        }
+        .trash-filter-chip:hover,
+        .trash-filter-chip:focus-visible {
+            color: #0f2f52;
+            border-color: rgba(50, 108, 175, 0.46);
+            background: #ffffff;
+        }
+        .trash-filter-chip.is-active {
+            color: #ffffff;
+            background: linear-gradient(180deg, #2f8be8, #246fbe);
+            border-color: #2063aa;
+            box-shadow: 0 6px 16px rgba(25, 85, 148, 0.3);
+        }
         .trash-type-badge {
             display: inline-flex;
             align-items: center;
@@ -5678,6 +5737,10 @@ function alpenia_dashboard_shortcode() {
         .alpenia-table--trash td {
             vertical-align: middle;
             word-break: break-word;
+            color: #1f3f60;
+        }
+        .alpenia-table--trash th {
+            color: #1a3c61;
         }
         .alpenia-table--trash th:nth-child(1),
         .alpenia-table--trash td:nth-child(1) { width: 120px; }
@@ -5712,11 +5775,11 @@ function alpenia_dashboard_shortcode() {
                 display: none;
             }
             .alpenia-table--trash tr {
-                border: 1px solid rgba(255,255,255,0.1);
+                border: 1px solid rgba(95, 135, 180, 0.2);
                 border-radius: 12px;
                 margin-bottom: 12px;
                 padding: 10px 12px;
-                background: rgba(255,255,255,0.02);
+                background: rgba(255,255,255,0.74);
             }
             .alpenia-table--trash td {
                 border-bottom: 0;
