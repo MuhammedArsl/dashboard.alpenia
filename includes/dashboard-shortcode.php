@@ -173,6 +173,14 @@ function alpenia_dashboard_render_pagination($current_page, $max_pages, $base_ar
     return ob_get_clean();
 }
 
+function alpenia_get_participant_full_name($participant_id) {
+    $first_name = alpenia_get_secure_meta($participant_id, 'first_name', true);
+    $second_first_name = alpenia_get_secure_meta($participant_id, 'second_first_name', true);
+    $last_name = alpenia_get_secure_meta($participant_id, 'last_name', true);
+
+    return trim(implode(' ', array_filter([$first_name, $second_first_name, $last_name])));
+}
+
 function alpenia_dashboard_shortcode() {
     if (!defined('DONOTCACHEPAGE')) {
         define('DONOTCACHEPAGE', true);
@@ -1012,10 +1020,7 @@ function alpenia_dashboard_shortcode() {
                 $missing_docs_items[] = [
                     'trip_id' => $trip_id,
                     'trip_title' => get_the_title($trip_id),
-                    'participant_name' => trim(
-                        alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                        alpenia_get_secure_meta($participant_id, 'last_name', true)
-                    ),
+                    'participant_name' => alpenia_get_participant_full_name($participant_id),
                     'missing_docs' => $missing_details,
                     'participant_id' => $participant_id,
                 ];
@@ -1031,10 +1036,7 @@ function alpenia_dashboard_shortcode() {
             $payment_item = [
                 'trip_id' => $trip_id,
                 'trip_title' => get_the_title($trip_id),
-                'participant_name' => trim(
-                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                    alpenia_get_secure_meta($participant_id, 'last_name', true)
-                ),
+                'participant_name' => alpenia_get_participant_full_name($participant_id),
                 'payment_open' => $payment_open,
                 'payment_status' => alpenia_get_payment_status($participant_id),
                 'participant_id' => $participant_id,
@@ -1063,10 +1065,7 @@ function alpenia_dashboard_shortcode() {
             $operations_task_items[] = [
                 'trip_id' => $trip_id,
                 'trip_title' => get_the_title($trip_id),
-                'participant_name' => trim(
-                    alpenia_get_secure_meta($participant_id, 'first_name', true) . ' ' .
-                    alpenia_get_secure_meta($participant_id, 'last_name', true)
-                ),
+                'participant_name' => alpenia_get_participant_full_name($participant_id),
                 'participant_id' => $participant_id,
                 'reasons' => $operation_reasons,
                 'payment_open' => $payment_open,
@@ -2198,8 +2197,7 @@ function alpenia_dashboard_shortcode() {
                                 <tbody>
                                     <?php foreach ($trip_participants as $participant) :
                                         $gender = get_post_meta($participant->ID, 'gender', true);
-                                        $first_name = alpenia_get_secure_meta($participant->ID, 'first_name', true);
-                                        $last_name = alpenia_get_secure_meta($participant->ID, 'last_name', true);
+                                        $participant_full_name = alpenia_get_participant_full_name($participant->ID);
                                         $passport_file_id = (int) get_post_meta($participant->ID, 'passport_file_id', true);
                                         $photo_file_id = (int) get_post_meta($participant->ID, 'photo_file_id', true);
                                         $visa_photo_file_id = (int) get_post_meta($participant->ID, 'visa_photo_file_id', true);
@@ -2211,8 +2209,7 @@ function alpenia_dashboard_shortcode() {
                                         <tr>
                                             <td><?php echo esc_html(alpenia_display_value(alpenia_travel_t($gender))); ?></td>
                                             <td>
-                                                <strong><?php echo esc_html(alpenia_display_value(trim($first_name . ' ' . $last_name))); ?></strong><br>
-                                                <small><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'second_first_name', true))); ?></small>
+                                                <strong><?php echo esc_html(alpenia_display_value($participant_full_name)); ?></strong>
                                             </td>
                                             <td><?php echo wp_kses_post(alpenia_get_participant_doc_badge($participant->ID)); ?></td>
                                             <?php if ($view_is_pilgrimage_trip) : ?>
