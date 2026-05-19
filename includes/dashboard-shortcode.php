@@ -1630,6 +1630,10 @@ function alpenia_dashboard_shortcode() {
                                         <strong><?php echo esc_html(alpenia_travel_t('Adresse & Kontakt')); ?></strong>
                                     </div>
 
+                                    <div class="form-group full">
+                                        <strong><?php echo esc_html(alpenia_travel_t('Notfallkontakt')); ?></strong>
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="street_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Straße')); ?></label>
                                         <input type="text" id="street_address_<?php echo $i; ?>" name="street_address_<?php echo $i; ?>">
@@ -1660,6 +1664,10 @@ function alpenia_dashboard_shortcode() {
                                         <input type="text" id="emergency_contact_phone_<?php echo $i; ?>" name="emergency_contact_phone_<?php echo $i; ?>" required>
                                     </div>
 
+                                    <div class="form-group full">
+                                        <strong><?php echo esc_html(alpenia_travel_t('Reisepassdaten')); ?></strong>
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="nationality_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
                                         <input type="text" id="nationality_<?php echo $i; ?>" name="nationality_<?php echo $i; ?>" list="alpenia-country-list" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Deutschland')); ?>" required>
@@ -1680,6 +1688,10 @@ function alpenia_dashboard_shortcode() {
                                         <input type="date" id="passport_expiry_date_<?php echo $i; ?>" name="passport_expiry_date_<?php echo $i; ?>" required>
                                     </div>
 
+                                    <div class="form-group full residence-field residence-field-<?php echo $i; ?>">
+                                        <strong><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel')); ?></strong>
+                                    </div>
+
                                     <div class="form-group residence-field residence-field-<?php echo $i; ?>">
                                         <label for="residence_permit_start_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig von')); ?></label>
                                         <input type="date" id="residence_permit_start_date_<?php echo $i; ?>" name="residence_permit_start_date_<?php echo $i; ?>">
@@ -1695,6 +1707,10 @@ function alpenia_dashboard_shortcode() {
                                         <input type="date" id="residence_permit_valid_until_<?php echo $i; ?>" name="residence_permit_valid_until_<?php echo $i; ?>">
                                     </div>
 
+                                    <div class="form-group full pilgrimage-visa-field pilgrimage-visa-field-<?php echo $i; ?>">
+                                        <strong><?php echo esc_html(alpenia_travel_t('Visum')); ?></strong>
+                                    </div>
+
                                     <div class="form-group pilgrimage-visa-field pilgrimage-visa-field-<?php echo $i; ?>">
                                         <label for="visa_entry_country_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></label>
                                         <input type="text" id="visa_entry_country_<?php echo $i; ?>" name="visa_entry_country_<?php echo $i; ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien')); ?>">
@@ -1708,6 +1724,10 @@ function alpenia_dashboard_shortcode() {
                                     <div class="form-group pilgrimage-visa-field pilgrimage-visa-field-<?php echo $i; ?>">
                                         <label for="visa_expiry_date_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></label>
                                         <input type="date" id="visa_expiry_date_<?php echo $i; ?>" name="visa_expiry_date_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group full">
+                                        <strong><?php echo esc_html(alpenia_travel_t('Status & Zahlung')); ?></strong>
                                     </div>
 
                                     <div class="form-group">
@@ -1733,6 +1753,10 @@ function alpenia_dashboard_shortcode() {
                                     <div class="form-group full">
                                         <label for="payment_paid_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Bereits bezahlt (€)')); ?></label>
                                         <input type="number" step="0.01" min="0" id="payment_paid_<?php echo $i; ?>" name="payment_paid_<?php echo $i; ?>">
+                                    </div>
+
+                                    <div class="form-group full">
+                                        <strong><?php echo esc_html(alpenia_travel_t('Dokumente & Checkliste')); ?></strong>
                                     </div>
 
                                     <div class="form-group">
@@ -1919,6 +1943,10 @@ function alpenia_dashboard_shortcode() {
                                 <input type="text" id="emergency_contact_phone" name="emergency_contact_phone" value="<?php echo esc_attr($emergency_contact_phone); ?>">
                             </div>
 
+                            <div class="form-group full">
+                                <strong><?php echo esc_html(alpenia_travel_t('Reisepassdaten')); ?></strong>
+                            </div>
+
                             <div class="form-group">
                                 <label for="nationality"><?php echo esc_html(alpenia_travel_t('Staatsbürgerschaft')); ?> <span class="required-mark">*</span></label>
                                 <input type="text" id="nationality" name="nationality" value="<?php echo esc_attr($nationality); ?>" list="alpenia-country-list-edit" required>
@@ -1944,6 +1972,10 @@ function alpenia_dashboard_shortcode() {
                                 <input type="date" id="passport_expiry_date" name="passport_expiry_date" value="<?php echo esc_attr($passport_expiry); ?>" required>
                             </div>
 
+                            <div class="form-group full edit-residence-field">
+                                <strong><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel')); ?></strong>
+                            </div>
+
                             <div class="form-group edit-residence-field">
                                 <label for="residence_permit_start_date"><?php echo esc_html(alpenia_travel_t('Aufenthaltstitel gültig von')); ?></label>
                                 <input type="date" id="residence_permit_start_date" name="residence_permit_start_date" value="<?php echo esc_attr($residence_permit_start_date); ?>">
@@ -1959,6 +1991,10 @@ function alpenia_dashboard_shortcode() {
                                 <input type="date" id="residence_permit_valid_until" name="residence_permit_valid_until" value="<?php echo esc_attr($residence_permit_valid_until); ?>">
                             </div>
 
+                            <div class="form-group full edit-visa-field">
+                                <strong><?php echo esc_html(alpenia_travel_t('Visum')); ?></strong>
+                            </div>
+
                             <div class="form-group edit-visa-field">
                                 <label for="visa_entry_country"><?php echo esc_html(alpenia_travel_t('Visum-Einreiseland')); ?></label>
                                 <input type="text" id="visa_entry_country" name="visa_entry_country" value="<?php echo esc_attr($visa_entry_country); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Saudi-Arabien')); ?>">
@@ -1972,6 +2008,10 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group edit-visa-field">
                                 <label for="visa_expiry_date"><?php echo esc_html(alpenia_travel_t('Visum gültig bis')); ?></label>
                                 <input type="date" id="visa_expiry_date" name="visa_expiry_date" value="<?php echo esc_attr($visa_expiry_date); ?>">
+                            </div>
+
+                            <div class="form-group full">
+                                <strong><?php echo esc_html(alpenia_travel_t('Status & Zahlung')); ?></strong>
                             </div>
 
                             <div class="form-group">
@@ -2002,6 +2042,10 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group full">
                                 <label for="payment_paid"><?php echo esc_html(alpenia_travel_t('Bereits bezahlt (€)')); ?></label>
                                 <input type="number" step="0.01" min="0" id="payment_paid" name="payment_paid" value="<?php echo esc_attr($payment_paid); ?>">
+                            </div>
+
+                            <div class="form-group full">
+                                <strong><?php echo esc_html(alpenia_travel_t('Dokumente & Checkliste')); ?></strong>
                             </div>
 
                             <div class="form-group">
