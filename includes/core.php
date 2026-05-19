@@ -568,11 +568,6 @@ function alpenia_travel_t($text) {
 
     return $text;
 }
-
-function alpenia_get_ui_lang() { return alpenia_travel_get_language(); }
-
-function alpenia_t($de, $tr) { return alpenia_travel_get_language() === 'tr' ? $tr : $de; }
-
 function alpenia_dashboard_link($args = []) {
     global $post;
     if ($post && !empty($post->post_content) && has_shortcode($post->post_content, 'alpenia_dashboard')) {
@@ -889,13 +884,6 @@ function alpenia_get_schengen_countries() {
     ];
     return array_values(array_unique(array_merge($countries, array_values(alpenia_get_country_turkish_aliases()))));
 }
-
-function alpenia_is_eu_nationality($nationality) {
-    $nationality = trim((string) $nationality);
-    if ($nationality === '') return false;
-    return in_array($nationality, alpenia_get_eu_countries(), true);
-}
-
 function alpenia_is_eu_or_schengen_nationality($nationality) {
     $nationality = trim((string) $nationality);
     if ($nationality === '') return false;
