@@ -1357,8 +1357,8 @@ function alpenia_dashboard_shortcode() {
                                 <select id="trip_type" name="trip_type" required>
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <option value="kultur" <?php selected($trip_form_values['trip_type'], 'kultur'); ?>><?php echo esc_html(alpenia_travel_t('Kulturreise')); ?></option>
-                                    <option value="umrah" <?php selected($trip_form_values['trip_type'], 'umrah'); ?>>Umrah</option>
-                                    <option value="hajj" <?php selected($trip_form_values['trip_type'], 'hajj'); ?>>Hajj</option>
+                                    <option value="umrah" <?php selected($trip_form_values['trip_type'], 'umrah'); ?>><?php echo esc_html(alpenia_travel_t('Umrah')); ?></option>
+                                    <option value="hajj" <?php selected($trip_form_values['trip_type'], 'hajj'); ?>><?php echo esc_html(alpenia_travel_t('Hajj')); ?></option>
                                 </select>
                             </div>
 
