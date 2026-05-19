@@ -433,10 +433,6 @@ function alpenia_public_participant_get_form_fields() {
         'second_first_name',
         'last_name',
         'birth_date',
-        'street_address',
-        'postal_city',
-        'phone_number',
-        'email_address',
         'nationality',
         'passport_no',
         'passport_valid_from_date',
@@ -446,6 +442,10 @@ function alpenia_public_participant_get_form_fields() {
         'residence_permit_valid_until',
         'emergency_contact_name',
         'emergency_contact_phone',
+        'street_address',
+        'postal_city',
+        'phone_number',
+        'email_address',
     ];
 
     $field_definitions = alpenia_participant_field_definitions();
