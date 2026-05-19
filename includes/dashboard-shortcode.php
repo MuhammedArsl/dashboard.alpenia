@@ -2351,7 +2351,7 @@ function alpenia_dashboard_shortcode() {
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><span><?php echo esc_html($view_trip_type === 'umrah' ? alpenia_travel_t('Umrah') : $view_trip_type); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Status')); ?></strong><span><?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($view_trip_id, 'trip_status', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(alpenia_display_value(alpenia_destination_to_display_language(get_post_meta($view_trip_id, 'destination', true)))); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'country', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><span><?php echo esc_html(alpenia_display_value(alpenia_country_to_display_language(get_post_meta($view_trip_id, 'country', true)))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'city', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'departure_city', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'departure_airport', true))); ?></span></div>
@@ -2484,9 +2484,9 @@ function alpenia_dashboard_shortcode() {
                                             </td>
                                             <td><?php echo wp_kses_post(alpenia_get_participant_doc_badge($participant->ID)); ?></td>
                                             <?php if ($view_is_pilgrimage_trip) : ?>
-                                                <td><?php echo esc_html(alpenia_display_value(alpenia_get_visa_entry_country($participant->ID))); ?></td>
+                                                <td><?php echo esc_html(alpenia_display_value(alpenia_country_to_display_language(alpenia_get_visa_entry_country($participant->ID)))); ?></td>
                                             <?php endif; ?>
-                                            <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'nationality', true))); ?></td>
+                                            <td><?php echo esc_html(alpenia_display_value(alpenia_country_to_display_language(alpenia_get_secure_meta($participant->ID, 'nationality', true)))); ?></td>
                                             <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'passport_no', true))); ?></td>
                                             <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_valid_from_date', true))); ?></td>
                                             <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'passport_expiry_date', true))); ?></td>
