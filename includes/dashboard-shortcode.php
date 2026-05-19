@@ -2585,7 +2585,7 @@ function alpenia_dashboard_shortcode() {
                             <option value=""><?php echo esc_html(alpenia_travel_t('Alle Länder')); ?></option>
                             <?php foreach ($countries as $country_option) : ?>
                                 <option value="<?php echo esc_attr($country_option); ?>" <?php selected($trip_country_filter, $country_option); ?>>
-                                    <?php echo esc_html($country_option); ?>
+                                    <?php echo esc_html(alpenia_country_to_display_language($country_option)); ?>
                                 </option>
                             <?php endforeach; ?>
                         </select>
@@ -2647,7 +2647,7 @@ function alpenia_dashboard_shortcode() {
                                             </div>
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Land / Stadt')); ?></span>
-                                                <strong><?php echo esc_html(alpenia_display_value(get_post_meta($trip->ID, 'country', true))); ?> / <?php echo esc_html(alpenia_display_value(get_post_meta($trip->ID, 'city', true))); ?></strong>
+                                                <strong><?php echo esc_html(alpenia_display_value(alpenia_country_to_display_language(get_post_meta($trip->ID, 'country', true)))); ?> / <?php echo esc_html(alpenia_display_value(get_post_meta($trip->ID, 'city', true))); ?></strong>
                                             </div>
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Reiseart')); ?></span>

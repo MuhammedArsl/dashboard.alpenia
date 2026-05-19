@@ -700,6 +700,50 @@ function alpenia_get_country_english_aliases() {
     ];
 }
 
+
+function alpenia_country_to_display_language($country, $lang = null) {
+    $country = trim((string) $country);
+    if ($country === '') {
+        return '';
+    }
+
+    $lang = $lang ? sanitize_key((string) $lang) : alpenia_travel_get_language();
+    if ($lang === 'tr') {
+        $aliases = alpenia_get_country_turkish_aliases();
+        if (isset($aliases[$country])) {
+            return $aliases[$country];
+        }
+
+        $country_folded = function_exists('mb_strtolower') ? mb_strtolower($country, 'UTF-8') : strtolower($country);
+        foreach ($aliases as $german_name => $turkish_name) {
+            $german_folded = function_exists('mb_strtolower') ? mb_strtolower((string) $german_name, 'UTF-8') : strtolower((string) $german_name);
+            $turkish_folded = function_exists('mb_strtolower') ? mb_strtolower((string) $turkish_name, 'UTF-8') : strtolower((string) $turkish_name);
+            if ($country_folded === $german_folded || $country_folded === $turkish_folded) {
+                return $turkish_name;
+            }
+        }
+
+        return $country;
+    }
+
+    $turkish_aliases = alpenia_get_country_turkish_aliases();
+    $german_by_turkish = array_flip($turkish_aliases);
+    if (isset($german_by_turkish[$country])) {
+        return $german_by_turkish[$country];
+    }
+
+    $country_folded = function_exists('mb_strtolower') ? mb_strtolower($country, 'UTF-8') : strtolower($country);
+    foreach ($german_by_turkish as $turkish_name => $german_name) {
+        $turkish_folded = function_exists('mb_strtolower') ? mb_strtolower((string) $turkish_name, 'UTF-8') : strtolower((string) $turkish_name);
+        $german_folded = function_exists('mb_strtolower') ? mb_strtolower((string) $german_name, 'UTF-8') : strtolower((string) $german_name);
+        if ($country_folded === $turkish_folded || $country_folded === $german_folded) {
+            return $german_name;
+        }
+    }
+
+    return $country;
+}
+
 function alpenia_country_to_english($country) {
     $country = trim((string) $country);
     if ($country === '') {
