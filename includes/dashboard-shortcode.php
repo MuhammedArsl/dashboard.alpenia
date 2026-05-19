@@ -210,7 +210,6 @@ function alpenia_dashboard_shortcode() {
 
     $current_user = wp_get_current_user();
     $message = '';
-    $auto_return_home = false;
     $logo_url = 'HIER_DEINE_LOGO_URL_EINFÜGEN';
 
     if (isset($_GET['participant_saved']) && $_GET['participant_saved'] === '1') {
@@ -219,7 +218,6 @@ function alpenia_dashboard_shortcode() {
             ? alpenia_travel_t('1 Teilnehmer erfolgreich gespeichert.')
             : sprintf(alpenia_travel_t('%d Teilnehmer erfolgreich gespeichert.'), $saved_count);
         $message = '<div class="alpenia-success" data-alpenia-success-message="1" data-alpenia-feedback-popup="participant_created">' . esc_html($saved_message) . '</div>';
-        $auto_return_home = true;
     }
 
     if (isset($_GET['export_trip_csv'])) {
@@ -321,7 +319,7 @@ function alpenia_dashboard_shortcode() {
                     alpenia_public_participant_get_trip_registration_token($trip_id, true);
 
                     if ($is_editing_trip) {
-                        $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Reise erfolgreich aktualisiert.')) . '</div>';
+                        $message = '<div class="alpenia-success" data-alpenia-feedback-popup="trip_updated">' . esc_html(alpenia_travel_t('Reise erfolgreich aktualisiert.')) . '</div>';
                     } else {
                         alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
                         $message = '<div class="alpenia-success" data-alpenia-feedback-popup="trip_created">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
@@ -682,7 +680,7 @@ function alpenia_dashboard_shortcode() {
                     if ($visa_photo_file_id) update_post_meta($participant_id, 'visa_photo_file_id', $visa_photo_file_id);
                     if ($meldezettel_file_id) update_post_meta($participant_id, 'meldezettel_file_id', $meldezettel_file_id);
 
-                    $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Teilnehmer erfolgreich aktualisiert.')) . '</div>';
+                    $message = '<div class="alpenia-success" data-alpenia-feedback-popup="participant_updated">' . esc_html(alpenia_travel_t('Teilnehmer erfolgreich aktualisiert.')) . '</div>';
                 }
             }
         }
@@ -1346,6 +1344,8 @@ function alpenia_dashboard_shortcode() {
                         participant: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gelöscht')); ?>,
                         trip_created: <?php echo wp_json_encode(alpenia_travel_t('Reise erstellt')); ?>,
                         participant_created: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer gespeichert')); ?>,
+                        trip_updated: <?php echo wp_json_encode(alpenia_travel_t('Reise aktualisiert')); ?>,
+                        participant_updated: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer aktualisiert')); ?>,
                         item_restored: <?php echo wp_json_encode(alpenia_travel_t('Eintrag wiederhergestellt')); ?>,
                         item_deleted: <?php echo wp_json_encode(alpenia_travel_t('Eintrag dauerhaft gelöscht')); ?>
                     };
@@ -1374,7 +1374,13 @@ function alpenia_dashboard_shortcode() {
                     closeButton.className = 'btn-primary';
                     closeButton.textContent = <?php echo wp_json_encode(alpenia_travel_t('Schließen')); ?>;
 
-                    const closePopup = function () { overlay.remove(); };
+                    const shouldRedirectHome = ['trip_created', 'participant_created', 'trip_updated', 'participant_updated'].includes(popupType);
+                    const closePopup = function () {
+                        overlay.remove();
+                        if (shouldRedirectHome) {
+                            window.location.href = <?php echo wp_json_encode(alpenia_dashboard_link()); ?>;
+                        }
+                    };
                     closeButton.addEventListener('click', closePopup);
 
                     overlay.addEventListener('click', function (event) {
@@ -1544,24 +1550,6 @@ function alpenia_dashboard_shortcode() {
                     });
                 }());
             </script>
-            <?php if ($auto_return_home) : ?>
-                <script>
-                    (function () {
-                        const successMessage = document.querySelector('[data-alpenia-success-message="1"]');
-                        if (successMessage) {
-                            successMessage.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                        } else {
-                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                        }
-
-                        window.setTimeout(function () {
-                            window.location.href = <?php echo wp_json_encode(alpenia_dashboard_link()); ?>;
-                        }, 2200);
-                    }());
-                </script>
-            <?php endif; ?>
-
-
             <form id="alpenia-idle-logout-form" method="post" style="display:none;">
                 <?php wp_nonce_field('alpenia_logout_action', 'alpenia_logout_nonce'); ?>
                 <input type="hidden" name="alpenia_logout" value="1">

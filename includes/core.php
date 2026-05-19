@@ -368,6 +368,8 @@ function alpenia_travel_t($text) {
         'Teilnehmer gelöscht' => 'Katılımcı silindi',
         'Reise erstellt' => 'Seyahat oluşturuldu',
         'Teilnehmer gespeichert' => 'Katılımcı kaydedildi',
+        'Reise aktualisiert' => 'Seyahat güncellendi',
+        'Teilnehmer aktualisiert' => 'Katılımcı güncellendi',
         'Eintrag wiederhergestellt' => 'Kayıt geri yüklendi',
         'Eintrag dauerhaft gelöscht' => 'Kayıt kalıcı olarak silindi',
         'Erfolgreich' => 'Başarılı',
