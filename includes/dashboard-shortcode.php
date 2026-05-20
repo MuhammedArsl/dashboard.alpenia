@@ -3002,21 +3002,6 @@ function alpenia_dashboard_shortcode() {
                                 <?php foreach ($dashboard_users as $user) :
                                     $disabled = get_user_meta($user->ID, 'alpenia_disabled', true);
                                     $status = $disabled ? 'Deaktiviert' : 'Aktiv';
-                                    $activate_url = wp_nonce_url(
-                                        alpenia_dashboard_link(['manage_users' => 1, 'dashboard_activate_user' => (int) $user->ID]),
-                                        'alpenia_dashboard_activate_user_' . (int) $user->ID,
-                                        '_dashboard_user_nonce'
-                                    );
-                                    $deactivate_url = wp_nonce_url(
-                                        alpenia_dashboard_link(['manage_users' => 1, 'dashboard_deactivate_user' => (int) $user->ID]),
-                                        'alpenia_dashboard_deactivate_user_' . (int) $user->ID,
-                                        '_dashboard_user_nonce'
-                                    );
-                                    $delete_user_url = wp_nonce_url(
-                                        alpenia_dashboard_link(['manage_users' => 1, 'dashboard_delete_user' => (int) $user->ID]),
-                                        'alpenia_dashboard_delete_user_' . (int) $user->ID,
-                                        '_dashboard_user_nonce'
-                                    );
 
                                     $role_label = '-';
                                     $role_key = 'unknown';
@@ -3044,11 +3029,11 @@ function alpenia_dashboard_shortcode() {
                                                     <a class="action-button edit-button" href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_edit_user' => (int) $user->ID])); ?>"><?php echo esc_html(alpenia_travel_t("Bearbeiten")); ?></a>
 
                                                     <?php if ($disabled) : ?>
-                                                        <form method="post" style="display:inline;" onsubmit="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich löschen?')); ?>');">
-                                                            <input type="hidden" name="dashboard_user_action" value="delete">
+                                                        <form method="post" style="display:inline;">
+                                                            <input type="hidden" name="dashboard_user_action" value="activate">
                                                             <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
-                                                            <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_delete_user_' . (int) $user->ID)); ?>">
-                                                            <button type="submit" class="link-button action-button delete-link"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></button>
+                                                            <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_activate_user_' . (int) $user->ID)); ?>">
+                                                            <button type="submit" class="link-button action-button activate-button"><?php echo esc_html(alpenia_travel_t("Aktivieren")); ?></button>
                                                         </form>
                                                     <?php else : ?>
                                                         <form method="post" style="display:inline;" onsubmit="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich deaktivieren?')); ?>');">
@@ -4031,6 +4016,12 @@ function alpenia_dashboard_shortcode() {
             border-color: #4a7bb9;
         }
 
+        .user-action-links .activate-button {
+            background: #1c8f6a;
+            color: #e9fff8;
+            border-color: #44b792;
+        }
+
         .user-action-links .deactivate-button {
             background: #b43434;
             color: #fff0f0;
@@ -4051,6 +4042,15 @@ function alpenia_dashboard_shortcode() {
         .user-action-links .action-button:hover,
         .user-action-links .action-button:focus {
             text-decoration: none !important;
+        }
+
+        .user-action-links .activate-button:hover,
+        .user-action-links .activate-button:focus {
+            color: #fff;
+            background: #157254;
+            border-color: #359f7e;
+            text-decoration: none !important;
+            outline: none;
         }
 
         .user-action-links .edit-button:hover,
