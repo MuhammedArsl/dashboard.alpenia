@@ -531,7 +531,7 @@ function alpenia_travel_t($text) {
         'Aufenthaltstitel geprüft' => 'Oturum izni kontrol edildi',
         'Zahlung geprüft' => 'Ödeme kontrol edildi',
         'Alle Teilnehmer speichern' => 'Tüm katılımcıları kaydet',
-        'Kulturreise' => 'Kültür seyahati',
+        'Kulturreise' => 'Kültür gezisi',
         'Öffnen' => 'Aç',
         'Probleme oder Fragen?' => 'Sorun mu var, yardıma mı ihtiyacınız var?',
         'Wenn du bei der Anmeldung Schwierigkeiten hast, kontaktiere bitte direkt unser Team.' => 'Kayıt sırasında sorun yaşarsanız lütfen doğrudan ekibimizle iletişime geçin.',
