@@ -282,14 +282,18 @@ function alpenia_dashboard_shortcode() {
             if (empty($trip_title) || empty($trip_type) || empty($destination) || empty($country) || empty($city) || empty($start_date) || empty($end_date)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
             } else {
-                $today = wp_date('Y-m-d');
+                $today_timestamp = strtotime(wp_date('Y-m-d'));
+                $start_timestamp = strtotime($start_date);
+                $end_timestamp = strtotime($end_date);
 
-                if ($start_date < $today || $end_date < $today) {
+                if ($start_timestamp === false || $end_timestamp === false) {
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte ein gültiges Datum eingeben.')) . '</div>';
+                } elseif ($start_timestamp < $today_timestamp || $end_timestamp < $today_timestamp) {
                     $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Start- und Enddatum dürfen nicht in der Vergangenheit liegen.')) . '</div>';
-                } elseif ($end_date < $start_date) {
+                } elseif ($end_timestamp < $start_timestamp) {
                     $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Enddatum darf nicht vor dem Startdatum liegen.')) . '</div>';
                 } else {
-                if ($is_editing_trip) {
+                    if ($is_editing_trip) {
                     $trip_id = wp_update_post([
                         'ID'           => $submitted_trip_id,
                         'post_title'   => $trip_title,
@@ -331,8 +335,9 @@ function alpenia_dashboard_shortcode() {
                         alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
                         $message = '<div class="alpenia-success" data-alpenia-feedback-popup="trip_created">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
                     }
-                } else {
-                    $message = '<div class="alpenia-message">' . esc_html($is_editing_trip ? alpenia_travel_t('Fehler beim Aktualisieren der Reise.') : alpenia_travel_t('Fehler beim Erstellen der Reise.')) . '</div>';
+                    } else {
+                        $message = '<div class="alpenia-message">' . esc_html($is_editing_trip ? alpenia_travel_t('Fehler beim Aktualisieren der Reise.') : alpenia_travel_t('Fehler beim Erstellen der Reise.')) . '</div>';
+                    }
                 }
                 }
             }
