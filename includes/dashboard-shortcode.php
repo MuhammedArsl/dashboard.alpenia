@@ -133,6 +133,38 @@ function alpenia_dashboard_money_label($amount) {
     return '€ ' . number_format((float) $amount, 2, ',', '.');
 }
 
+function alpenia_dashboard_trip_days_left($trip_id) {
+    $start_date = (string) get_post_meta((int) $trip_id, 'start_date', true);
+    if ($start_date === '') {
+        return null;
+    }
+
+    $start_timestamp = strtotime($start_date);
+    if ($start_timestamp === false) {
+        return null;
+    }
+
+    $today_timestamp = strtotime(wp_date('Y-m-d'));
+    return (int) floor(($start_timestamp - $today_timestamp) / DAY_IN_SECONDS);
+}
+
+function alpenia_dashboard_trip_timeline_badge($trip_id) {
+    $days_left = alpenia_dashboard_trip_days_left($trip_id);
+    if ($days_left === null) {
+        return '';
+    }
+
+    if ($days_left < 0) {
+        return '<span class="timeline-badge timeline-badge--overdue">' . esc_html(alpenia_travel_t('Gestartet')) . '</span>';
+    }
+
+    if ($days_left <= 14) {
+        return '<span class="timeline-badge timeline-badge--urgent">' . esc_html(sprintf(alpenia_travel_t('%d Tage übrig'), $days_left)) . '</span>';
+    }
+
+    return '<span class="timeline-badge timeline-badge--planned">' . esc_html(sprintf(alpenia_travel_t('%d Tage bis Start'), $days_left)) . '</span>';
+}
+
 function alpenia_dashboard_render_pagination($current_page, $max_pages, $base_args, $page_arg) {
     $current_page = max(1, (int) $current_page);
     $max_pages = max(1, (int) $max_pages);
@@ -2938,6 +2970,12 @@ function alpenia_dashboard_shortcode() {
                 <div class="panel">
                     <h2><?php echo esc_html(alpenia_travel_t('Reisen mit Teilnehmerliste')); ?></h2>
 
+                    <div class="trip-quick-filters">
+                        <a class="trip-quick-filter <?php echo $trip_status_filter === 'open' ? 'is-active' : ''; ?>" href="<?php echo esc_url(alpenia_dashboard_link(array_merge($_GET, ['trip_status_filter' => 'open', 'trip_page' => 1]))); ?>"><?php echo esc_html(alpenia_travel_t('Nur offene Reisen')); ?></a>
+                        <a class="trip-quick-filter <?php echo $trip_status_filter === 'full' ? 'is-active' : ''; ?>" href="<?php echo esc_url(alpenia_dashboard_link(array_merge($_GET, ['trip_status_filter' => 'full', 'trip_page' => 1]))); ?>"><?php echo esc_html(alpenia_travel_t('Nur volle Reisen')); ?></a>
+                        <a class="trip-quick-filter" href="<?php echo esc_url(alpenia_dashboard_link()); ?>"><?php echo esc_html(alpenia_travel_t('Alles zurücksetzen')); ?></a>
+                    </div>
+
                     <form method="get" class="filter-bar">
                         <input type="text" name="trip_search" value="<?php echo esc_attr($trip_search); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('Reise oder Ziel suchen')); ?>">
 
@@ -3007,12 +3045,17 @@ function alpenia_dashboard_shortcode() {
                                 $guide_id = (int) get_post_meta($trip->ID, 'assigned_guide', true);
                                 $guide_name = $guide_id ? get_the_author_meta('display_name', $guide_id) : '-';
                                 $delete_trip_nonce = wp_create_nonce('alpenia_delete_trip_' . $trip->ID);
+                                $trip_capacity = (int) get_post_meta($trip->ID, 'max_people', true);
+                                $trip_occupancy = $trip_capacity > 0 ? min(100, (int) round(($trip_participants_count / $trip_capacity) * 100)) : null;
                             ?>
                                 <li class="trip-list-card">
                                     <div class="trip-list-card__content">
                                         <div class="trip-list-card__header">
                                             <strong><?php echo esc_html($trip->post_title); ?></strong>
-                                            <?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($trip->ID, 'trip_status', true))); ?>
+                                            <div class="trip-list-card__badges">
+                                                <?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($trip->ID, 'trip_status', true))); ?>
+                                                <?php echo wp_kses_post(alpenia_dashboard_trip_timeline_badge($trip->ID)); ?>
+                                            </div>
                                         </div>
 
                                         <div class="trip-info-grid">
@@ -3050,6 +3093,17 @@ function alpenia_dashboard_shortcode() {
                                                 <strong><?php echo esc_html(alpenia_format_date_display(get_post_meta($trip->ID, 'end_date', true))); ?></strong>
                                             </div>
                                         </div>
+                                        <?php if ($trip_occupancy !== null) : ?>
+                                            <div class="trip-progress" aria-label="<?php echo esc_attr(alpenia_travel_t('Auslastung')); ?>">
+                                                <div class="trip-progress__meta">
+                                                    <span><?php echo esc_html(alpenia_travel_t('Auslastung')); ?></span>
+                                                    <strong><?php echo esc_html($trip_occupancy); ?>%</strong>
+                                                </div>
+                                                <div class="trip-progress__track">
+                                                    <span class="trip-progress__fill" style="width: <?php echo esc_attr($trip_occupancy); ?>%"></span>
+                                                </div>
+                                            </div>
+                                        <?php endif; ?>
                                     </div>
 
                                     <div class="list-actions trip-list-card__actions">
@@ -5218,6 +5272,37 @@ function alpenia_dashboard_shortcode() {
             flex-basis: 190px;
         }
 
+        .trip-quick-filters {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin: 0 0 12px;
+        }
+
+        .trip-quick-filter {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 40px;
+            padding: 9px 14px;
+            border-radius: 999px;
+            border: 1px solid rgba(125,211,168,0.3);
+            color: #d6fbe7;
+            background: rgba(16,36,29,0.56);
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 13px;
+        }
+
+        .trip-quick-filter:hover,
+        .trip-quick-filter:focus,
+        .trip-quick-filter.is-active {
+            background: rgba(125,211,168,0.24);
+            border-color: rgba(125,211,168,0.7);
+            color: #ffffff;
+            outline: none;
+        }
+
         .list-summary {
             margin: 0 0 16px;
             padding: 12px 14px;
@@ -5584,6 +5669,43 @@ function alpenia_dashboard_shortcode() {
             font-size: 20px;
         }
 
+        .trip-list-card__badges {
+            display: inline-flex;
+            gap: 8px;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .timeline-badge {
+            display: inline-flex;
+            align-items: center;
+            min-height: 28px;
+            padding: 5px 11px;
+            border-radius: 999px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+            border: 1px solid transparent;
+        }
+
+        .timeline-badge--planned {
+            color: #d7fff1;
+            background: rgba(46, 204, 113, 0.2);
+            border-color: rgba(46, 204, 113, 0.42);
+        }
+
+        .timeline-badge--urgent {
+            color: #fff7d8;
+            background: rgba(241, 196, 15, 0.22);
+            border-color: rgba(241, 196, 15, 0.45);
+        }
+
+        .timeline-badge--overdue {
+            color: #ffd8d8;
+            background: rgba(231, 76, 60, 0.22);
+            border-color: rgba(231, 76, 60, 0.45);
+        }
+
         .trip-info-grid {
             display: grid;
             grid-template-columns: repeat(4, minmax(0, 1fr));
@@ -5620,6 +5742,38 @@ function alpenia_dashboard_shortcode() {
             flex: 0 0 210px;
             align-content: flex-start;
             justify-content: flex-end;
+        }
+
+        .trip-progress {
+            margin-top: 14px;
+            padding: 10px 12px;
+            border: 1px solid rgba(125,211,168,0.2);
+            border-radius: 12px;
+            background: rgba(12, 30, 24, 0.5);
+        }
+
+        .trip-progress__meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: rgba(255,255,255,0.88);
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .trip-progress__track {
+            width: 100%;
+            height: 8px;
+            border-radius: 999px;
+            background: rgba(255,255,255,0.14);
+            overflow: hidden;
+        }
+
+        .trip-progress__fill {
+            display: block;
+            height: 100%;
+            border-radius: 999px;
+            background: linear-gradient(90deg, #5ed89d 0%, #8ee0b8 100%);
         }
 
         .list-main {
