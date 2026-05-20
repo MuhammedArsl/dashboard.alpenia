@@ -1686,7 +1686,7 @@ function alpenia_dashboard_shortcode() {
                     </div>
                 </div>
 
-                <div class="panel">
+                <div class="panel users-panel users-panel--create">
                     <form method="post" class="alpenia-form">
                         <?php wp_nonce_field($trip_form_is_edit ? 'alpenia_edit_trip_' . $trip_form_id : 'alpenia_save_trip', 'alpenia_trip_nonce'); ?>
                         <?php if ($trip_form_is_edit) : ?>
@@ -2898,7 +2898,10 @@ function alpenia_dashboard_shortcode() {
                         </form>
 
                     <?php else : ?>
-                        <h2><?php echo esc_html(alpenia_travel_t("Neuen Benutzer anlegen")); ?></h2>
+                        <div class="users-panel__header">
+                            <h2><?php echo esc_html(alpenia_travel_t("Neuen Benutzer anlegen")); ?></h2>
+                            <p><?php echo esc_html(alpenia_travel_t('Reiseleiter und Backoffice verwalten')); ?></p>
+                        </div>
 
                         <form method="post" class="alpenia-form">
                             <?php wp_nonce_field('alpenia_create_user', 'alpenia_create_user_nonce'); ?>
@@ -2929,15 +2932,20 @@ function alpenia_dashboard_shortcode() {
                                 </div>
                             </div>
 
-                            <button type="submit" name="create_reiseleiter" class="btn-primary"><?php echo esc_html(alpenia_travel_t("Benutzer erstellen")); ?></button>
+                            <div class="users-panel__footer">
+                                <button type="submit" name="create_reiseleiter" class="btn-primary"><?php echo esc_html(alpenia_travel_t("Benutzer erstellen")); ?></button>
+                            </div>
                         </form>
                     <?php endif; ?>
                 </div>
 
-                <div class="panel" style="margin-top:20px;">
-                    <h2><?php echo esc_html(alpenia_travel_t("Benutzerliste")); ?></h2>
+                <div class="panel users-panel users-panel--list" style="margin-top:20px;">
+                    <div class="users-panel__header users-panel__header--inline">
+                        <h2><?php echo esc_html(alpenia_travel_t("Benutzerliste")); ?></h2>
+                        <span class="users-count-badge"><?php echo esc_html(count($dashboard_users)); ?></span>
+                    </div>
                     <div class="table-wrap">
-                        <table class="alpenia-table">
+                        <table class="alpenia-table users-table">
                             <thead>
                                 <tr>
                                     <th><?php echo esc_html(alpenia_travel_t("Name")); ?></th>
@@ -2979,8 +2987,8 @@ function alpenia_dashboard_shortcode() {
                                     <tr>
                                         <td><?php echo esc_html($user->display_name); ?></td>
                                         <td><?php echo esc_html($user->user_email); ?></td>
-                                        <td><?php echo esc_html($role_label); ?></td>
-                                        <td><?php echo esc_html($status); ?></td>
+                                        <td><span class="users-role-pill"><?php echo esc_html($role_label); ?></span></td>
+                                        <td><span class="users-status-pill <?php echo $disabled ? 'is-disabled' : 'is-active'; ?>"><?php echo esc_html($status); ?></span></td>
                                         <td>
                                             <?php if ((int) $user->ID === (int) get_current_user_id()) : ?>
                                                 <?php echo esc_html(alpenia_travel_t("Eigenes Account")); ?>
@@ -3788,6 +3796,84 @@ function alpenia_dashboard_shortcode() {
             background:
                 radial-gradient(circle at 100% 0%, rgba(217, 154, 43, 0.13), transparent 32%),
                 linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 248, 0.96));
+        }
+
+        .users-panel {
+            border: 1px solid rgba(167, 197, 184, 0.3);
+            background:
+                radial-gradient(circle at 100% 0%, rgba(217, 154, 43, 0.12), transparent 36%),
+                linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 248, 0.95));
+        }
+
+        .users-panel__header {
+            margin-bottom: 18px;
+        }
+
+        .users-panel__header h2 {
+            margin: 0;
+            color: #123f34;
+        }
+
+        .users-panel__header p {
+            margin: 8px 0 0;
+            color: #4f6f63;
+            font-weight: 600;
+        }
+
+        .users-panel__header--inline {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+        }
+
+        .users-count-badge {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-width: 38px;
+            height: 34px;
+            padding: 0 12px;
+            border-radius: 999px;
+            border: 1px solid rgba(47, 125, 99, 0.3);
+            background: rgba(255, 255, 255, 0.8);
+            color: #123f34;
+            font-weight: 800;
+        }
+
+        .users-panel__footer {
+            margin-top: 4px;
+        }
+
+        .users-table thead th {
+            background: #f4fbf8;
+            color: #123f34;
+        }
+
+        .users-role-pill,
+        .users-status-pill {
+            display: inline-flex;
+            align-items: center;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        .users-role-pill {
+            color: #1b5b48;
+            background: rgba(47, 125, 99, 0.14);
+        }
+
+        .users-status-pill.is-active {
+            color: #0f5b43;
+            background: rgba(59, 185, 129, 0.18);
+        }
+
+        .users-status-pill.is-disabled {
+            color: #8d2b2b;
+            background: rgba(217, 93, 93, 0.17);
         }
 
         .public-registration-panel__header {
