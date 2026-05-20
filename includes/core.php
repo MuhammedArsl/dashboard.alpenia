@@ -616,6 +616,7 @@ function alpenia_travel_t($text) {
         'Reiseart' => 'Gezi türü',
         'Abflugstadt' => 'Kalkış şehri',
         'Flughafen' => 'Havalimanı',
+        'Flughafen (IATA-Code)' => 'Havalimanı (IATA kodu)',
         'Reisezeitraum' => 'Gezi tarihleri',
         'z. B. Wien' => 'örn. Frankfurt',
         'z. B. Vienna International Airport' => 'örn. Frankfurt Havalimanı',
