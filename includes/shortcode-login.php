@@ -232,7 +232,7 @@ function alpenia_login_shortcode() {
     if (is_user_logged_in()) {
         return $layout_styles . '<div class="alpenia-login-page-shell">
             <div class="alpenia-login-card" style="padding:36px;text-align:center;">
-                Du bist bereits eingeloggt.<br><br>
+                ' . esc_html(alpenia_travel_t('Du bist bereits eingeloggt.')) . '<br><br>
                 <a href="' . esc_url(alpenia_get_dashboard_url()) . '" style="display:inline-block;color:#d5ffe9;background:linear-gradient(135deg,#1e664f,#2f9574);padding:10px 16px;border-radius:10px;font-weight:700;text-decoration:none;">' . esc_html(alpenia_travel_t('Zum Dashboard')) . '</a>
             </div>
         </div>';
