@@ -124,8 +124,6 @@ function alpenia_public_participant_form_shortcode($atts = []) {
             </form>
         <?php endif; ?>
 
-
-        <?php alpenia_public_participant_render_support_card($trip_available ? $selected_trip_id : 0); ?>
     </div>
     <?php
     return ob_get_clean();
@@ -179,8 +177,6 @@ function alpenia_public_participant_language_switcher($request_token = '') {
         <a class="<?php echo $current_lang === 'de' ? 'is-active' : ''; ?>" href="<?php echo esc_url($de_url); ?>" aria-label="Deutsch">DE</a>
         <a class="<?php echo $current_lang === 'tr' ? 'is-active' : ''; ?>" href="<?php echo esc_url($tr_url); ?>" aria-label="Türkçe">TR</a>
 
-
-        <?php alpenia_public_participant_render_support_card($trip_available ? $selected_trip_id : 0); ?>
     </div>
     <?php
     return ob_get_clean();
@@ -402,6 +398,7 @@ function alpenia_public_participant_get_trip_detail_items($trip_id) {
 function alpenia_public_participant_render_support_card($trip_id = 0) {
     $trip_id = absint($trip_id);
 
+    $support_email = trim((string) get_option('admin_email', ''));
     $support_whatsapp = $trip_id > 0 ? trim((string) get_post_meta($trip_id, 'whatsapp_link', true)) : '';
     $has_channels = ($support_email !== '' || $support_whatsapp !== '');
 
