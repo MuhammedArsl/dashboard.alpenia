@@ -3025,10 +3025,7 @@ function alpenia_dashboard_shortcode() {
                                         <td><span class="users-status-pill <?php echo $disabled ? 'is-disabled' : 'is-active'; ?>"><?php echo esc_html($status); ?></span></td>
                                         <td>
                                             <?php if ((int) $user->ID === (int) get_current_user_id()) : ?>
-                                                <div class="user-action-links">
-                                                    <a href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_edit_user' => (int) $user->ID])); ?>"><?php echo esc_html(alpenia_travel_t("Bearbeiten")); ?></a>
-                                                    <span class="users-action-hint"><?php echo esc_html(alpenia_travel_t("Eigenes Account")); ?></span>
-                                                </div>
+                                                <?php echo esc_html(alpenia_travel_t("Eigenes Account")); ?>
                                             <?php else : ?>
                                                 <div class="user-action-links">
                                                     <a href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_edit_user' => (int) $user->ID])); ?>"><?php echo esc_html(alpenia_travel_t("Bearbeiten")); ?></a>
@@ -3984,12 +3981,6 @@ function alpenia_dashboard_shortcode() {
         .user-action-links .link-button {
             color: #1f6b56;
             font-weight: 700;
-        }
-
-        .users-action-hint {
-            color: #4f6f66;
-            font-size: 12px;
-            font-weight: 600;
         }
 
         .user-action-links .link-button {
