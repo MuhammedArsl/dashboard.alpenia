@@ -200,6 +200,12 @@
     margin: 8px 0 12px;
 }
 
+
+.alpenia-public-support-card__empty {
+    margin: 0;
+    color: var(--alpenia-public-muted);
+    font-size: .94rem;
+}
 .alpenia-public-support-card ul {
     margin: 0;
     padding: 0;

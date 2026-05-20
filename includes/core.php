@@ -535,6 +535,7 @@ function alpenia_travel_t($text) {
         'Hilfe & Kontakt' => 'Yardım ve iletişim',
         'Schnelle Hilfe' => 'Hızlı destek',
         'Bei Fragen oder technischen Problemen während der Anmeldung helfen wir dir direkt weiter.' => 'Kayıt sırasında sorunuz veya teknik bir sorun olursa size doğrudan yardımcı oluruz.',
+        'Derzeit sind noch keine direkten Kontaktkanäle hinterlegt. Bitte versuche es später erneut.' => 'Şu anda doğrudan iletişim kanalı tanımlı değil. Lütfen daha sonra tekrar deneyin.',
         'Kein Zugriff auf diese Reise.' => 'Bu seyahate erişim yok.',
         'Bitte Name, E-Mail und Passwort ausfüllen.' => 'Lütfen ad, e-posta ve şifre alanlarını doldurun.',
         'Diese E-Mail existiert bereits.' => 'Bu e-posta zaten mevcut.',
