@@ -5231,6 +5231,14 @@ function alpenia_dashboard_shortcode() {
             border: 1px solid rgba(47, 125, 99, 0.2) !important;
         }
 
+        .table-btn--ghost:hover,
+        .table-btn--ghost:focus,
+        .table-btn--ghost:active {
+            background: #eef8f4 !important;
+            color: #174b3d !important;
+            border-color: rgba(47, 125, 99, 0.35) !important;
+        }
+
         .overview-empty-state {
             position: relative;
             z-index: 1;

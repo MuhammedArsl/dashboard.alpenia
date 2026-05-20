@@ -536,6 +536,8 @@ function alpenia_travel_t($text) {
         'Chat öffnen' => 'Sohbeti aç',
         'Meeting öffnen' => 'Toplantıyı aç',
         'Hilfe & Kontakt' => 'Yardım ve iletişim',
+        'Hilfe & Kontaktstelle' => 'Yardım ve iletişim',
+        'Support' => 'Destek',
         'Schnelle Hilfe' => 'Hızlı destek',
         'Bei Fragen oder technischen Problemen während der Anmeldung helfen wir dir direkt weiter.' => 'Kayıt sırasında sorunuz veya teknik bir sorun olursa size doğrudan yardımcı oluruz.',
         'Derzeit sind noch keine direkten Kontaktkanäle hinterlegt. Bitte versuche es später erneut.' => 'Şu anda doğrudan iletişim kanalı tanımlı değil. Lütfen daha sonra tekrar deneyin.',
