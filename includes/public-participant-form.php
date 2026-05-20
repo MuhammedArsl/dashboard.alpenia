@@ -434,6 +434,17 @@ function alpenia_public_participant_render_support_card($trip_id = 0) {
 
 function alpenia_public_participant_render_trip_overview($trip_id) {
     $items = alpenia_public_participant_get_trip_detail_items($trip_id);
+    $assigned_guide = (int) get_post_meta($trip_id, 'assigned_guide', true);
+    $guide_name = '';
+
+    if ($assigned_guide > 0) {
+        $guide = get_userdata($assigned_guide);
+        $guide_name = $guide ? $guide->display_name : '';
+    }
+
+    $support_whatsapp = trim((string) get_post_meta($trip_id, 'whatsapp_link', true));
+    $support_zoom = trim((string) get_post_meta($trip_id, 'zoom_link', true));
+    $support_email = sanitize_email((string) get_option('admin_email'));
     ?>
     <section class="alpenia-public-trip-card" aria-labelledby="alpenia-public-trip-title">
         <div class="alpenia-public-trip-card__content">
