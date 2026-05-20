@@ -1718,7 +1718,7 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
-                                <label for="country"><?php echo esc_html(alpenia_travel_t('Land')); ?></label>
+                                <label for="country"><?php echo esc_html(alpenia_travel_t('Reiseveranstalter Land')); ?></label>
                                 <select id="country" name="country" required>
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <?php foreach (alpenia_get_all_countries() as $country_name) : ?>
@@ -1728,7 +1728,7 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
-                                <label for="city"><?php echo esc_html(alpenia_travel_t('Stadt')); ?></label>
+                                <label for="city"><?php echo esc_html(alpenia_travel_t('Reiseveranstalter Stadt')); ?></label>
                                 <input type="text" id="city" name="city" value="<?php echo esc_attr($trip_form_values['city']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt')); ?>" required>
                             </div>
 
@@ -2527,8 +2527,8 @@ function alpenia_dashboard_shortcode() {
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><span><?php echo esc_html($view_trip_type === 'umrah' ? alpenia_travel_t('Umrah') : $view_trip_type); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Status')); ?></strong><span><?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($view_trip_id, 'trip_status', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(alpenia_display_value(alpenia_destination_to_display_language(get_post_meta($view_trip_id, 'destination', true)))); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Land')); ?></strong><span><?php echo esc_html(alpenia_display_value(alpenia_country_to_display_language(get_post_meta($view_trip_id, 'country', true)))); ?></span></div>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Stadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'city', true))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reiseveranstalter Land')); ?></strong><span><?php echo esc_html(alpenia_display_value(alpenia_country_to_display_language(get_post_meta($view_trip_id, 'country', true)))); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reiseveranstalter Stadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'city', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Abflugstadt')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'departure_city', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></strong><span><?php echo esc_html(alpenia_display_value(get_post_meta($view_trip_id, 'departure_airport', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Zeitraum')); ?></strong><span><?php echo esc_html(alpenia_date_range_display(get_post_meta($view_trip_id, 'start_date', true), get_post_meta($view_trip_id, 'end_date', true))); ?></span></div>
