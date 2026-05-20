@@ -3048,14 +3048,14 @@ function alpenia_dashboard_shortcode() {
                                                             <input type="hidden" name="dashboard_user_action" value="delete">
                                                             <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
                                                             <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_delete_user_' . (int) $user->ID)); ?>">
-                                                            <button type="submit" class="link-button delete-link"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></button>
+                                                            <button type="submit" class="link-button action-button delete-link"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></button>
                                                         </form>
                                                     <?php else : ?>
                                                         <form method="post" style="display:inline;" onsubmit="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich deaktivieren?')); ?>');">
                                                             <input type="hidden" name="dashboard_user_action" value="deactivate">
                                                             <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
                                                             <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_deactivate_user_' . (int) $user->ID)); ?>">
-                                                            <button type="submit" class="link-button deactivate-button"><?php echo esc_html(alpenia_travel_t("Deaktivieren")); ?></button>
+                                                            <button type="submit" class="link-button action-button deactivate-button"><?php echo esc_html(alpenia_travel_t("Deaktivieren")); ?></button>
                                                         </form>
                                                     <?php endif; ?>
                                                 </div>
