@@ -342,7 +342,6 @@ function alpenia_dashboard_shortcode() {
                 }
             }
         }
-    }
 
     if (isset($_GET['delete_trip']) && isset($_GET['_delete_trip_nonce'])) {
         $trip_id = (int) $_GET['delete_trip'];
