@@ -806,6 +806,40 @@ function alpenia_dashboard_shortcode() {
 
     if (alpenia_user_can_manage_users()) {
 
+        if (isset($_POST['dashboard_user_action'])) {
+            $dashboard_user_action = sanitize_key((string) ($_POST['dashboard_user_action'] ?? ''));
+            $target_id = (int) ($_POST['dashboard_user_id'] ?? 0);
+            $nonce = sanitize_text_field(wp_unslash($_POST['_dashboard_user_nonce'] ?? ''));
+
+            if ($dashboard_user_action === 'deactivate') {
+                if (!wp_verify_nonce($nonce, 'alpenia_dashboard_deactivate_user_' . $target_id)) {
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Deaktivieren des Benutzers.')) . '</div>';
+                } elseif ($target_id > 0 && $target_id !== get_current_user_id()) {
+                    update_user_meta($target_id, 'alpenia_disabled', 1);
+                    $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_deactivated">' . esc_html(alpenia_travel_t('Benutzer deaktiviert.')) . '</div>';
+                }
+            } elseif ($dashboard_user_action === 'activate') {
+                if (!wp_verify_nonce($nonce, 'alpenia_dashboard_activate_user_' . $target_id)) {
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Aktivieren des Benutzers.')) . '</div>';
+                } elseif ($target_id > 0) {
+                    delete_user_meta($target_id, 'alpenia_disabled');
+                    $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_activated">' . esc_html(alpenia_travel_t('Benutzer aktiviert.')) . '</div>';
+                }
+            } elseif ($dashboard_user_action === 'delete') {
+                if (!wp_verify_nonce($nonce, 'alpenia_dashboard_delete_user_' . $target_id)) {
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Löschen des Benutzers.')) . '</div>';
+                } elseif (
+                    $target_id > 0 &&
+                    $target_id !== get_current_user_id() &&
+                    get_user_meta($target_id, 'alpenia_disabled', true)
+                ) {
+                    require_once ABSPATH . 'wp-admin/includes/user.php';
+                    wp_delete_user($target_id);
+                    $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_deleted">' . esc_html(alpenia_travel_t('Benutzer gelöscht.')) . '</div>';
+                }
+            }
+        }
+
         if (isset($_GET['dashboard_deactivate_user'])) {
             $target_id = (int) $_GET['dashboard_deactivate_user'];
             $nonce = sanitize_text_field(wp_unslash($_GET['_dashboard_user_nonce'] ?? ''));
@@ -2997,10 +3031,25 @@ function alpenia_dashboard_shortcode() {
                                                     <a href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_edit_user' => (int) $user->ID])); ?>"><?php echo esc_html(alpenia_travel_t("Bearbeiten")); ?></a>
 
                                                     <?php if ($disabled) : ?>
-                                                        <a href="<?php echo esc_url($activate_url); ?>"><?php echo esc_html(alpenia_travel_t("Aktivieren")); ?></a>
-                                                        <a class="delete-link" href="<?php echo esc_url($delete_user_url); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich löschen?')); ?>');"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></a>
+                                                        <form method="post" style="display:inline;">
+                                                            <input type="hidden" name="dashboard_user_action" value="activate">
+                                                            <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
+                                                            <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_activate_user_' . (int) $user->ID)); ?>">
+                                                            <button type="submit" class="link-button"><?php echo esc_html(alpenia_travel_t("Aktivieren")); ?></button>
+                                                        </form>
+                                                        <form method="post" style="display:inline;" onsubmit="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich löschen?')); ?>');">
+                                                            <input type="hidden" name="dashboard_user_action" value="delete">
+                                                            <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
+                                                            <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_delete_user_' . (int) $user->ID)); ?>">
+                                                            <button type="submit" class="link-button delete-link"><?php echo esc_html(alpenia_travel_t('Löschen')); ?></button>
+                                                        </form>
                                                     <?php else : ?>
-                                                        <a href="<?php echo esc_url($deactivate_url); ?>" onclick="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich deaktivieren?')); ?>');"><?php echo esc_html(alpenia_travel_t("Deaktivieren")); ?></a>
+                                                        <form method="post" style="display:inline;" onsubmit="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich deaktivieren?')); ?>');">
+                                                            <input type="hidden" name="dashboard_user_action" value="deactivate">
+                                                            <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
+                                                            <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_deactivate_user_' . (int) $user->ID)); ?>">
+                                                            <button type="submit" class="link-button"><?php echo esc_html(alpenia_travel_t("Deaktivieren")); ?></button>
+                                                        </form>
                                                     <?php endif; ?>
                                                 </div>
                                             <?php endif; ?>
@@ -3928,13 +3977,24 @@ function alpenia_dashboard_shortcode() {
             border: 1px solid rgba(163, 53, 53, 0.2);
         }
 
-        .user-action-links a {
+        .user-action-links a,
+        .user-action-links .link-button {
             color: #1f6b56;
             font-weight: 700;
         }
 
+        .user-action-links .link-button {
+            border: 0;
+            background: transparent;
+            padding: 0;
+            cursor: pointer;
+            font: inherit;
+        }
+
         .user-action-links a:hover,
-        .user-action-links a:focus {
+        .user-action-links a:focus,
+        .user-action-links .link-button:hover,
+        .user-action-links .link-button:focus {
             color: #154f40;
             text-decoration: underline !important;
         }
