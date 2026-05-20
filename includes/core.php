@@ -4,7 +4,36 @@ if (!defined('ABSPATH')) exit;
 /**
  * Rollen
  */
+
+function alpenia_capability_map() {
+    return [
+        'access_dashboard' => 'alpenia_access_dashboard',
+        'manage_users' => 'alpenia_manage_users',
+        'create_trip' => 'alpenia_create_trip',
+        'edit_trip' => 'alpenia_edit_trip',
+        'delete_trip' => 'alpenia_delete_trip',
+    ];
+}
+
+function alpenia_get_capability($key) {
+    $map = alpenia_capability_map();
+    return isset($map[$key]) ? $map[$key] : '';
+}
+
+function alpenia_grant_role_capabilities($role_name, array $capabilities) {
+    $role = get_role($role_name);
+    if (!$role) {
+        return;
+    }
+
+    foreach ($capabilities as $capability) {
+        $role->add_cap($capability);
+    }
+}
+
 function alpenia_add_roles() {
+    $caps = alpenia_capability_map();
+
     if (!get_role('reiseleiter')) {
         add_role('reiseleiter', 'Reiseleiter', [
             'read' => true,
@@ -38,6 +67,50 @@ function alpenia_add_roles() {
     if (!get_role('superadmin')) {
         add_role('superadmin', 'Superadmin', ['read' => true, 'upload_files' => true, 'list_users' => true]);
     }
+
+    alpenia_grant_role_capabilities('reiseleiter', [
+        $caps['access_dashboard'],
+        $caps['edit_trip'],
+    ]);
+
+    alpenia_grant_role_capabilities('backoffice', [
+        $caps['access_dashboard'],
+        $caps['create_trip'],
+        $caps['edit_trip'],
+        $caps['delete_trip'],
+    ]);
+
+    alpenia_grant_role_capabilities('support', [
+        $caps['access_dashboard'],
+    ]);
+
+    alpenia_grant_role_capabilities('staff', [
+        $caps['access_dashboard'],
+    ]);
+
+    alpenia_grant_role_capabilities('manager', [
+        $caps['access_dashboard'],
+        $caps['manage_users'],
+        $caps['create_trip'],
+        $caps['edit_trip'],
+        $caps['delete_trip'],
+    ]);
+
+    alpenia_grant_role_capabilities('superadmin', [
+        $caps['access_dashboard'],
+        $caps['manage_users'],
+        $caps['create_trip'],
+        $caps['edit_trip'],
+        $caps['delete_trip'],
+    ]);
+
+    alpenia_grant_role_capabilities('administrator', [
+        $caps['access_dashboard'],
+        $caps['manage_users'],
+        $caps['create_trip'],
+        $caps['edit_trip'],
+        $caps['delete_trip'],
+    ]);
 }
 
 register_activation_hook(ALPENIA_PLUGIN_FILE, 'alpenia_add_roles');
@@ -99,26 +172,19 @@ function alpenia_has_role($role) {
 }
 
 function alpenia_user_can_access_dashboard() {
-    if (!is_user_logged_in()) return false;
+    if (!is_user_logged_in()) {
+        return false;
+    }
 
-    return alpenia_is_admin_user()
-        || alpenia_has_role('superadmin')
-        || alpenia_has_role('manager')
-        || alpenia_has_role('staff')
-        || alpenia_has_role('support')
-        || alpenia_is_reiseleiter_user()
-        || alpenia_is_backoffice_user();
+    return current_user_can(alpenia_get_capability('access_dashboard'));
 }
 
 function alpenia_user_can_manage_users() {
-    return alpenia_is_admin_user() || alpenia_has_role('superadmin') || alpenia_has_role('manager');
+    return current_user_can(alpenia_get_capability('manage_users'));
 }
 
 function alpenia_user_can_create_trip() {
-    return alpenia_is_admin_user()
-        || alpenia_is_backoffice_user()
-        || alpenia_has_role('superadmin')
-        || alpenia_has_role('manager');
+    return current_user_can(alpenia_get_capability('create_trip'));
 }
 
 function alpenia_user_can_edit_trip($trip_id) {
@@ -127,13 +193,15 @@ function alpenia_user_can_edit_trip($trip_id) {
     $trip = get_post($trip_id);
     if (!$trip || $trip->post_type !== 'group_trip') return false;
 
-    return alpenia_user_can_create_trip() && alpenia_user_can_access_trip($trip_id);
+    return current_user_can(alpenia_get_capability('edit_trip')) && alpenia_user_can_access_trip($trip_id);
 }
 
 function alpenia_user_can_delete_trip($trip_id) {
-    if (!$trip_id) return false;
+    if (!$trip_id) {
+        return false;
+    }
 
-    return alpenia_user_can_create_trip();
+    return current_user_can(alpenia_get_capability('delete_trip'));
 }
 
 /**
