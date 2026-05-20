@@ -3042,7 +3042,7 @@ function alpenia_dashboard_shortcode() {
                                                             <input type="hidden" name="dashboard_user_action" value="deactivate">
                                                             <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
                                                             <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_deactivate_user_' . (int) $user->ID)); ?>">
-                                                            <button type="submit" class="link-button"><?php echo esc_html(alpenia_travel_t("Deaktivieren")); ?></button>
+                                                            <button type="submit" class="link-button deactivate-button"><?php echo esc_html(alpenia_travel_t("Deaktivieren")); ?></button>
                                                         </form>
                                                     <?php endif; ?>
                                                 </div>
@@ -3983,12 +3983,30 @@ function alpenia_dashboard_shortcode() {
             font: inherit;
         }
 
+        .user-action-links .deactivate-button {
+            background: #b43434;
+            color: #fff0f0;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid #d46a6a;
+            text-decoration: none !important;
+        }
+
         .user-action-links a:hover,
         .user-action-links a:focus,
         .user-action-links .link-button:hover,
         .user-action-links .link-button:focus {
             color: #b6f4db;
             text-decoration: underline !important;
+        }
+
+        .user-action-links .deactivate-button:hover,
+        .user-action-links .deactivate-button:focus {
+            color: #fff;
+            background: #962a2a;
+            border-color: #bd5353;
+            text-decoration: none !important;
+            outline: none;
         }
 
         .public-registration-panel__header {
