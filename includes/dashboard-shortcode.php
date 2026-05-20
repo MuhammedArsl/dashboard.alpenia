@@ -3035,7 +3035,7 @@ function alpenia_dashboard_shortcode() {
                                         <td><?php echo esc_html($user->display_name); ?></td>
                                         <td><?php echo esc_html($user->user_email); ?></td>
                                         <td><span class="users-role-pill users-role-pill--<?php echo esc_attr($role_key); ?>"><?php echo esc_html($role_label); ?></span></td>
-                                        <td><span class="users-status-pill <?php echo $disabled ? 'is-disabled' : 'is-active'; ?>"><?php echo esc_html($status); ?></span></td>
+                                        <td><span class="users-status-pill <?php echo $disabled ? 'is-disabled' : 'is-active'; ?>"><?php echo esc_html(alpenia_travel_t($status)); ?></span></td>
                                         <td>
                                             <?php if ((int) $user->ID === (int) get_current_user_id()) : ?>
                                                 <?php echo esc_html(alpenia_travel_t("Eigenes Account")); ?>
