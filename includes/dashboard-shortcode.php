@@ -1673,8 +1673,10 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group">
-                                <label for="departure_airport"><?php echo esc_html(alpenia_travel_t('Flughafen')); ?></label>
-                                <input type="text" id="departure_airport" name="departure_airport" value="<?php echo esc_attr($trip_form_values['departure_airport']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt Airport')); ?>">
+                                <label for="departure_airport"><?php echo esc_html(alpenia_travel_t('Flughafen (IATA-Code)')); ?></label>
+                                <select id="departure_airport" name="departure_airport" data-selected="<?php echo esc_attr($trip_form_values['departure_airport']); ?>">
+                                    <option value=""><?php echo esc_html(alpenia_travel_t('Lade Flughafenliste …')); ?></option>
+                                </select>
                             </div>
 
                             <div class="form-group">
@@ -6550,6 +6552,90 @@ function alpenia_dashboard_shortcode() {
                 resetIdleTimer();
             }
         });
+
+        (function initAirportDropdown() {
+            const airportSelect = document.getElementById('departure_airport');
+            if (!airportSelect) return;
+
+            const selectedCode = (airportSelect.dataset.selected || '').trim().toUpperCase();
+            const airportSourceUrl = 'https://raw.githubusercontent.com/datasets/airport-codes/master/data/airport-codes.csv';
+
+            function parseCsvLine(line) {
+                const cells = [];
+                let cell = '';
+                let inQuotes = false;
+
+                for (let i = 0; i < line.length; i += 1) {
+                    const char = line[i];
+                    if (char === '"') {
+                        if (inQuotes && line[i + 1] === '"') {
+                            cell += '"';
+                            i += 1;
+                        } else {
+                            inQuotes = !inQuotes;
+                        }
+                    } else if (char === ',' && !inQuotes) {
+                        cells.push(cell);
+                        cell = '';
+                    } else {
+                        cell += char;
+                    }
+                }
+                cells.push(cell);
+                return cells;
+            }
+
+            function populateOptions(options) {
+                airportSelect.innerHTML = '';
+                const placeholder = document.createElement('option');
+                placeholder.value = '';
+                placeholder.textContent = <?php echo wp_json_encode(alpenia_travel_t('Bitte wählen')); ?>;
+                airportSelect.appendChild(placeholder);
+
+                options.forEach((airport) => {
+                    const option = document.createElement('option');
+                    option.value = airport.code;
+                    option.textContent = `${airport.code} — ${airport.name}${airport.city ? `, ${airport.city}` : ''}${airport.country ? ` (${airport.country})` : ''}`;
+                    if (airport.code === selectedCode) option.selected = true;
+                    airportSelect.appendChild(option);
+                });
+            }
+
+            fetch(airportSourceUrl)
+                .then((response) => response.ok ? response.text() : Promise.reject())
+                .then((csvText) => {
+                    const lines = csvText.split(/\r?\n/).filter(Boolean);
+                    const headers = parseCsvLine(lines.shift() || '');
+                    const idxIata = headers.indexOf('iata_code');
+                    const idxName = headers.indexOf('name');
+                    const idxCity = headers.indexOf('municipality');
+                    const idxCountry = headers.indexOf('iso_country');
+
+                    const byCode = new Map();
+                    lines.forEach((line) => {
+                        const cells = parseCsvLine(line);
+                        const code = (cells[idxIata] || '').trim().toUpperCase();
+                        if (!code || byCode.has(code)) return;
+                        byCode.set(code, {
+                            code: code,
+                            name: (cells[idxName] || '').trim(),
+                            city: (cells[idxCity] || '').trim(),
+                            country: (cells[idxCountry] || '').trim(),
+                        });
+                    });
+
+                    const options = Array.from(byCode.values()).sort((a, b) => a.code.localeCompare(b.code));
+                    populateOptions(options);
+                })
+                .catch(() => {
+                    airportSelect.innerHTML = '';
+                    const fallback = document.createElement('option');
+                    fallback.value = selectedCode;
+                    fallback.textContent = selectedCode || <?php echo wp_json_encode(alpenia_travel_t('Flughafenliste konnte nicht geladen werden')); ?>;
+                    fallback.selected = true;
+                    airportSelect.appendChild(fallback);
+                });
+        })();
 
         resetIdleTimer();
     });
