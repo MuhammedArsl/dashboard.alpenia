@@ -1820,7 +1820,7 @@ function alpenia_dashboard_shortcode() {
                                 <select id="trip_id" name="trip_id" required>
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte Reise wählen")); ?></option>
                                     <?php foreach ($filtered_trips as $trip) : ?>
-                                        <option value="<?php echo esc_attr($trip->ID); ?>">
+                                        <option value="<?php echo esc_attr($trip->ID); ?>" data-capacity-left="<?php echo esc_attr(alpenia_get_trip_capacity_left($trip->ID)); ?>">
                                             <?php echo esc_html($trip->post_title); ?>
                                         </option>
                                     <?php endforeach; ?>
@@ -1830,12 +1830,51 @@ function alpenia_dashboard_shortcode() {
                             <div class="form-group">
                                 <label for="participant_count"><?php echo esc_html(alpenia_travel_t("Anzahl Teilnehmer")); ?></label>
                                 <input type="number" id="participant_count" name="participant_count" min="1" value="1" required>
+                                <small id="participant_count_hint" style="display:block;margin-top:6px;opacity:.8;"><?php echo esc_html(alpenia_travel_t('Bitte zuerst Reise wählen.')); ?></small>
                             </div>
                         </div>
 
                         <button type="submit" name="generate_participant_fields" class="btn-primary"><?php echo esc_html(alpenia_travel_t("Weiter")); ?></button>
                     </form>
                 </div>
+                <script>
+                document.addEventListener('DOMContentLoaded', function () {
+                    var tripSelect = document.getElementById('trip_id');
+                    var participantInput = document.getElementById('participant_count');
+                    var hint = document.getElementById('participant_count_hint');
+                    if (!tripSelect || !participantInput) return;
+
+                    function updateParticipantLimit() {
+                        var selectedOption = tripSelect.options[tripSelect.selectedIndex];
+                        if (!selectedOption || !selectedOption.value) {
+                            participantInput.removeAttribute('max');
+                            participantInput.value = '1';
+                            if (hint) hint.textContent = '<?php echo esc_js(alpenia_travel_t('Bitte zuerst Reise wählen.')); ?>';
+                            return;
+                        }
+                        var capacityLeft = parseInt(selectedOption.getAttribute('data-capacity-left') || '0', 10);
+                        if (!Number.isFinite(capacityLeft)) capacityLeft = 0;
+
+                        if (capacityLeft <= 0) {
+                            participantInput.value = '0';
+                            participantInput.setAttribute('max', '0');
+                            if (hint) hint.textContent = '<?php echo esc_js(alpenia_travel_t('Diese Reise ist voll. Es sind keine freien Plätze mehr verfügbar.')); ?>';
+                            return;
+                        }
+
+                        participantInput.setAttribute('max', String(capacityLeft));
+                        if (parseInt(participantInput.value || '1', 10) > capacityLeft) {
+                            participantInput.value = String(capacityLeft);
+                        } else if (parseInt(participantInput.value || '0', 10) < 1) {
+                            participantInput.value = '1';
+                        }
+                        if (hint) hint.textContent = '<?php echo esc_js(alpenia_travel_t('Freie Plätze:')); ?> ' + capacityLeft;
+                    }
+
+                    tripSelect.addEventListener('change', updateParticipantLimit);
+                    updateParticipantLimit();
+                });
+                </script>
 
             <?php elseif (isset($_GET['add_participant']) && $_GET['add_participant'] == '1' && isset($_POST['generate_participant_fields'])) : ?>
 
@@ -1850,6 +1889,21 @@ function alpenia_dashboard_shortcode() {
                 $all_countries_list = alpenia_get_all_countries();
                 $selected_is_pilgrimage_trip = alpenia_is_pilgrimage_trip($selected_trip_id);
                 $selected_trip_price = (float) get_post_meta($selected_trip_id, 'price', true);
+                $selected_trip_capacity = (int) get_post_meta($selected_trip_id, 'max_people', true);
+                $selected_trip_capacity_left = alpenia_get_trip_capacity_left($selected_trip_id);
+
+                if ($selected_trip_capacity > 0 && $selected_trip_capacity_left < 1) {
+                    return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Diese Reise ist voll. Es sind keine freien Plätze mehr verfügbar.')) . '</div>';
+                }
+
+                if ($selected_trip_capacity > 0 && $participant_count > $selected_trip_capacity_left) {
+                    return '<div class="alpenia-message">' . esc_html(sprintf(alpenia_travel_t('Es sind nur noch %d freie Plätze verfügbar.'), (int) $selected_trip_capacity_left)) . '</div>';
+                }
+
+                $max_form_participants = 25;
+                if ($participant_count > $max_form_participants) {
+                    return '<div class="alpenia-message">' . esc_html(sprintf(alpenia_travel_t('Aus Leistungsgründen können maximal %d Teilnehmer gleichzeitig erfasst werden.'), (int) $max_form_participants)) . '</div>';
+                }
                 ?>
 
                 <div class="dashboard-top">
