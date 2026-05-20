@@ -881,7 +881,7 @@ function alpenia_dashboard_shortcode() {
             }
         }
 
-        if (isset($_POST['dashboard_update_user'])) {
+        if (isset($_POST['dashboard_update_user']) || isset($_POST['alpenia_dashboard_edit_user_nonce'])) {
             if (
                 !isset($_POST['alpenia_dashboard_edit_user_nonce']) ||
                 !wp_verify_nonce($_POST['alpenia_dashboard_edit_user_nonce'], 'alpenia_dashboard_edit_user')
