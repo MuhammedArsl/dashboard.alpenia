@@ -87,8 +87,8 @@ function alpenia_dashboard_sidebar_nav() {
             <span class="dashboard-sidebar__support-eyebrow"><?php echo esc_html(alpenia_travel_t('Support')); ?></span>
             <strong><?php echo esc_html(alpenia_travel_t('Hilfe & Kontaktstelle')); ?></strong>
             <div class="dashboard-sidebar__support-actions">
-                <a class="table-btn" href="https://wa.me/436609779900" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('WhatsApp')); ?></a>
-                <a class="table-btn table-btn--ghost" href="mailto:office@alpeniatravel.com"><?php echo esc_html(alpenia_travel_t('E-Mail')); ?></a>
+                <a class="table-btn" href="https://wa.me/" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('WhatsApp')); ?></a>
+                <a class="table-btn table-btn--ghost" href="mailto:support@alpeniatravel.com"><?php echo esc_html(alpenia_travel_t('E-Mail')); ?></a>
             </div>
         </div>
     </aside>
