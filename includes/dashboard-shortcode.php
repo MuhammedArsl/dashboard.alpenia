@@ -282,6 +282,13 @@ function alpenia_dashboard_shortcode() {
             if (empty($trip_title) || empty($trip_type) || empty($destination) || empty($country) || empty($city) || empty($start_date) || empty($end_date)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
             } else {
+                $today = wp_date('Y-m-d');
+
+                if ($start_date < $today || $end_date < $today) {
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Start- und Enddatum dürfen nicht in der Vergangenheit liegen.')) . '</div>';
+                } elseif ($end_date < $start_date) {
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Enddatum darf nicht vor dem Startdatum liegen.')) . '</div>';
+                } else {
                 if ($is_editing_trip) {
                     $trip_id = wp_update_post([
                         'ID'           => $submitted_trip_id,
@@ -326,6 +333,7 @@ function alpenia_dashboard_shortcode() {
                     }
                 } else {
                     $message = '<div class="alpenia-message">' . esc_html($is_editing_trip ? alpenia_travel_t('Fehler beim Aktualisieren der Reise.') : alpenia_travel_t('Fehler beim Erstellen der Reise.')) . '</div>';
+                }
                 }
             }
         }
