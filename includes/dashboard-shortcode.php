@@ -3031,12 +3031,6 @@ function alpenia_dashboard_shortcode() {
                                                     <a href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_edit_user' => (int) $user->ID])); ?>"><?php echo esc_html(alpenia_travel_t("Bearbeiten")); ?></a>
 
                                                     <?php if ($disabled) : ?>
-                                                        <form method="post" style="display:inline;">
-                                                            <input type="hidden" name="dashboard_user_action" value="activate">
-                                                            <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
-                                                            <input type="hidden" name="_dashboard_user_nonce" value="<?php echo esc_attr(wp_create_nonce('alpenia_dashboard_activate_user_' . (int) $user->ID)); ?>">
-                                                            <button type="submit" class="link-button"><?php echo esc_html(alpenia_travel_t("Aktivieren")); ?></button>
-                                                        </form>
                                                         <form method="post" style="display:inline;" onsubmit="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich löschen?')); ?>');">
                                                             <input type="hidden" name="dashboard_user_action" value="delete">
                                                             <input type="hidden" name="dashboard_user_id" value="<?php echo (int) $user->ID; ?>">
