@@ -277,6 +277,9 @@ function alpenia_public_participant_enqueue_assets() {
             'consentErrorIntro' => alpenia_travel_t('Bitte bestätige vor dem Absenden die folgenden Pflichtzustimmungen:'),
             'privacyConsentMissing' => alpenia_travel_t('Datenschutzerklärung akzeptieren'),
             'accuracyConsentMissing' => alpenia_travel_t('Echtheit der Daten bestätigen'),
+            'dateRangePassportError' => alpenia_travel_t('Reisepass gültig bis muss am oder nach Reisepass gültig von liegen.'),
+            'dateRangeResidenceError' => alpenia_travel_t('Aufenthaltstitel gültig bis muss am oder nach Aufenthaltstitel gültig von liegen.'),
+            'dateRangeTravelError' => alpenia_travel_t('Reisedatum bis muss am oder nach Reisedatum von liegen.'),
         ],
     ]);
 }
@@ -505,11 +508,50 @@ function alpenia_public_participant_get_submitted_values() {
     return $values;
 }
 
+function alpenia_public_participant_validate_date_range($start_date, $end_date, $message) {
+    $start_date = trim((string) $start_date);
+    $end_date = trim((string) $end_date);
+
+    if ($start_date === '' || $end_date === '') {
+        return true;
+    }
+
+    $start = strtotime($start_date);
+    $end = strtotime($end_date);
+    if ($start === false || $end === false) {
+        return true;
+    }
+
+    if ($start > $end) {
+        return new WP_Error('invalid_date_range', alpenia_travel_t($message));
+    }
+
+    return true;
+}
+
 function alpenia_public_participant_create($trip_id, $values) {
     foreach (alpenia_public_participant_get_required_fields() as $required_key) {
         if (empty($values[$required_key])) {
             return new WP_Error('missing_required_fields', alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.'));
         }
+    }
+
+    $passport_date_validation = alpenia_public_participant_validate_date_range(
+        $values['passport_valid_from_date'] ?? '',
+        $values['passport_expiry_date'] ?? '',
+        'Reisepass gültig bis muss am oder nach Reisepass gültig von liegen.'
+    );
+    if (is_wp_error($passport_date_validation)) {
+        return $passport_date_validation;
+    }
+
+    $residence_date_validation = alpenia_public_participant_validate_date_range(
+        $values['residence_permit_start_date'] ?? '',
+        $values['residence_permit_valid_until'] ?? '',
+        'Aufenthaltstitel gültig bis muss am oder nach Aufenthaltstitel gültig von liegen.'
+    );
+    if (is_wp_error($residence_date_validation)) {
+        return $residence_date_validation;
     }
 
     $requires_residence_permit = alpenia_nationality_requires_residence_permit($values['nationality'] ?? '');
