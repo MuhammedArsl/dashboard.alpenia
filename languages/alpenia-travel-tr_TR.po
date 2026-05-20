@@ -203,6 +203,16 @@ msgstr "Güvenlik doğrulama hatası oluştu. Lütfen tekrar deneyiniz."
 msgid "Bitte alle Pflichtfelder ausfüllen."
 msgstr "Lütfen tüm zorunlu alanları doldurunuz."
 
+msgid "Bitte ein gültiges Datum eingeben."
+msgstr "Lütfen geçerli bir tarih giriniz."
+
+
+msgid "Start- und Enddatum dürfen nicht in der Vergangenheit liegen."
+msgstr "Başlangıç ve bitiş tarihi geçmişte olamaz."
+
+msgid "Enddatum darf nicht vor dem Startdatum liegen."
+msgstr "Bitiş tarihi başlangıç tarihinden önce olamaz."
+
 msgid "Kein Zugriff."
 msgstr "Erişim izniniz bulunmamaktadır."
 
