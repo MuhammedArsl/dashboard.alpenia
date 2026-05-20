@@ -342,6 +342,7 @@ function alpenia_travel_t($text) {
         'Es werden die wichtigsten %1$d von %2$d Teilnehmern angezeigt.' => 'En önemli %1$d / %2$d katılımcı gösteriliyor.',
         '%d Fehlende Unterlagen' => '%d eksik belge',
         'Zum Dashboard' => 'Kontrol paneline git',
+        'Du bist bereits eingeloggt.' => 'Zaten giriş yaptınız.',
         'Ungültige Anmeldedaten.' => 'Geçersiz giriş bilgileri.',
         'Bitte E-Mail und Passwort eingeben.' => 'Lütfen e-posta ve şifre girin.',
         'Passwort vergessen' => 'Şifremi unuttum',
