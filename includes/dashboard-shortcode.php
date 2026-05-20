@@ -763,7 +763,7 @@ function alpenia_dashboard_shortcode() {
             if (empty($display_name) || empty($email) || empty($password)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte Name, E-Mail und Passwort ausfüllen.')) . '</div>';
             } elseif (email_exists($email)) {
-                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Diese E-Mail existiert bereits.')) . '</div>';
+                $message = '<div class="alpenia-message" data-alpenia-feedback-popup="user_email_exists">' . esc_html(alpenia_travel_t('Diese E-Mail existiert bereits.')) . '</div>';
             } else {
                 $allowed_roles = ['reiseleiter', 'backoffice', 'administrator'];
                 if (!in_array($role, $allowed_roles, true)) {
@@ -826,7 +826,7 @@ function alpenia_dashboard_shortcode() {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Aktivieren des Benutzers.')) . '</div>';
             } elseif ($target_id > 0) {
                 delete_user_meta($target_id, 'alpenia_disabled');
-                $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer aktiviert.')) . '</div>';
+                $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_activated">' . esc_html(alpenia_travel_t('Benutzer aktiviert.')) . '</div>';
             }
         }
 
@@ -870,7 +870,7 @@ function alpenia_dashboard_shortcode() {
                 if (!$edit_user_id || empty($edit_display_name) || empty($edit_email)) {
                     $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
                 } elseif ($existing_email_owner && (int) $existing_email_owner !== $edit_user_id) {
-                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Diese E-Mail wird bereits verwendet.')) . '</div>';
+                    $message = '<div class="alpenia-message" data-alpenia-feedback-popup="user_email_in_use">' . esc_html(alpenia_travel_t('Diese E-Mail wird bereits verwendet.')) . '</div>';
                 } else {
                     $updated = wp_update_user([
                         'ID'           => $edit_user_id,
@@ -1416,7 +1416,10 @@ function alpenia_dashboard_shortcode() {
                         user_created: <?php echo wp_json_encode(alpenia_travel_t('Benutzer erstellt')); ?>,
                         user_deleted: <?php echo wp_json_encode(alpenia_travel_t('Benutzer gelöscht')); ?>,
                         user_updated: <?php echo wp_json_encode(alpenia_travel_t('Benutzer aktualisiert')); ?>,
-                        user_deactivated: <?php echo wp_json_encode(alpenia_travel_t('Benutzer deaktiviert')); ?>
+                        user_deactivated: <?php echo wp_json_encode(alpenia_travel_t('Benutzer deaktiviert')); ?>,
+                        user_activated: <?php echo wp_json_encode(alpenia_travel_t('Benutzer aktiviert')); ?>,
+                        user_email_exists: <?php echo wp_json_encode(alpenia_travel_t('E-Mail bereits vorhanden')); ?>,
+                        user_email_in_use: <?php echo wp_json_encode(alpenia_travel_t('E-Mail bereits verwendet')); ?>
                     };
 
                     const overlay = document.createElement('div');
