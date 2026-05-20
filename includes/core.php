@@ -454,6 +454,9 @@ function alpenia_travel_t($text) {
         'Reisepassnummer' => 'Pasaport numarası',
         'Anmeldung für' => 'Kayıt',
         'Prüfe bitte vor dem Absenden die wichtigsten Reisedetails und halte die benötigten Dokumente bereit.' => 'Göndermeden önce seyahat detaylarını hızlıca doğrulayın; zorunlu belgelerin güncel ve okunaklı olduğundan emin olun.',
+        'Nur offene Reisen' => 'Sadece açık seyahatler',
+        'Nur volle Reisen' => 'Sadece dolu seyahatler',
+        'Alles zurücksetzen' => 'Tümünü sıfırla',
 
         'E-Mail Adresse' => 'E-posta adresi',
         'Aufenthaltstitel Nummer' => 'Oturum izni numarası',
