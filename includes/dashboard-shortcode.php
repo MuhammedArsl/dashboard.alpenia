@@ -339,6 +339,7 @@ function alpenia_dashboard_shortcode() {
                         $message = '<div class="alpenia-message">' . esc_html($is_editing_trip ? alpenia_travel_t('Fehler beim Aktualisieren der Reise.') : alpenia_travel_t('Fehler beim Erstellen der Reise.')) . '</div>';
                     }
                 }
+                }
             }
         }
     }
