@@ -356,3 +356,13 @@ msgstr "%d belge eksik"
 
 msgid "%d Unterlagen fehlen"
 msgstr "%d belge eksik"
+
+
+msgid "Reisepass gültig bis muss am oder nach Reisepass gültig von liegen."
+msgstr "Pasaport geçerlilik bitiş tarihi, pasaport geçerlilik başlangıç tarihine eşit veya daha sonra olmalıdır."
+
+msgid "Aufenthaltstitel gültig bis muss am oder nach Aufenthaltstitel gültig von liegen."
+msgstr "Oturum izni geçerlilik bitiş tarihi, oturum izni geçerlilik başlangıç tarihine eşit veya daha sonra olmalıdır."
+
+msgid "Reisedatum bis muss am oder nach Reisedatum von liegen."
+msgstr "Seyahat bitiş tarihi, seyahat başlangıç tarihine eşit veya daha sonra olmalıdır."
