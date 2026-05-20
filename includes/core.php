@@ -500,6 +500,7 @@ function alpenia_travel_t($text) {
         'Lütfen geçerli bir telefon numarası girin.' => 'Lütfen geçerli bir telefon numarası girin.',
         'Lütfen geçerli bir değer girin.' => 'Lütfen geçerli bir değer girin.',
         'Lütfen geçerli bir dosya yükleyin.' => 'Lütfen geçerli bir dosya yükleyin.',
+        'Enddatum darf nicht vor dem Startdatum liegen.' => 'Bitiş tarihi başlangıç tarihinden önce olamaz.',
         'Bei Umrah-/Hajj-Reisen sind Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.' => 'Umre/Hac seyahatlerinde vize giriş ülkesi, vize numarası ve vize bitiş tarihi zorunludur.',
         'Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.' => 'AB/Schengen dışı vatandaşlar için oturum izni numarası, oturum izni başlangıç tarihi ve oturum izni bitiş tarihi zorunludur.',
         'Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von und Reisepass gültig bis ausfüllen.' => 'Lütfen hitap, ad, soyad, vatandaşlık, pasaport başlangıç tarihi ve pasaport bitiş tarihi alanlarını doldurun.',
