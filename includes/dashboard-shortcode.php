@@ -430,6 +430,19 @@ function alpenia_dashboard_shortcode() {
             if (!$trip_id || $participant_count < 1 || !alpenia_user_can_access_trip($trip_id)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Ungültige Reise oder kein Zugriff.')) . '</div>';
             } else {
+                $trip_capacity = (int) get_post_meta($trip_id, 'max_people', true);
+                $existing_participants_count = alpenia_count_trip_participants($trip_id);
+
+                if ($trip_capacity > 0 && ($existing_participants_count + $participant_count) > $trip_capacity) {
+                    $available_spots = max(0, $trip_capacity - $existing_participants_count);
+                    $message = '<div class="alpenia-message">' . esc_html(sprintf(
+                        alpenia_travel_t('Bu geziye en fazla %d katılımcı daha eklenebilir. / Für diese Reise können maximal noch %d Teilnehmer hinzugefügt werden.'),
+                        $available_spots,
+                        $available_spots
+                    )) . '</div>';
+                    return $message;
+                }
+
                 $all_ok = true;
                 $saved_count = 0;
                 $is_pilgrimage_trip = alpenia_is_pilgrimage_trip($trip_id);
