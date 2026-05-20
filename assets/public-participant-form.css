@@ -166,6 +166,64 @@
     background: rgba(255, 255, 255, .68);
 }
 
+.alpenia-public-support-card {
+    grid-column: 1 / -1;
+    padding: 18px;
+    border-radius: 20px;
+    border: 1px solid rgba(23, 75, 61, .14);
+    background: #ffffff;
+    box-shadow: 0 10px 24px rgba(16, 37, 31, .05);
+}
+
+.alpenia-public-support-card__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.alpenia-public-support-card__badge {
+    display: inline-block;
+    padding: 3px 8px;
+    border-radius: 999px;
+    font-size: .74rem;
+    font-weight: 800;
+    background: var(--alpenia-public-accent-soft);
+    color: #7b5a20;
+}
+
+.alpenia-public-support-card strong {
+    color: var(--alpenia-public-primary);
+}
+
+.alpenia-public-support-card p {
+    margin: 8px 0 12px;
+}
+
+
+.alpenia-public-support-card__empty {
+    margin: 0;
+    color: var(--alpenia-public-muted);
+    font-size: .94rem;
+}
+.alpenia-public-support-card ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+    display: grid;
+    gap: 8px;
+}
+
+.alpenia-public-support-card li span {
+    color: var(--alpenia-public-muted);
+    font-weight: 700;
+}
+
+.alpenia-public-support-card a {
+    color: var(--alpenia-public-primary-2);
+    font-weight: 800;
+}
+
 .alpenia-public-trip-card__label {
     display: block;
     margin-bottom: 9px;

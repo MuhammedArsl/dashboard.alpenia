@@ -98,8 +98,10 @@ function alpenia_public_participant_form_shortcode($atts = []) {
 
         <?php if (!$selected_trip_id && $request_token === '') : ?>
             <?php echo wp_kses_post(alpenia_public_participant_message('Bitte verwenden Sie den individuellen Anmeldelink Ihrer Reise.', 'info')); ?>
+            <?php alpenia_public_participant_render_support_card(0); ?>
         <?php elseif (!$trip_available) : ?>
             <?php echo wp_kses_post(alpenia_public_participant_message('Dieser Anmeldelink ist ungültig oder die Reise ist nicht öffentlich anmeldbar.', 'error')); ?>
+            <?php alpenia_public_participant_render_support_card($selected_trip_id); ?>
         <?php else : ?>
             <?php alpenia_public_participant_render_trip_overview($selected_trip_id); ?>
 
@@ -393,6 +395,43 @@ function alpenia_public_participant_get_trip_detail_items($trip_id) {
     }));
 }
 
+function alpenia_public_participant_render_support_card($trip_id = 0) {
+    $trip_id = absint($trip_id);
+    $guide_name = '';
+
+    if ($trip_id > 0) {
+        $assigned_guide = (int) get_post_meta($trip_id, 'assigned_guide', true);
+        if ($assigned_guide > 0) {
+            $guide = get_userdata($assigned_guide);
+            $guide_name = $guide ? $guide->display_name : '';
+        }
+    }
+
+    $support_whatsapp = $trip_id > 0 ? trim((string) get_post_meta($trip_id, 'whatsapp_link', true)) : '';
+    $support_zoom = $trip_id > 0 ? trim((string) get_post_meta($trip_id, 'zoom_link', true)) : '';
+    $support_email = sanitize_email((string) get_option('admin_email'));
+    $has_channels = ($guide_name !== '' || $support_email !== '' || $support_whatsapp !== '' || $support_zoom !== '');
+    ?>
+    <div class="alpenia-public-support-card">
+        <div class="alpenia-public-support-card__header">
+            <strong><?php echo esc_html(alpenia_travel_t('Hilfe & Kontakt')); ?></strong>
+            <span class="alpenia-public-support-card__badge"><?php echo esc_html(alpenia_travel_t('Schnelle Hilfe')); ?></span>
+        </div>
+        <p><?php echo esc_html(alpenia_travel_t('Bei Fragen oder technischen Problemen während der Anmeldung helfen wir dir direkt weiter.')); ?></p>
+        <?php if ($has_channels) : ?>
+            <ul>
+                <?php if ($guide_name !== '') : ?><li><span><?php echo esc_html(alpenia_travel_t('Reiseleitung')); ?>:</span> <strong><?php echo esc_html($guide_name); ?></strong></li><?php endif; ?>
+                <?php if ($support_email !== '') : ?><li><span><?php echo esc_html(alpenia_travel_t('E-Mail')); ?>:</span> <a href="mailto:<?php echo esc_attr($support_email); ?>"><?php echo esc_html($support_email); ?></a></li><?php endif; ?>
+                <?php if ($support_whatsapp !== '') : ?><li><span>WhatsApp:</span> <a href="<?php echo esc_url($support_whatsapp); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('Chat öffnen')); ?></a></li><?php endif; ?>
+                <?php if ($support_zoom !== '') : ?><li><span>Zoom:</span> <a href="<?php echo esc_url($support_zoom); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('Meeting öffnen')); ?></a></li><?php endif; ?>
+            </ul>
+        <?php else : ?>
+            <p class="alpenia-public-support-card__empty"><?php echo esc_html(alpenia_travel_t('Derzeit sind noch keine direkten Kontaktkanäle hinterlegt. Bitte versuche es später erneut.')); ?></p>
+        <?php endif; ?>
+    </div>
+    <?php
+}
+
 function alpenia_public_participant_render_trip_overview($trip_id) {
     $items = alpenia_public_participant_get_trip_detail_items($trip_id);
     ?>
@@ -410,6 +449,9 @@ function alpenia_public_participant_render_trip_overview($trip_id) {
                 </div>
             <?php endforeach; ?>
         </dl>
+
+        <?php alpenia_public_participant_render_support_card($trip_id); ?>
+
         <div class="alpenia-public-prep-card">
             <strong><?php echo esc_html(alpenia_travel_t('Für die Anmeldung erforderlich')); ?></strong>
             <ul>
