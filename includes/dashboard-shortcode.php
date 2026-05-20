@@ -3134,6 +3134,43 @@ function alpenia_dashboard_shortcode() {
                 </div>
 
                 <div class="overview-card-grid" aria-label="<?php echo esc_attr(alpenia_travel_t('Dashboard Übersichten')); ?>">
+                    <section class="overview-card overview-card--support">
+                        <div class="overview-card__header">
+                            <div>
+                                <span class="overview-card__eyebrow"><?php echo esc_html(alpenia_travel_t('Support')); ?></span>
+                                <h2><?php echo esc_html(alpenia_travel_t('Hilfe & Kontaktstelle')); ?></h2>
+                                <p class="overview-card__subtitle"><?php echo esc_html(alpenia_travel_t('Bei Fragen zu Reise oder Teilnehmern nutze bitte die Kontaktstelle. Bei sehr dringenden Fällen erreichst du uns direkt per Telefon oder WhatsApp.')); ?></p>
+                            </div>
+                            <div class="overview-card__metric" aria-label="<?php echo esc_attr(alpenia_travel_t('Erreichbarkeit')); ?>">
+                                <span class="overview-card__count">24/7</span>
+                                <span><?php echo esc_html(alpenia_travel_t('Notfallkanal')); ?></span>
+                            </div>
+                        </div>
+                        <div class="support-channel-list">
+                            <article class="support-channel-item support-channel-item--phone">
+                                <div>
+                                    <strong><?php echo esc_html(alpenia_travel_t('Telefon (dringend)')); ?></strong>
+                                    <p><?php echo esc_html(alpenia_travel_t('Sofortige Hilfe bei Ausfällen oder kritischen Teilnehmerfällen.')); ?></p>
+                                </div>
+                                <a class="table-btn" href="tel:+491234567890"><?php echo esc_html(alpenia_travel_t('Jetzt anrufen')); ?></a>
+                            </article>
+                            <article class="support-channel-item support-channel-item--whatsapp">
+                                <div>
+                                    <strong><?php echo esc_html(alpenia_travel_t('WhatsApp (dringend)')); ?></strong>
+                                    <p><?php echo esc_html(alpenia_travel_t('Für schnelle Rückfragen und Statusupdates im laufenden Betrieb.')); ?></p>
+                                </div>
+                                <a class="table-btn" href="https://wa.me/491234567890" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('Per WhatsApp schreiben')); ?></a>
+                            </article>
+                            <article class="support-channel-item">
+                                <div>
+                                    <strong><?php echo esc_html(alpenia_travel_t('Kontaktstelle (normal)')); ?></strong>
+                                    <p><?php echo esc_html(alpenia_travel_t('Alle allgemeinen Fragen zu Reisen, Teilnehmerdaten und Abläufen.')); ?></p>
+                                </div>
+                                <a class="table-btn table-btn--ghost" href="mailto:support@alpenia.de"><?php echo esc_html(alpenia_travel_t('E-Mail senden')); ?></a>
+                            </article>
+                        </div>
+                    </section>
+
                     <section class="overview-card overview-card--documents">
                         <div class="overview-card__header">
                             <div>
@@ -4779,6 +4816,10 @@ function alpenia_dashboard_shortcode() {
             background: linear-gradient(90deg, #1f6d57, #d99a2b);
         }
 
+        .overview-card--support::before {
+            background: linear-gradient(90deg, #1d4ed8, #0891b2);
+        }
+
         .overview-card--participants {
             grid-column: 1 / -1;
         }
@@ -4882,6 +4923,48 @@ function alpenia_dashboard_shortcode() {
             color: #174b3d;
             font-weight: 800;
             line-height: 1.45;
+        }
+
+        .support-channel-list {
+            position: relative;
+            z-index: 1;
+            display: grid;
+            gap: 12px;
+        }
+
+        .support-channel-item {
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto;
+            align-items: center;
+            gap: 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(31, 109, 87, 0.2);
+            background: #f7fbf9;
+            padding: 14px;
+        }
+
+        .support-channel-item strong {
+            display: block;
+            margin-bottom: 4px;
+            color: #0d3a30;
+            font-size: 15px;
+        }
+
+        .support-channel-item p {
+            margin: 0;
+            color: #557266;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+        .support-channel-item--phone {
+            border-color: rgba(190, 24, 93, 0.24);
+            background: #fff8fa;
+        }
+
+        .support-channel-item--whatsapp {
+            border-color: rgba(22, 163, 74, 0.26);
+            background: #f4fdf7;
         }
 
         .overview-list,
