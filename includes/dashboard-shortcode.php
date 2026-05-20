@@ -795,7 +795,7 @@ function alpenia_dashboard_shortcode() {
 
                     $reloaded_user = get_user_by('id', $user_id);
                     if ($reloaded_user && in_array($role, (array) $reloaded_user->roles, true)) {
-                        $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer erfolgreich erstellt.')) . '</div>';
+                        $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_created">' . esc_html(alpenia_travel_t('Benutzer erfolgreich erstellt.')) . '</div>';
                     } else {
                         $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Benutzer wurde erstellt, aber die Rolle konnte nicht korrekt gesetzt werden.')) . '</div>';
                     }
@@ -814,7 +814,7 @@ function alpenia_dashboard_shortcode() {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Sicherheitsfehler beim Deaktivieren des Benutzers.')) . '</div>';
             } elseif ($target_id > 0 && $target_id !== get_current_user_id()) {
                 update_user_meta($target_id, 'alpenia_disabled', 1);
-                $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer deaktiviert.')) . '</div>';
+                $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_deactivated">' . esc_html(alpenia_travel_t('Benutzer deaktiviert.')) . '</div>';
             }
         }
 
@@ -843,7 +843,7 @@ function alpenia_dashboard_shortcode() {
             ) {
                 require_once ABSPATH . 'wp-admin/includes/user.php';
                 wp_delete_user($target_id);
-                $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer gelöscht.')) . '</div>';
+                $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_deleted">' . esc_html(alpenia_travel_t('Benutzer gelöscht.')) . '</div>';
             }
         }
 
@@ -888,7 +888,7 @@ function alpenia_dashboard_shortcode() {
                             wp_set_password($edit_password, $edit_user_id);
                         }
 
-                        $message = '<div class="alpenia-success">' . esc_html(alpenia_travel_t('Benutzer erfolgreich aktualisiert.')) . '</div>';
+                        $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_updated">' . esc_html(alpenia_travel_t('Benutzer erfolgreich aktualisiert.')) . '</div>';
                     }
                 }
             }
@@ -1412,7 +1412,11 @@ function alpenia_dashboard_shortcode() {
                         trip_updated: <?php echo wp_json_encode(alpenia_travel_t('Reise aktualisiert')); ?>,
                         participant_updated: <?php echo wp_json_encode(alpenia_travel_t('Teilnehmer aktualisiert')); ?>,
                         item_restored: <?php echo wp_json_encode(alpenia_travel_t('Eintrag wiederhergestellt')); ?>,
-                        item_deleted: <?php echo wp_json_encode(alpenia_travel_t('Eintrag dauerhaft gelöscht')); ?>
+                        item_deleted: <?php echo wp_json_encode(alpenia_travel_t('Eintrag dauerhaft gelöscht')); ?>,
+                        user_created: <?php echo wp_json_encode(alpenia_travel_t('Benutzer erstellt')); ?>,
+                        user_deleted: <?php echo wp_json_encode(alpenia_travel_t('Benutzer gelöscht')); ?>,
+                        user_updated: <?php echo wp_json_encode(alpenia_travel_t('Benutzer aktualisiert')); ?>,
+                        user_deactivated: <?php echo wp_json_encode(alpenia_travel_t('Benutzer deaktiviert')); ?>
                     };
 
                     const overlay = document.createElement('div');
