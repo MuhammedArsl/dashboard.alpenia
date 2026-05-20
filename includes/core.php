@@ -447,6 +447,7 @@ function alpenia_travel_t($text) {
         'Benutzer gelöscht' => 'Kullanıcı silindi',
         'Benutzer aktualisiert' => 'Kullanıcı güncellendi',
         'Benutzer deaktiviert' => 'Kullanıcı devre dışı bırakıldı',
+        'Benutzer aktiviert' => 'Kullanıcı etkinleştirildi',
         'Erfolgreich' => 'Başarılı',
         'Schließen' => 'Kapat',
         'Löschoption wählen' => 'Silme seçeneğini seçin',
