@@ -3803,6 +3803,7 @@ function alpenia_dashboard_shortcode() {
             background:
                 radial-gradient(circle at 100% 0%, rgba(217, 154, 43, 0.12), transparent 36%),
                 linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 248, 0.95));
+            box-shadow: 0 14px 36px rgba(18, 63, 52, 0.12);
         }
 
         .users-panel__header {
@@ -3811,13 +3812,16 @@ function alpenia_dashboard_shortcode() {
 
         .users-panel__header h2 {
             margin: 0;
-            color: #123f34;
+            color: #10362d;
+            font-size: 30px;
+            line-height: 1.2;
         }
 
         .users-panel__header p {
             margin: 8px 0 0;
-            color: #4f6f63;
+            color: #37594f;
             font-weight: 600;
+            font-size: 15px;
         }
 
         .users-panel__header--inline {
@@ -3842,12 +3846,57 @@ function alpenia_dashboard_shortcode() {
         }
 
         .users-panel__footer {
-            margin-top: 4px;
+            margin-top: 12px;
+        }
+
+        .users-panel .form-group label {
+            color: #153d33;
+            font-weight: 800;
+        }
+
+        .users-panel .form-group input:not([type="file"]),
+        .users-panel .form-group select {
+            background: #ffffff;
+            color: #163b31 !important;
+            border: 1px solid rgba(24, 74, 61, 0.2);
+            box-shadow: 0 2px 0 rgba(14, 56, 45, 0.04), 0 8px 24px rgba(10, 43, 34, 0.06);
+        }
+
+        .users-panel .form-group input:not([type="file"]):focus,
+        .users-panel .form-group select:focus {
+            border-color: #2f7d63;
+            box-shadow: 0 0 0 3px rgba(47, 125, 99, 0.18);
+        }
+
+        .users-panel .form-group input::placeholder {
+            color: #7d9189;
+        }
+
+        .users-panel .btn-primary {
+            background: linear-gradient(135deg, #1c5c4b, #25735d);
+            box-shadow: 0 12px 20px rgba(25, 87, 70, 0.25);
+        }
+
+        .users-panel .btn-primary:hover,
+        .users-panel .btn-primary:focus {
+            transform: translateY(-1px);
         }
 
         .users-table thead th {
-            background: #f4fbf8;
-            color: #123f34;
+            background: #edf5f2;
+            color: #133e33;
+            font-weight: 800;
+            border-bottom: 1px solid rgba(19, 62, 51, 0.14);
+        }
+
+        .users-table tbody td {
+            color: #163a30;
+            background: rgba(255, 255, 255, 0.76);
+            border-bottom: 1px solid rgba(19, 62, 51, 0.08);
+        }
+
+        .users-table tbody tr:hover td {
+            background: #f6fbf9;
         }
 
         .users-role-pill,
@@ -3863,17 +3912,31 @@ function alpenia_dashboard_shortcode() {
 
         .users-role-pill {
             color: #1b5b48;
-            background: rgba(47, 125, 99, 0.14);
+            background: rgba(47, 125, 99, 0.16);
+            border: 1px solid rgba(47, 125, 99, 0.14);
         }
 
         .users-status-pill.is-active {
             color: #0f5b43;
             background: rgba(59, 185, 129, 0.18);
+            border: 1px solid rgba(47, 125, 99, 0.16);
         }
 
         .users-status-pill.is-disabled {
             color: #8d2b2b;
             background: rgba(217, 93, 93, 0.17);
+            border: 1px solid rgba(163, 53, 53, 0.2);
+        }
+
+        .user-action-links a {
+            color: #1f6b56;
+            font-weight: 700;
+        }
+
+        .user-action-links a:hover,
+        .user-action-links a:focus {
+            color: #154f40;
+            text-decoration: underline !important;
         }
 
         .public-registration-panel__header {
