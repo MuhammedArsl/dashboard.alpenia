@@ -881,6 +881,10 @@ function alpenia_dashboard_shortcode() {
             }
         }
 
+        if (isset($_GET['dashboard_user_updated'])) {
+            $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_updated">' . esc_html(alpenia_travel_t('Benutzer erfolgreich aktualisiert.')) . '</div>';
+        }
+
         if (isset($_POST['dashboard_update_user']) || isset($_POST['alpenia_dashboard_edit_user_nonce'])) {
             if (
                 !isset($_POST['alpenia_dashboard_edit_user_nonce']) ||
@@ -922,7 +926,12 @@ function alpenia_dashboard_shortcode() {
                             wp_set_password($edit_password, $edit_user_id);
                         }
 
-                        $message = '<div class="alpenia-success" data-alpenia-feedback-popup="user_updated">' . esc_html(alpenia_travel_t('Benutzer erfolgreich aktualisiert.')) . '</div>';
+                        $redirect_url = alpenia_dashboard_link([
+                            'manage_users' => 1,
+                            'dashboard_user_updated' => 1,
+                        ]);
+                        wp_safe_redirect($redirect_url);
+                        exit;
                     }
                 }
             }
