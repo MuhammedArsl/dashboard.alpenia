@@ -3010,25 +3010,29 @@ function alpenia_dashboard_shortcode() {
                                     );
 
                                     $role_label = '-';
+                                    $role_key = 'unknown';
                                     if (in_array('administrator', (array) $user->roles, true)) {
                                         $role_label = 'Admin';
+                                        $role_key = 'admin';
                                     } elseif (in_array('reiseleiter', (array) $user->roles, true)) {
                                         $role_label = alpenia_travel_t('Reiseleiter');
+                                        $role_key = 'reiseleiter';
                                     } elseif (in_array('backoffice', (array) $user->roles, true)) {
                                         $role_label = alpenia_travel_t('Backoffice');
+                                        $role_key = 'backoffice';
                                     }
                                 ?>
                                     <tr>
                                         <td><?php echo esc_html($user->display_name); ?></td>
                                         <td><?php echo esc_html($user->user_email); ?></td>
-                                        <td><span class="users-role-pill"><?php echo esc_html($role_label); ?></span></td>
+                                        <td><span class="users-role-pill users-role-pill--<?php echo esc_attr($role_key); ?>"><?php echo esc_html($role_label); ?></span></td>
                                         <td><span class="users-status-pill <?php echo $disabled ? 'is-disabled' : 'is-active'; ?>"><?php echo esc_html($status); ?></span></td>
                                         <td>
                                             <?php if ((int) $user->ID === (int) get_current_user_id()) : ?>
                                                 <?php echo esc_html(alpenia_travel_t("Eigenes Account")); ?>
                                             <?php else : ?>
                                                 <div class="user-action-links">
-                                                    <a href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_edit_user' => (int) $user->ID])); ?>"><?php echo esc_html(alpenia_travel_t("Bearbeiten")); ?></a>
+                                                    <a class="action-button edit-button" href="<?php echo esc_url(alpenia_dashboard_link(['manage_users' => 1, 'dashboard_edit_user' => (int) $user->ID])); ?>"><?php echo esc_html(alpenia_travel_t("Bearbeiten")); ?></a>
 
                                                     <?php if ($disabled) : ?>
                                                         <form method="post" style="display:inline;" onsubmit="return confirm('<?php echo esc_js(alpenia_travel_t('Benutzer wirklich löschen?')); ?>');">
@@ -3952,15 +3956,33 @@ function alpenia_dashboard_shortcode() {
         }
 
         .users-role-pill {
-            color: #e8f8f2;
-            background: rgba(57, 140, 113, 0.34);
-            border: 1px solid rgba(116, 187, 162, 0.4);
+            color: #e8eef8;
+            background: rgba(76, 111, 174, 0.34);
+            border: 1px solid rgba(125, 153, 205, 0.4);
+        }
+
+        .users-role-pill--admin {
+            color: #fff2d7;
+            background: rgba(161, 111, 36, 0.42);
+            border: 1px solid rgba(214, 161, 79, 0.44);
+        }
+
+        .users-role-pill--reiseleiter {
+            color: #d8f4ff;
+            background: rgba(41, 106, 154, 0.42);
+            border: 1px solid rgba(95, 152, 194, 0.44);
+        }
+
+        .users-role-pill--backoffice {
+            color: #eee3ff;
+            background: rgba(97, 67, 150, 0.42);
+            border: 1px solid rgba(145, 113, 204, 0.44);
         }
 
         .users-status-pill.is-active {
-            color: #e8f8f1;
-            background: rgba(53, 169, 119, 0.3);
-            border: 1px solid rgba(112, 200, 165, 0.38);
+            color: #d8f1ff;
+            background: rgba(38, 111, 156, 0.35);
+            border: 1px solid rgba(86, 150, 191, 0.4);
         }
 
         .users-status-pill.is-disabled {
@@ -3983,6 +4005,23 @@ function alpenia_dashboard_shortcode() {
             font: inherit;
         }
 
+        .user-action-links .action-button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 6px 12px;
+            border-radius: 8px;
+            border: 1px solid transparent;
+            text-decoration: none !important;
+            line-height: 1.2;
+        }
+
+        .user-action-links .edit-button {
+            background: #2e5f9b;
+            color: #eff7ff;
+            border-color: #4a7bb9;
+        }
+
         .user-action-links .deactivate-button {
             background: #b43434;
             color: #fff0f0;
@@ -3998,6 +4037,20 @@ function alpenia_dashboard_shortcode() {
         .user-action-links .link-button:focus {
             color: #b6f4db;
             text-decoration: underline !important;
+        }
+
+        .user-action-links .action-button:hover,
+        .user-action-links .action-button:focus {
+            text-decoration: none !important;
+        }
+
+        .user-action-links .edit-button:hover,
+        .user-action-links .edit-button:focus {
+            color: #fff;
+            background: #244d80;
+            border-color: #3d699f;
+            text-decoration: none !important;
+            outline: none;
         }
 
         .user-action-links .deactivate-button:hover,
