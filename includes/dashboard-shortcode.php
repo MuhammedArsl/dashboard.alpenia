@@ -1874,10 +1874,6 @@ function alpenia_dashboard_shortcode() {
                                         <strong><?php echo esc_html(alpenia_travel_t('Adresse & Kontakt')); ?></strong>
                                     </div>
 
-                                    <div class="form-group full">
-                                        <strong><?php echo esc_html(alpenia_travel_t('Notfallkontakt')); ?></strong>
-                                    </div>
-
                                     <div class="form-group">
                                         <label for="street_address_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Straße')); ?></label>
                                         <input type="text" id="street_address_<?php echo $i; ?>" name="street_address_<?php echo $i; ?>">
