@@ -1720,7 +1720,7 @@ function alpenia_dashboard_shortcode() {
                     </div>
                 </div>
 
-                <div class="panel users-panel users-panel--create">
+                <div class="panel">
                     <form method="post" class="alpenia-form">
                         <?php wp_nonce_field($trip_form_is_edit ? 'alpenia_edit_trip_' . $trip_form_id : 'alpenia_save_trip', 'alpenia_trip_nonce'); ?>
                         <?php if ($trip_form_is_edit) : ?>
@@ -2880,7 +2880,7 @@ function alpenia_dashboard_shortcode() {
                     </div>
                 </div>
 
-                <div class="panel">
+                <div class="panel users-panel users-panel--create">
                     <?php if ($dashboard_edit_mode && $dashboard_edit_user) : ?>
                         <h2><?php echo esc_html(alpenia_travel_t("Benutzer bearbeiten")); ?></h2>
 
@@ -3842,11 +3842,9 @@ function alpenia_dashboard_shortcode() {
         }
 
         .users-panel {
-            border: 1px solid rgba(167, 197, 184, 0.3);
-            background:
-                radial-gradient(circle at 100% 0%, rgba(217, 154, 43, 0.12), transparent 36%),
-                linear-gradient(135deg, rgba(255, 255, 255, 0.98), rgba(244, 251, 248, 0.95));
-            box-shadow: 0 14px 36px rgba(18, 63, 52, 0.12);
+            border: 1px solid rgba(132, 167, 154, 0.32);
+            background: linear-gradient(135deg, #21453c, #214f41 50%, #1f483e);
+            box-shadow: 0 14px 36px rgba(7, 30, 24, 0.25);
         }
 
         .users-panel__header {
@@ -3855,14 +3853,14 @@ function alpenia_dashboard_shortcode() {
 
         .users-panel__header h2 {
             margin: 0;
-            color: #10362d;
+            color: #f3f8f6;
             font-size: 30px;
             line-height: 1.2;
         }
 
         .users-panel__header p {
             margin: 8px 0 0;
-            color: #37594f;
+            color: rgba(223, 241, 234, 0.86);
             font-weight: 600;
             font-size: 15px;
         }
@@ -3882,9 +3880,9 @@ function alpenia_dashboard_shortcode() {
             height: 34px;
             padding: 0 12px;
             border-radius: 999px;
-            border: 1px solid rgba(47, 125, 99, 0.3);
-            background: rgba(255, 255, 255, 0.8);
-            color: #123f34;
+            border: 1px solid rgba(184, 223, 206, 0.3);
+            background: rgba(14, 54, 45, 0.6);
+            color: #ecf8f4;
             font-weight: 800;
         }
 
@@ -3893,31 +3891,31 @@ function alpenia_dashboard_shortcode() {
         }
 
         .users-panel .form-group label {
-            color: #153d33;
+            color: #f2f9f5;
             font-weight: 800;
         }
 
         .users-panel .form-group input:not([type="file"]),
         .users-panel .form-group select {
-            background: #ffffff;
-            color: #163b31 !important;
-            border: 1px solid rgba(24, 74, 61, 0.2);
-            box-shadow: 0 2px 0 rgba(14, 56, 45, 0.04), 0 8px 24px rgba(10, 43, 34, 0.06);
+            background: linear-gradient(90deg, #072a23, #073127);
+            color: #ecf8f4 !important;
+            border: 1px solid rgba(93, 158, 137, 0.42);
+            box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02), 0 8px 16px rgba(5, 24, 20, 0.32);
         }
 
         .users-panel .form-group input:not([type="file"]):focus,
         .users-panel .form-group select:focus {
-            border-color: #2f7d63;
-            box-shadow: 0 0 0 3px rgba(47, 125, 99, 0.18);
+            border-color: #61b89a;
+            box-shadow: 0 0 0 3px rgba(97, 184, 154, 0.25);
         }
 
         .users-panel .form-group input::placeholder {
-            color: #7d9189;
+            color: rgba(206, 226, 218, 0.55);
         }
 
         .users-panel .btn-primary {
-            background: linear-gradient(135deg, #1c5c4b, #25735d);
-            box-shadow: 0 12px 20px rgba(25, 87, 70, 0.25);
+            background: linear-gradient(135deg, #256b56, #2c7f66);
+            box-shadow: 0 12px 20px rgba(7, 28, 22, 0.38);
         }
 
         .users-panel .btn-primary:hover,
@@ -3926,20 +3924,20 @@ function alpenia_dashboard_shortcode() {
         }
 
         .users-table thead th {
-            background: #edf5f2;
-            color: #133e33;
+            background: rgba(15, 62, 50, 0.88);
+            color: #f0f8f4;
             font-weight: 800;
-            border-bottom: 1px solid rgba(19, 62, 51, 0.14);
+            border-bottom: 1px solid rgba(146, 194, 176, 0.35);
         }
 
         .users-table tbody td {
-            color: #163a30;
-            background: rgba(255, 255, 255, 0.76);
-            border-bottom: 1px solid rgba(19, 62, 51, 0.08);
+            color: #f2f8f6;
+            background: rgba(28, 78, 65, 0.42);
+            border-bottom: 1px solid rgba(120, 169, 151, 0.2);
         }
 
         .users-table tbody tr:hover td {
-            background: #f6fbf9;
+            background: rgba(40, 95, 81, 0.56);
         }
 
         .users-role-pill,
@@ -3954,26 +3952,26 @@ function alpenia_dashboard_shortcode() {
         }
 
         .users-role-pill {
-            color: #1b5b48;
-            background: rgba(47, 125, 99, 0.16);
-            border: 1px solid rgba(47, 125, 99, 0.14);
+            color: #e8f8f2;
+            background: rgba(57, 140, 113, 0.34);
+            border: 1px solid rgba(116, 187, 162, 0.4);
         }
 
         .users-status-pill.is-active {
-            color: #0f5b43;
-            background: rgba(59, 185, 129, 0.18);
-            border: 1px solid rgba(47, 125, 99, 0.16);
+            color: #e8f8f1;
+            background: rgba(53, 169, 119, 0.3);
+            border: 1px solid rgba(112, 200, 165, 0.38);
         }
 
         .users-status-pill.is-disabled {
-            color: #8d2b2b;
-            background: rgba(217, 93, 93, 0.17);
-            border: 1px solid rgba(163, 53, 53, 0.2);
+            color: #ffd7d7;
+            background: rgba(158, 55, 55, 0.44);
+            border: 1px solid rgba(201, 111, 111, 0.36);
         }
 
         .user-action-links a,
         .user-action-links .link-button {
-            color: #1f6b56;
+            color: #95e4c6;
             font-weight: 700;
         }
 
@@ -3989,7 +3987,7 @@ function alpenia_dashboard_shortcode() {
         .user-action-links a:focus,
         .user-action-links .link-button:hover,
         .user-action-links .link-button:focus {
-            color: #154f40;
+            color: #b6f4db;
             text-decoration: underline !important;
         }
 
