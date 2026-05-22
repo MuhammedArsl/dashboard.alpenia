@@ -6782,7 +6782,6 @@ function alpenia_dashboard_shortcode() {
                 const html = await response.text();
                 replaceDashboardPanelFromHtml(html, panelIndex);
                 window.history.pushState({ alpeniaFilter: true, panelIndex: panelIndex }, '', url);
-                window.scrollTo({ top: 0, behavior: 'smooth' });
             } catch (error) {
                 window.location.href = url;
             }
