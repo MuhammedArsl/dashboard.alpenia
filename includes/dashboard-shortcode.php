@@ -325,9 +325,16 @@ function alpenia_dashboard_shortcode() {
             $whatsapp_link   = esc_url_raw($_POST['whatsapp_link'] ?? '');
             $zoom_link       = esc_url_raw($_POST['zoom_link'] ?? '');
             $internal_notes  = sanitize_textarea_field($_POST['internal_notes'] ?? '');
+            $trip_languages  = isset($_POST['trip_languages']) ? (array) $_POST['trip_languages'] : [];
+            $allowed_trip_languages = array_keys(alpenia_get_trip_language_options());
+            $trip_languages = array_values(array_unique(array_filter(array_map('sanitize_key', $trip_languages), function($code) use ($allowed_trip_languages) {
+                return in_array($code, $allowed_trip_languages, true);
+            })));
 
-            if (empty($trip_title) || empty($trip_type) || empty($destination) || empty($country) || empty($city) || empty($start_date) || empty($end_date)) {
+            if (empty($trip_title) || empty($trip_type) || empty($destination) || empty($country) || empty($city) || empty($start_date) || empty($end_date) || empty($trip_languages)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
+            } elseif (count($trip_languages) > 3) {
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte maximal 3 Sprachen auswählen.')) . '</div>';
             } else {
                 $today_timestamp = strtotime(wp_date('Y-m-d'));
                 $start_timestamp = strtotime($start_date);
@@ -373,6 +380,7 @@ function alpenia_dashboard_shortcode() {
                     update_post_meta($trip_id, 'assigned_guide', $assigned_guide);
                     update_post_meta($trip_id, 'whatsapp_link', $whatsapp_link);
                     update_post_meta($trip_id, 'zoom_link', $zoom_link);
+                    update_post_meta($trip_id, 'trip_languages', $trip_languages);
                     alpenia_update_secure_meta($trip_id, 'internal_notes', $internal_notes);
                     alpenia_public_participant_get_trip_registration_token($trip_id, true);
 
@@ -1726,6 +1734,7 @@ function alpenia_dashboard_shortcode() {
                     'assigned_guide' => $trip_form_id ? (int) get_post_meta($trip_form_id, 'assigned_guide', true) : 0,
                     'whatsapp_link' => $trip_form_id ? get_post_meta($trip_form_id, 'whatsapp_link', true) : '',
                     'zoom_link' => $trip_form_id ? get_post_meta($trip_form_id, 'zoom_link', true) : '',
+                    'trip_languages' => $trip_form_id ? (array) get_post_meta($trip_form_id, 'trip_languages', true) : [],
                     'internal_notes' => $trip_form_id ? alpenia_get_secure_meta($trip_form_id, 'internal_notes', true) : '',
                 ];
                 ?>
@@ -1839,6 +1848,18 @@ function alpenia_dashboard_shortcode() {
                                         <option value="<?php echo esc_attr($guide->ID); ?>" <?php selected($trip_form_values['assigned_guide'], $guide->ID); ?>><?php echo esc_html($guide->display_name); ?></option>
                                     <?php endforeach; ?>
                                 </select>
+                            </div>
+
+                            <div class="form-group full">
+                                <label for="trip_languages"><?php echo esc_html(alpenia_travel_t('Unterstützte Sprachen')); ?></label>
+                                <select id="trip_languages" name="trip_languages[]" multiple required>
+                                    <?php foreach (alpenia_get_trip_language_options() as $language_code => $language_label) : ?>
+                                        <option value="<?php echo esc_attr($language_code); ?>" <?php selected(in_array($language_code, (array) $trip_form_values['trip_languages'], true)); ?>>
+                                            <?php echo esc_html(alpenia_get_trip_language_label($language_code)); ?>
+                                        </option>
+                                    <?php endforeach; ?>
+                                </select>
+                                <small><?php echo esc_html(alpenia_travel_t('Mehrfachauswahl möglich (max. 3).')); ?></small>
                             </div>
 
                             <div class="form-group full">
@@ -2601,6 +2622,7 @@ function alpenia_dashboard_shortcode() {
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Zeitraum')); ?></strong><span><?php echo esc_html(alpenia_date_range_display(get_post_meta($view_trip_id, 'start_date', true), get_post_meta($view_trip_id, 'end_date', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Freie Plätze')); ?></strong><span><?php echo esc_html(alpenia_get_trip_capacity_left($view_trip_id)); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reiseleiter')); ?></strong><span><?php echo esc_html(alpenia_display_value($assigned_guide_name)); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Unterstützte Sprachen')); ?></strong><span><?php echo esc_html(alpenia_format_trip_languages(get_post_meta($view_trip_id, 'trip_languages', true))); ?></span></div>
                         <div class="trip-meta-box"><strong>WhatsApp</strong><span><?php $wa = get_post_meta($view_trip_id, 'whatsapp_link', true); if ($wa) : ?><div class="public-registration-link__actions"><button type="button" class="btn-secondary public-registration-link__copy" data-copy-value="<?php echo esc_attr($wa); ?>" data-copy-default="<?php echo esc_attr(alpenia_travel_t('Link kopieren')); ?>" data-copy-success="<?php echo esc_attr(alpenia_travel_t('Link kopiert')); ?>" aria-live="polite"><?php echo esc_html(alpenia_travel_t('Link kopieren')); ?></button><a class="btn-primary public-registration-link__open" href="<?php echo esc_url($wa); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a></div><?php else : ?>-<?php endif; ?></span></div>
                         <div class="trip-meta-box"><strong>Zoom</strong><span><?php $zoom = get_post_meta($view_trip_id, 'zoom_link', true); if ($zoom) : ?><div class="public-registration-link__actions"><button type="button" class="btn-secondary public-registration-link__copy" data-copy-value="<?php echo esc_attr($zoom); ?>" data-copy-default="<?php echo esc_attr(alpenia_travel_t('Link kopieren')); ?>" data-copy-success="<?php echo esc_attr(alpenia_travel_t('Link kopiert')); ?>" aria-live="polite"><?php echo esc_html(alpenia_travel_t('Link kopieren')); ?></button><a class="btn-primary public-registration-link__open" href="<?php echo esc_url($zoom); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('Öffnen')); ?></a></div><?php else : ?>-<?php endif; ?></span></div>
                     </div>
@@ -3241,6 +3263,10 @@ function alpenia_dashboard_shortcode() {
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Start')); ?></span>
                                                 <strong><?php echo esc_html(alpenia_format_date_display(get_post_meta($trip->ID, 'start_date', true))); ?></strong>
+                                            </div>
+                                            <div class="trip-info-item">
+                                                <span><?php echo esc_html(alpenia_travel_t('Sprachen')); ?></span>
+                                                <strong><?php echo esc_html(alpenia_format_trip_languages(get_post_meta($trip->ID, 'trip_languages', true))); ?></strong>
                                             </div>
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Ende')); ?></span>
