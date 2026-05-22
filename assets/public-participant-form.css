@@ -914,3 +914,53 @@ body:has(.alpenia-public-form) .page-title {
         width: calc(100vw - 20px);
     }
 }
+
+.alpenia-public-link-actions {
+    grid-column: 1 / -1;
+    display: grid;
+    gap: 10px;
+}
+
+.alpenia-public-link-actions__item {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1px solid rgba(23, 75, 61, .14);
+    border-radius: 14px;
+    background: #fff;
+}
+
+.alpenia-public-link-actions__item > span {
+    font-weight: 800;
+    color: var(--alpenia-public-primary);
+}
+
+.alpenia-public-link-actions__buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.alpenia-public-link-copy,
+.alpenia-public-link-open {
+    border: 1px solid rgba(23, 75, 61, .2);
+    border-radius: 999px;
+    padding: 7px 12px;
+    font-size: .86rem;
+    font-weight: 800;
+    cursor: pointer;
+    text-decoration: none;
+}
+
+.alpenia-public-link-copy {
+    background: #fff;
+    color: var(--alpenia-public-primary);
+}
+
+.alpenia-public-link-open {
+    background: var(--alpenia-public-primary);
+    color: #fff;
+}
