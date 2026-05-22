@@ -4044,6 +4044,12 @@ function alpenia_dashboard_shortcode() {
             text-decoration: none !important;
         }
 
+        .user-action-links .delete-button {
+            background: #b43434;
+            color: #fff0f0;
+            border-color: #d46a6a;
+        }
+
         .user-action-links a:hover,
         .user-action-links a:focus,
         .user-action-links .link-button:hover,
@@ -4077,6 +4083,15 @@ function alpenia_dashboard_shortcode() {
 
         .user-action-links .deactivate-button:hover,
         .user-action-links .deactivate-button:focus {
+            color: #fff;
+            background: #962a2a;
+            border-color: #bd5353;
+            text-decoration: none !important;
+            outline: none;
+        }
+
+        .user-action-links .delete-button:hover,
+        .user-action-links .delete-button:focus {
             color: #fff;
             background: #962a2a;
             border-color: #bd5353;
