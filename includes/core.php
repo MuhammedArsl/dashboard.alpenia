@@ -685,6 +685,10 @@ function alpenia_travel_t($text) {
         'Noch keine Daten vorhanden.' => 'Henüz veri yok.',
         'Aktuell keine priorisierten Aufgaben.' => 'Şu anda öncelikli görev yok.',
         'Keine offenen Reisen mit niedriger Auslastung.' => 'Düşük doluluklu açık seyahat yok.',
+        'Unterstützte Sprachen' => 'Desteklenen diller',
+        'Mehrfachauswahl möglich (max. 3).' => 'Birden fazla seçim yapılabilir (en fazla 3).',
+        'Bitte maximal 3 Sprachen auswählen.' => 'Lütfen en fazla 3 dil seçin.',
+        'Sprachen' => 'Diller',
     ];
 
     if (isset($translations['tr']) && is_array($translations['tr'])) {
@@ -742,6 +746,49 @@ function alpenia_date_range_display($start, $end) {
     }
 
     return alpenia_format_date_display($start) . ' - ' . alpenia_format_date_display($end);
+}
+
+function alpenia_get_trip_language_options() {
+    return [
+        'de' => 'Deutsch',
+        'tr' => 'Türkçe',
+        'en' => 'English',
+        'ar' => 'العربية',
+    ];
+}
+
+function alpenia_get_trip_language_label($code, $lang = null) {
+    $code = sanitize_key((string) $code);
+    $labels = [
+        'de' => ['de' => 'Deutsch', 'tr' => 'Almanca'],
+        'tr' => ['de' => 'Türkisch', 'tr' => 'Türkçe'],
+        'en' => ['de' => 'Englisch', 'tr' => 'İngilizce'],
+        'ar' => ['de' => 'Arabisch', 'tr' => 'Arapça'],
+    ];
+    $lang = $lang ? sanitize_key((string) $lang) : alpenia_travel_get_language();
+
+    if (!isset($labels[$code])) {
+        return strtoupper($code);
+    }
+
+    return $labels[$code][$lang === 'tr' ? 'tr' : 'de'];
+}
+
+function alpenia_format_trip_languages($codes, $lang = null) {
+    $lang = $lang ? sanitize_key((string) $lang) : alpenia_travel_get_language();
+    $codes = is_array($codes) ? $codes : (array) $codes;
+    $allowed = array_keys(alpenia_get_trip_language_options());
+    $codes = array_values(array_unique(array_filter(array_map('sanitize_key', $codes), function($code) use ($allowed) {
+        return in_array($code, $allowed, true);
+    })));
+
+    if (empty($codes)) {
+        return '-';
+    }
+
+    return implode(', ', array_map(function($code) use ($lang) {
+        return alpenia_get_trip_language_label($code, $lang);
+    }, $codes));
 }
 
 function alpenia_travel_pdf_label($key) {
