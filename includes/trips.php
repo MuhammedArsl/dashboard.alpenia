@@ -445,9 +445,76 @@ function alpenia_get_missing_docs_details($participant_id) {
 /**
  * Mail Helfer
  */
-function alpenia_send_notification($subject, $message) {
+function alpenia_send_notification($subject, $message, $context = []) {
     $admin_email = get_option('admin_email');
-    if ($admin_email) {
-        wp_mail($admin_email, $subject, $message);
+    if (!$admin_email) {
+        return;
     }
+
+    $context = is_array($context) ? $context : [];
+    $event_label = trim((string) ($context['event_label'] ?? alpenia_travel_t('System Benachrichtigung')));
+    $trip_label = trim((string) ($context['trip'] ?? ''));
+    $participant_label = trim((string) ($context['participant'] ?? ''));
+    $user_label = trim((string) ($context['user'] ?? ''));
+    $trip_id = absint($context['trip_id'] ?? 0);
+    $participant_id = absint($context['participant_id'] ?? 0);
+
+    $rows = [];
+    if ($trip_label !== '') {
+        $rows[] = ['label' => alpenia_travel_t('Reise'), 'value' => $trip_label];
+    }
+    if ($participant_label !== '') {
+        $rows[] = ['label' => alpenia_travel_t('Teilnehmer'), 'value' => $participant_label];
+    }
+    if ($user_label !== '') {
+        $rows[] = ['label' => alpenia_travel_t('Erstellt von'), 'value' => $user_label];
+    }
+    $rows[] = ['label' => alpenia_travel_t('Zeitpunkt'), 'value' => wp_date('d.m.Y H:i')];
+
+    $details_html = '';
+    foreach ($rows as $row) {
+        $details_html .= '<tr>';
+        $details_html .= '<td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#6b7280;font-size:13px;width:180px;">' . esc_html($row['label']) . '</td>';
+        $details_html .= '<td style="padding:10px 12px;border-bottom:1px solid #e5e7eb;color:#111827;font-size:13px;font-weight:600;">' . esc_html($row['value']) . '</td>';
+        $details_html .= '</tr>';
+    }
+
+    $site_name = wp_specialchars_decode(get_bloginfo('name'), ENT_QUOTES);
+    $dashboard_url = home_url('/');
+    $trip_url = $trip_id > 0 && function_exists('alpenia_dashboard_link') ? alpenia_dashboard_link(['view_trip' => $trip_id]) : '';
+    $participant_url = $participant_id > 0 && function_exists('alpenia_dashboard_link') ? alpenia_dashboard_link(['edit_participant' => $participant_id]) : '';
+
+    $cta_buttons = '';
+    if ($trip_url !== '') {
+        $cta_buttons .= '<a href="' . esc_url($trip_url) . '" style="display:inline-block;padding:11px 16px;background:#0f7566;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;margin-right:8px;">' . esc_html(alpenia_travel_t('Geziye Git')) . '</a>';
+    }
+    if ($participant_url !== '') {
+        $cta_buttons .= '<a href="' . esc_url($participant_url) . '" style="display:inline-block;padding:11px 16px;background:#1b4d93;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">' . esc_html(alpenia_travel_t('Katılımcıya Git')) . '</a>';
+    }
+    if ($cta_buttons === '') {
+        $cta_buttons = '<a href="' . esc_url($dashboard_url) . '" style="display:inline-block;padding:11px 16px;background:#0f7566;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">' . esc_html(alpenia_travel_t('Dashboard öffnen')) . '</a>';
+    }
+
+    $html_message = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">';
+    $html_message .= '<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background:#f3f4f6;padding:28px 12px;"><tr><td align="center">';
+    $html_message .= '<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="max-width:680px;background:#ffffff;border-radius:14px;overflow:hidden;box-shadow:0 8px 24px rgba(15,23,42,.08);">';
+    $html_message .= '<tr><td style="padding:24px 28px;background:linear-gradient(135deg,#0f7566,#1b4d93);color:#ffffff;">';
+    $html_message .= '<p style="margin:0 0 8px 0;font-size:12px;letter-spacing:.08em;text-transform:uppercase;opacity:.9;">Alpenia Travel</p>';
+    $html_message .= '<h1 style="margin:0;font-size:24px;line-height:1.3;">' . esc_html($subject) . '</h1>';
+    $html_message .= '<p style="margin:10px 0 0 0;font-size:14px;line-height:1.6;opacity:.95;">' . esc_html($event_label) . '</p>';
+    $html_message .= '</td></tr>';
+    $html_message .= '<tr><td style="padding:24px 28px 10px 28px;color:#111827;">';
+    $html_message .= '<p style="margin:0 0 16px 0;font-size:15px;line-height:1.7;color:#374151;">' . nl2br(esc_html($message)) . '</p>';
+    $html_message .= '<table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="border:1px solid #e5e7eb;border-radius:10px;border-collapse:separate;border-spacing:0;overflow:hidden;">' . $details_html . '</table>';
+    $html_message .= '</td></tr>';
+    $html_message .= '<tr><td style="padding:18px 28px 28px 28px;">';
+    $html_message .= $cta_buttons;
+    $html_message .= '</td></tr>';
+    $html_message .= '<tr><td style="padding:14px 28px;background:#f9fafb;border-top:1px solid #e5e7eb;color:#6b7280;font-size:12px;line-height:1.6;">';
+    $html_message .= esc_html($site_name) . ' · office@alpeniatravel.com';
+    $html_message .= '</td></tr>';
+    $html_message .= '</table></td></tr></table></body></html>';
+
+    $headers = ['Content-Type: text/html; charset=UTF-8'];
+    wp_mail($admin_email, $subject, $html_message, $headers);
 }
