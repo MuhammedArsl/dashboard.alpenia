@@ -452,7 +452,7 @@ function alpenia_send_notification($subject, $message, $context = []) {
     }
 
     $context = is_array($context) ? $context : [];
-    $event_label = trim((string) ($context['event_label'] ?? alpenia_travel_t('System Benachrichtigung')));
+    $event_label = trim((string) ($context['event_label'] ?? 'Systembenachrichtigung'));
     $trip_label = trim((string) ($context['trip'] ?? ''));
     $participant_label = trim((string) ($context['participant'] ?? ''));
     $user_label = trim((string) ($context['user'] ?? ''));
@@ -461,15 +461,15 @@ function alpenia_send_notification($subject, $message, $context = []) {
 
     $rows = [];
     if ($trip_label !== '') {
-        $rows[] = ['label' => alpenia_travel_t('Reise'), 'value' => $trip_label];
+        $rows[] = ['label' => 'Reise', 'value' => $trip_label];
     }
     if ($participant_label !== '') {
-        $rows[] = ['label' => alpenia_travel_t('Teilnehmer'), 'value' => $participant_label];
+        $rows[] = ['label' => 'Teilnehmer', 'value' => $participant_label];
     }
     if ($user_label !== '') {
-        $rows[] = ['label' => alpenia_travel_t('Erstellt von'), 'value' => $user_label];
+        $rows[] = ['label' => 'Erstellt von', 'value' => $user_label];
     }
-    $rows[] = ['label' => alpenia_travel_t('Zeitpunkt'), 'value' => wp_date('d.m.Y H:i')];
+    $rows[] = ['label' => 'Zeitpunkt', 'value' => wp_date('d.m.Y H:i')];
 
     $details_html = '';
     foreach ($rows as $row) {
@@ -486,13 +486,13 @@ function alpenia_send_notification($subject, $message, $context = []) {
 
     $cta_buttons = '';
     if ($trip_url !== '') {
-        $cta_buttons .= '<a href="' . esc_url($trip_url) . '" style="display:inline-block;padding:11px 16px;background:#0f7566;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;margin-right:8px;">' . esc_html(alpenia_travel_t('Geziye Git')) . '</a>';
+        $cta_buttons .= '<a href="' . esc_url($trip_url) . '" style="display:inline-block;padding:11px 16px;background:#0f7566;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;margin-right:8px;">' . 'Zur Reise' . '</a>';
     }
     if ($participant_url !== '') {
-        $cta_buttons .= '<a href="' . esc_url($participant_url) . '" style="display:inline-block;padding:11px 16px;background:#1b4d93;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">' . esc_html(alpenia_travel_t('Katılımcıya Git')) . '</a>';
+        $cta_buttons .= '<a href="' . esc_url($participant_url) . '" style="display:inline-block;padding:11px 16px;background:#1b4d93;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">' . 'Zum Teilnehmer' . '</a>';
     }
     if ($cta_buttons === '') {
-        $cta_buttons = '<a href="' . esc_url($dashboard_url) . '" style="display:inline-block;padding:11px 16px;background:#0f7566;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">' . esc_html(alpenia_travel_t('Dashboard öffnen')) . '</a>';
+        $cta_buttons = '<a href="' . esc_url($dashboard_url) . '" style="display:inline-block;padding:11px 16px;background:#0f7566;color:#ffffff;text-decoration:none;border-radius:8px;font-size:13px;font-weight:600;">' . 'Dashboard öffnen' . '</a>';
     }
 
     $html_message = '<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head><body style="margin:0;padding:0;background:#f3f4f6;font-family:-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Helvetica,Arial,sans-serif;">';
