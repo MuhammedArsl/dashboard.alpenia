@@ -499,7 +499,7 @@ function alpenia_travel_t($text) {
         'Alle Reiseleiter' => 'Tüm seyahat rehberleri',
         'pro Seite' => 'sayfa başına',
         '%1$d Reisen gefunden – Seite %2$d von %3$d' => '%1$d seyahat bulundu – Sayfa %2$d / %3$d',
-        '%d Tage bis Start' => 'Başlangıca %d gün',
+        '%d Tage bis Reise' => 'Geziye %d gün',
         'Start' => 'Başlangıç',
         'Ende' => 'Bitiş',
         'Offene Zahlungen im Überblick' => 'Açık ödemeler genel bakışı',
