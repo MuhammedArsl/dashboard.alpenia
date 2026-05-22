@@ -660,7 +660,7 @@ function alpenia_public_participant_create($trip_id, $values) {
     }
 
     alpenia_send_notification('Neue Teilnehmerdaten übermittelt', 'Ein Teilnehmer hat öffentliche Formulardaten gesendet: ' . $title, [
-        'event_label' => alpenia_travel_t('Öffentliche Teilnehmeranmeldung'),
+        'event_label' => 'Öffentliche Teilnehmeranmeldung',
         'trip' => get_the_title($trip_id),
         'trip_id' => $trip_id,
         'participant' => $title,
