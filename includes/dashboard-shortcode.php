@@ -3261,7 +3261,6 @@ function alpenia_dashboard_shortcode() {
                                     </div>
 
                                     <div class="list-actions trip-list-card__actions">
-                                        <span class="badge"><?php echo esc_html($trip_participants_count); ?> <?php echo esc_html(alpenia_travel_t('Teilnehmer')); ?></span>
                                         <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['view_trip' => $trip->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Zur Reise')); ?></a>
                                         <?php if (alpenia_user_can_edit_trip($trip->ID)) : ?>
                                             <a class="table-btn" href="<?php echo esc_url(alpenia_dashboard_link(['edit_trip' => $trip->ID])); ?>"><?php echo esc_html(alpenia_travel_t('Bearbeiten')); ?></a>
