@@ -754,6 +754,13 @@ function alpenia_get_trip_language_options() {
         'tr' => 'Türkçe',
         'en' => 'English',
         'ar' => 'العربية',
+        'es' => 'Español',
+        'fr' => 'Français',
+        'pt' => 'Português',
+        'ru' => 'Русский',
+        'zh' => '中文',
+        'hi' => 'हिन्दी',
+        'ur' => 'اردو',
     ];
 }
 
@@ -764,6 +771,13 @@ function alpenia_get_trip_language_label($code, $lang = null) {
         'tr' => ['de' => 'Türkisch', 'tr' => 'Türkçe'],
         'en' => ['de' => 'Englisch', 'tr' => 'İngilizce'],
         'ar' => ['de' => 'Arabisch', 'tr' => 'Arapça'],
+        'es' => ['de' => 'Spanisch', 'tr' => 'İspanyolca'],
+        'fr' => ['de' => 'Französisch', 'tr' => 'Fransızca'],
+        'pt' => ['de' => 'Portugiesisch', 'tr' => 'Portekizce'],
+        'ru' => ['de' => 'Russisch', 'tr' => 'Rusça'],
+        'zh' => ['de' => 'Chinesisch', 'tr' => 'Çince'],
+        'hi' => ['de' => 'Hindi', 'tr' => 'Hintçe'],
+        'ur' => ['de' => 'Urdu', 'tr' => 'Urduca'],
     ];
     $lang = $lang ? sanitize_key((string) $lang) : alpenia_travel_get_language();
 
