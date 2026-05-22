@@ -241,7 +241,14 @@ function alpenia_dashboard_shortcode() {
     $debug_mode = isset($_GET['alpenia_debug_auth']) && $_GET['alpenia_debug_auth'] == '1';
 
     if (!is_user_logged_in()) {
-        return '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte zuerst einloggen.')) . ' <a href="' . esc_url(alpenia_get_login_url()) . '" style="color:#8ee0b8;font-weight:bold;">' . esc_html(alpenia_travel_t('Zum Login')) . '</a></div>';
+        $login_url = alpenia_get_login_url();
+
+        if (!headers_sent()) {
+            wp_safe_redirect($login_url);
+            exit;
+        }
+
+        return '<script>window.location.replace(' . wp_json_encode($login_url) . ');</script>';
     }
 
     if (!alpenia_user_can_access_dashboard()) {
