@@ -379,7 +379,12 @@ function alpenia_dashboard_shortcode() {
                     if ($is_editing_trip) {
                         $message = '<div class="alpenia-success" data-alpenia-feedback-popup="trip_updated">' . esc_html(alpenia_travel_t('Reise erfolgreich aktualisiert.')) . '</div>';
                     } else {
-                        alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title);
+                        alpenia_send_notification(esc_html__('Neue Reise erstellt', 'alpenia-travel'), esc_html__('Eine neue Reise wurde erstellt: ', 'alpenia-travel') . $trip_title, [
+                            'event_label' => alpenia_travel_t('Neue Reise angelegt'),
+                            'trip' => $trip_title,
+                            'trip_id' => $trip_id,
+                            'user' => wp_get_current_user()->display_name,
+                        ]);
                         $message = '<div class="alpenia-success" data-alpenia-feedback-popup="trip_created">' . esc_html(alpenia_travel_t('Reise erfolgreich erstellt.')) . '</div>';
                     }
                     } else {
@@ -600,7 +605,12 @@ function alpenia_dashboard_shortcode() {
                 }
 
                 if ($all_ok) {
-                    alpenia_send_notification('Neue Teilnehmer erfasst', $saved_count . ' Teilnehmer wurden für eine Reise gespeichert.');
+                    alpenia_send_notification('Neue Teilnehmer erfasst', $saved_count . ' Teilnehmer wurden für eine Reise gespeichert.', [
+                        'event_label' => alpenia_travel_t('Teilnehmer wurden erfasst'),
+                        'trip' => get_the_title($trip_id),
+                        'trip_id' => $trip_id,
+                        'user' => wp_get_current_user()->display_name,
+                    ]);
                     $redirect_url = alpenia_dashboard_link([
                         'participant_saved' => 1,
                         'saved_count' => (int) $saved_count,
