@@ -6749,6 +6749,93 @@ function alpenia_dashboard_shortcode() {
             meldezettel: 5 * 1024 * 1024
         };
 
+        function getDashboardPanelIndex(panel) {
+            if (!panel) return -1;
+            const panels = Array.from(document.querySelectorAll('.panel, .trash-panel'));
+            return panels.indexOf(panel);
+        }
+
+        function replaceDashboardPanelFromHtml(html, panelIndex) {
+            const parser = new DOMParser();
+            const nextDocument = parser.parseFromString(html, 'text/html');
+            const nextPanels = nextDocument.querySelectorAll('.panel, .trash-panel');
+            const nextPanel = nextPanels[panelIndex];
+            const currentPanels = document.querySelectorAll('.panel, .trash-panel');
+            const currentPanel = currentPanels[panelIndex];
+
+            if (!nextPanel || !currentPanel) {
+                window.location.reload();
+                return;
+            }
+
+            currentPanel.outerHTML = nextPanel.outerHTML;
+        }
+
+        async function loadFilterPanel(url, panelIndex) {
+            try {
+                const response = await fetch(url, { credentials: 'same-origin' });
+                if (!response.ok) {
+                    window.location.href = url;
+                    return;
+                }
+
+                const html = await response.text();
+                replaceDashboardPanelFromHtml(html, panelIndex);
+                window.history.pushState({ alpeniaFilter: true, panelIndex: panelIndex }, '', url);
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            } catch (error) {
+                window.location.href = url;
+            }
+        }
+
+        document.addEventListener('submit', function (event) {
+            const form = event.target;
+            if (!(form instanceof HTMLFormElement) || !form.classList.contains('filter-bar') || (form.method || '').toLowerCase() !== 'get') {
+                return;
+            }
+
+            event.preventDefault();
+            const panel = form.closest('.panel, .trash-panel');
+            const panelIndex = getDashboardPanelIndex(panel);
+            if (panelIndex === -1) {
+                form.submit();
+                return;
+            }
+
+            const action = form.getAttribute('action') || window.location.href;
+            const url = new URL(action, window.location.origin);
+            const formData = new FormData(form);
+            const params = new URLSearchParams();
+
+            formData.forEach(function (value, key) {
+                if (typeof value === 'string' && value !== '') {
+                    params.append(key, value);
+                }
+            });
+
+            url.search = params.toString();
+            loadFilterPanel(url.toString(), panelIndex);
+        });
+
+        document.addEventListener('click', function (event) {
+            const link = event.target.closest('.trip-quick-filter, .trash-filter-chip, .alpenia-pagination a, .filter-bar a.btn-secondary');
+            if (!link) return;
+
+            const panel = link.closest('.panel, .trash-panel');
+            const panelIndex = getDashboardPanelIndex(panel);
+            if (panelIndex === -1) return;
+
+            const href = link.getAttribute('href');
+            if (!href) return;
+
+            event.preventDefault();
+            loadFilterPanel(href, panelIndex);
+        });
+
+        window.addEventListener('popstate', function () {
+            window.location.reload();
+        });
+
         function normalize(value) {
             return (value || '').trim().toLowerCase();
         }
