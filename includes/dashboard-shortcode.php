@@ -170,7 +170,7 @@ function alpenia_dashboard_trip_timeline_badge($trip_id) {
         return '<span class="timeline-badge timeline-badge--urgent">' . esc_html(sprintf(alpenia_travel_t('%d Tage übrig'), $days_left)) . '</span>';
     }
 
-    return '<span class="timeline-badge timeline-badge--planned">' . esc_html(sprintf(alpenia_travel_t('%d Tage bis Start'), $days_left)) . '</span>';
+    return '<span class="timeline-badge timeline-badge--planned">' . esc_html(sprintf(alpenia_travel_t('%d Tage bis Reise'), $days_left)) . '</span>';
 }
 
 function alpenia_dashboard_render_pagination($current_page, $max_pages, $base_args, $page_arg) {
