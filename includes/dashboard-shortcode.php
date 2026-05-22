@@ -1851,14 +1851,18 @@ function alpenia_dashboard_shortcode() {
                             </div>
 
                             <div class="form-group full">
-                                <label for="trip_languages"><?php echo esc_html(alpenia_travel_t('Unterstützte Sprachen')); ?></label>
-                                <select id="trip_languages" name="trip_languages[]" multiple required>
-                                    <?php foreach (alpenia_get_trip_language_options() as $language_code => $language_label) : ?>
-                                        <option value="<?php echo esc_attr($language_code); ?>" <?php selected(in_array($language_code, (array) $trip_form_values['trip_languages'], true)); ?>>
-                                            <?php echo esc_html(alpenia_get_trip_language_label($language_code)); ?>
-                                        </option>
-                                    <?php endforeach; ?>
-                                </select>
+                                <label><?php echo esc_html(alpenia_travel_t('Unterstützte Sprachen')); ?></label>
+                                <details class="trip-language-dropdown" id="trip_languages_dropdown">
+                                    <summary id="trip_languages_summary"><?php echo esc_html(alpenia_travel_t('Bitte wählen')); ?></summary>
+                                    <div class="trip-language-dropdown__menu" role="group" aria-label="<?php echo esc_attr(alpenia_travel_t('Unterstützte Sprachen')); ?>">
+                                        <?php foreach (alpenia_get_trip_language_options() as $language_code => $language_label) : ?>
+                                            <label class="trip-language-dropdown__option">
+                                                <input type="checkbox" name="trip_languages[]" value="<?php echo esc_attr($language_code); ?>" <?php checked(in_array($language_code, (array) $trip_form_values['trip_languages'], true)); ?>>
+                                                <span><?php echo esc_html(alpenia_get_trip_language_label($language_code)); ?></span>
+                                            </label>
+                                        <?php endforeach; ?>
+                                    </div>
+                                </details>
                                 <small><?php echo esc_html(alpenia_travel_t('Mehrfachauswahl möglich (max. 3).')); ?></small>
                             </div>
 
@@ -6629,6 +6633,38 @@ function alpenia_dashboard_shortcode() {
             transition: background-color 9999s ease-out 0s;
         }
 
+        .trip-language-dropdown {
+            border: 1px solid rgba(46, 108, 90, 0.45);
+            border-radius: 10px;
+            background: #ffffff;
+        }
+
+        .trip-language-dropdown > summary {
+            list-style: none;
+            cursor: pointer;
+            padding: 12px 14px;
+            font-size: 15px;
+            color: #163d33;
+        }
+
+        .trip-language-dropdown > summary::-webkit-details-marker { display: none; }
+
+        .trip-language-dropdown__menu {
+            border-top: 1px solid rgba(46, 108, 90, 0.2);
+            padding: 10px 12px;
+            display: grid;
+            gap: 8px;
+            max-height: 220px;
+            overflow: auto;
+        }
+
+        .trip-language-dropdown__option {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-weight: 500;
+        }
+
         @media (max-width: 1200px) {
             .trip-meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .trip-info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -6774,6 +6810,50 @@ function alpenia_dashboard_shortcode() {
             visaPhoto: 2 * 1024 * 1024,
             meldezettel: 5 * 1024 * 1024
         };
+
+        const tripLanguagesDropdown = document.getElementById('trip_languages_dropdown');
+        const tripLanguagesSummary = document.getElementById('trip_languages_summary');
+        const tripLanguageInputs = tripLanguagesDropdown ? Array.from(tripLanguagesDropdown.querySelectorAll('input[name="trip_languages[]"]')) : [];
+
+        function syncTripLanguageSummary() {
+            if (!tripLanguagesSummary) return;
+            const selected = tripLanguageInputs.filter((input) => input.checked);
+            if (!selected.length) {
+                tripLanguagesSummary.textContent = '<?php echo esc_js(alpenia_travel_t('Bitte wählen')); ?>';
+                return;
+            }
+            const names = selected.map((input) => {
+                const optionText = input.closest('label')?.querySelector('span');
+                return optionText ? optionText.textContent.trim() : input.value.toUpperCase();
+            });
+            tripLanguagesSummary.textContent = names.join(', ');
+        }
+
+        if (tripLanguageInputs.length) {
+            tripLanguageInputs.forEach(function (input) {
+                input.addEventListener('change', function () {
+                    const checked = tripLanguageInputs.filter((field) => field.checked);
+                    if (checked.length > 3) {
+                        input.checked = false;
+                        alert('<?php echo esc_js(alpenia_travel_t('Bitte maximal 3 Sprachen auswählen.')); ?>');
+                    }
+                    syncTripLanguageSummary();
+                });
+            });
+
+            const tripForm = tripLanguagesDropdown.closest('form');
+            if (tripForm) {
+                tripForm.addEventListener('submit', function (event) {
+                    const checked = tripLanguageInputs.filter((field) => field.checked);
+                    if (!checked.length) {
+                        event.preventDefault();
+                        alert('<?php echo esc_js(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')); ?>');
+                    }
+                });
+            }
+
+            syncTripLanguageSummary();
+        }
 
         function getDashboardPanelIndex(panel) {
             if (!panel) return -1;
