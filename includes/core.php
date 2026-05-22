@@ -686,8 +686,8 @@ function alpenia_travel_t($text) {
         'Aktuell keine priorisierten Aufgaben.' => 'Şu anda öncelikli görev yok.',
         'Keine offenen Reisen mit niedriger Auslastung.' => 'Düşük doluluklu açık seyahat yok.',
         'Unterstützte Sprachen' => 'Desteklenen diller',
-        'Mehrfachauswahl möglich (max. 3).' => 'Birden fazla seçim yapılabilir (en fazla 3).',
-        'Bitte maximal 3 Sprachen auswählen.' => 'Lütfen en fazla 3 dil seçin.',
+        'Mehrfachauswahl möglich (max. 5).' => 'Birden fazla seçim yapılabilir (en fazla 5).',
+        'Bitte maximal 5 Sprachen auswählen.' => 'Lütfen en fazla 5 dil seçin.',
         'Sprachen' => 'Diller',
     ];
 
