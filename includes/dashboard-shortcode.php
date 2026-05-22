@@ -333,8 +333,8 @@ function alpenia_dashboard_shortcode() {
 
             if (empty($trip_title) || empty($trip_type) || empty($destination) || empty($country) || empty($city) || empty($start_date) || empty($end_date) || empty($trip_languages)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . '</div>';
-            } elseif (count($trip_languages) > 3) {
-                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte maximal 3 Sprachen auswählen.')) . '</div>';
+            } elseif (count($trip_languages) > 5) {
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte maximal 5 Sprachen auswählen.')) . '</div>';
             } else {
                 $today_timestamp = strtotime(wp_date('Y-m-d'));
                 $start_timestamp = strtotime($start_date);
@@ -1863,7 +1863,7 @@ function alpenia_dashboard_shortcode() {
                                         <?php endforeach; ?>
                                     </div>
                                 </details>
-                                <small><?php echo esc_html(alpenia_travel_t('Mehrfachauswahl möglich (max. 3).')); ?></small>
+                                <small><?php echo esc_html(alpenia_travel_t('Mehrfachauswahl möglich (max. 5).')); ?></small>
                             </div>
 
                             <div class="form-group full">
@@ -3945,7 +3945,7 @@ function alpenia_dashboard_shortcode() {
             font-weight: 800;
         }
 
-        .users-panel .form-group input:not([type="file"]),
+        .users-panel .form-group input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
         .users-panel .form-group select {
             background: linear-gradient(90deg, #072a23, #073127);
             color: #ecf8f4 !important;
@@ -3953,7 +3953,7 @@ function alpenia_dashboard_shortcode() {
             box-shadow: inset 0 1px 1px rgba(255, 255, 255, 0.02), 0 8px 16px rgba(5, 24, 20, 0.32);
         }
 
-        .users-panel .form-group input:not([type="file"]):focus,
+        .users-panel .form-group input:not([type="file"]):not([type="checkbox"]):not([type="radio"]):focus,
         .users-panel .form-group select:focus {
             border-color: #61b89a;
             box-shadow: 0 0 0 3px rgba(97, 184, 154, 0.25);
@@ -5834,7 +5834,7 @@ function alpenia_dashboard_shortcode() {
 
         .filter-bar input,
         .filter-bar select,
-        .form-group input:not([type="file"]),
+        .form-group input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
         .form-group select {
             width: 100%;
             min-width: 0;
@@ -6665,6 +6665,18 @@ function alpenia_dashboard_shortcode() {
             font-weight: 500;
         }
 
+        .trip-language-dropdown__option input[type="checkbox"] {
+            appearance: auto;
+            -webkit-appearance: checkbox;
+            width: 18px;
+            height: 18px;
+            min-width: 18px;
+            min-height: 18px;
+            margin: 0;
+            padding: 0;
+            accent-color: #2e6c5a;
+        }
+
         @media (max-width: 1200px) {
             .trip-meta-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); }
             .trip-info-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
@@ -6751,7 +6763,7 @@ function alpenia_dashboard_shortcode() {
             .filter-bar > * { flex: 1 1 100%; width: 100%; }
             .filter-bar input,
             .filter-bar select,
-            .form-group input:not([type="file"]),
+            .form-group input:not([type="file"]):not([type="checkbox"]):not([type="radio"]),
             .form-group select,
             .form-group input[type="file"] { font-size: 16px; }
             .participant-wizard__top,
@@ -6833,9 +6845,9 @@ function alpenia_dashboard_shortcode() {
             tripLanguageInputs.forEach(function (input) {
                 input.addEventListener('change', function () {
                     const checked = tripLanguageInputs.filter((field) => field.checked);
-                    if (checked.length > 3) {
+                    if (checked.length > 5) {
                         input.checked = false;
-                        alert('<?php echo esc_js(alpenia_travel_t('Bitte maximal 3 Sprachen auswählen.')); ?>');
+                        alert('<?php echo esc_js(alpenia_travel_t('Bitte maximal 5 Sprachen auswählen.')); ?>');
                     }
                     syncTripLanguageSummary();
                 });
