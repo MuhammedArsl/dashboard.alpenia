@@ -427,8 +427,6 @@ function alpenia_public_participant_render_trip_overview($trip_id) {
     $items = alpenia_public_participant_get_trip_detail_items($trip_id);
     $assigned_guide = (int) get_post_meta($trip_id, 'assigned_guide', true);
     $guide_name = '';
-    $whatsapp_link = trim((string) get_post_meta($trip_id, 'whatsapp_link', true));
-    $zoom_link = trim((string) get_post_meta($trip_id, 'zoom_link', true));
 
     if ($assigned_guide > 0) {
         $guide = get_userdata($assigned_guide);
@@ -450,30 +448,6 @@ function alpenia_public_participant_render_trip_overview($trip_id) {
                 </div>
             <?php endforeach; ?>
         </dl>
-
-
-        <?php if ($whatsapp_link !== '' || $zoom_link !== '') : ?>
-            <div class="alpenia-public-link-actions" aria-label="<?php echo esc_attr(alpenia_travel_t('Support')); ?>">
-                <?php if ($whatsapp_link !== '') : ?>
-                    <div class="alpenia-public-link-actions__item">
-                        <span>WhatsApp</span>
-                        <div class="alpenia-public-link-actions__buttons">
-                            <button type="button" class="alpenia-public-link-copy" data-copy-value="<?php echo esc_attr($whatsapp_link); ?>" data-copy-default="<?php echo esc_attr(alpenia_travel_t('Link kopieren')); ?>" data-copy-success="<?php echo esc_attr(alpenia_travel_t('Link kopiert')); ?>"><?php echo esc_html(alpenia_travel_t('Link kopieren')); ?></button>
-                            <a class="alpenia-public-link-open" href="<?php echo esc_url($whatsapp_link); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('Chat öffnen')); ?></a>
-                        </div>
-                    </div>
-                <?php endif; ?>
-                <?php if ($zoom_link !== '') : ?>
-                    <div class="alpenia-public-link-actions__item">
-                        <span>Zoom</span>
-                        <div class="alpenia-public-link-actions__buttons">
-                            <button type="button" class="alpenia-public-link-copy" data-copy-value="<?php echo esc_attr($zoom_link); ?>" data-copy-default="<?php echo esc_attr(alpenia_travel_t('Link kopieren')); ?>" data-copy-success="<?php echo esc_attr(alpenia_travel_t('Link kopiert')); ?>"><?php echo esc_html(alpenia_travel_t('Link kopieren')); ?></button>
-                            <a class="alpenia-public-link-open" href="<?php echo esc_url($zoom_link); ?>" target="_blank" rel="noopener noreferrer"><?php echo esc_html(alpenia_travel_t('Meeting öffnen')); ?></a>
-                        </div>
-                    </div>
-                <?php endif; ?>
-            </div>
-        <?php endif; ?>
 
 
         <div class="alpenia-public-prep-card">
