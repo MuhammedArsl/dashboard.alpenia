@@ -464,6 +464,7 @@ function alpenia_travel_t($text) {
         'Nur offene Reisen' => 'Sadece açık seyahatler',
         'Nur volle Reisen' => 'Sadece dolu seyahatler',
         'Alles zurücksetzen' => 'Tümünü sıfırla',
+        'Hallo, %s!' => 'Merhaba, %s!',
 
         'E-Mail Adresse' => 'E-posta adresi',
         'Aufenthaltstitel Nummer' => 'Oturum izni numarası',
