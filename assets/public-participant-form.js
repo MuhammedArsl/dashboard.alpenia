@@ -159,6 +159,50 @@
         });
 
         var messages = getMessages();
+
+        document.querySelectorAll('.alpenia-public-link-copy').forEach(function (button) {
+            button.addEventListener('click', function () {
+                var value = button.getAttribute('data-copy-value') || '';
+                var defaultLabel = button.getAttribute('data-copy-default') || button.textContent;
+                var successLabel = button.getAttribute('data-copy-success') || defaultLabel;
+                if (!value) {
+                    return;
+                }
+
+                function showCopied() {
+                    button.textContent = successLabel;
+                    window.setTimeout(function () {
+                        button.textContent = defaultLabel;
+                    }, 1800);
+                }
+
+                function copyWithFallback() {
+                    var temp = document.createElement('textarea');
+                    temp.value = value;
+                    temp.setAttribute('readonly', 'readonly');
+                    temp.style.position = 'absolute';
+                    temp.style.left = '-9999px';
+                    document.body.appendChild(temp);
+                    temp.select();
+                    try {
+                        if (document.execCommand('copy')) {
+                            showCopied();
+                        }
+                    } catch (error) {
+                        // noop
+                    }
+                    document.body.removeChild(temp);
+                }
+
+                if (navigator.clipboard && navigator.clipboard.writeText) {
+                    navigator.clipboard.writeText(value).then(showCopied).catch(copyWithFallback);
+                    return;
+                }
+
+                copyWithFallback();
+            });
+        });
+
         forms.forEach(function (form) {
             var privacyConsent = form.querySelector('input[name="privacy_consent"]');
             var accuracyConsent = form.querySelector('input[name="accuracy_consent"]');
