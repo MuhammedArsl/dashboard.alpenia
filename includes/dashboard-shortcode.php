@@ -6775,6 +6775,21 @@ function alpenia_dashboard_shortcode() {
             meldezettel: 5 * 1024 * 1024
         };
 
+        const tripLanguageSelect = document.getElementById('trip_languages');
+        if (tripLanguageSelect) {
+            tripLanguageSelect.addEventListener('change', function () {
+                const selectedOptions = Array.from(tripLanguageSelect.selectedOptions);
+                if (selectedOptions.length <= 3) {
+                    tripLanguageSelect.setCustomValidity('');
+                    return;
+                }
+
+                selectedOptions[selectedOptions.length - 1].selected = false;
+                tripLanguageSelect.setCustomValidity('<?php echo esc_js(alpenia_travel_t('Bitte maximal 3 Sprachen auswählen.')); ?>');
+                tripLanguageSelect.reportValidity();
+            });
+        }
+
         function getDashboardPanelIndex(panel) {
             if (!panel) return -1;
             const panels = Array.from(document.querySelectorAll('.panel, .trash-panel'));
