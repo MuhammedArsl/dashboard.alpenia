@@ -105,7 +105,7 @@
     function toggleResidencePermit(form, countryList) {
         var nationalityField = form.querySelector('[data-alpenia-nationality]');
         if (!nationalityField) {
-            return;
+            return false;
         }
 
         var value = normalize(nationalityField.value);
@@ -127,6 +127,24 @@
             uploadInput.disabled = !requiresResidencePermit;
             uploadInput.required = requiresResidencePermit;
         }
+
+        return requiresResidencePermit;
+    }
+
+    function validateRequiredFields(form) {
+        if (form.checkValidity()) {
+            return true;
+        }
+
+        var invalidField = form.querySelector(':invalid');
+        if (invalidField && typeof invalidField.reportValidity === 'function') {
+            invalidField.reportValidity();
+            invalidField.focus({ preventScroll: true });
+        } else if (typeof form.reportValidity === 'function') {
+            form.reportValidity();
+        }
+
+        return false;
     }
 
     document.addEventListener('DOMContentLoaded', function () {
@@ -254,8 +272,12 @@
             });
 
             form.addEventListener('submit', function (event) {
+                toggleResidencePermit(form, countryList);
+                var requiredFieldsValid = validateRequiredFields(form);
                 var datesValid = validateDateRanges(form, messages);
-                if (!datesValid || !validateConsents()) {
+                var consentsValid = validateConsents();
+
+                if (!requiredFieldsValid || !datesValid || !consentsValid) {
                     event.preventDefault();
                     event.stopPropagation();
                 }
