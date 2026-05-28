@@ -6634,41 +6634,78 @@ function alpenia_dashboard_shortcode() {
         }
 
         .trip-language-dropdown {
-            border: 1px solid rgba(46, 108, 90, 0.45);
-            border-radius: 10px;
-            background: #ffffff;
+            width: 100%;
+            min-width: 0;
+            border: 1px solid rgba(120,180,150,0.35);
+            border-radius: 12px;
+            background: rgba(16,36,29,0.9);
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        .trip-language-dropdown[open] {
+            border-color: rgba(125, 211, 168, 0.55);
+            box-shadow: 0 0 0 2px rgba(125, 211, 168, 0.15);
         }
 
         .trip-language-dropdown > summary {
+            position: relative;
+            display: flex;
+            align-items: center;
+            min-height: 56px;
             list-style: none;
             cursor: pointer;
-            padding: 12px 14px;
-            font-size: 15px;
-            color: #163d33;
+            padding: 0 52px 0 16px;
+            font-size: 16px;
+            font-weight: 500;
+            color: #ffffff;
+            outline: none;
+            background-image:
+                linear-gradient(45deg, transparent 50%, #ffffff 50%),
+                linear-gradient(135deg, #ffffff 50%, transparent 50%);
+            background-position:
+                calc(100% - 22px) calc(50% - 3px),
+                calc(100% - 16px) calc(50% - 3px);
+            background-size: 6px 6px, 6px 6px;
+            background-repeat: no-repeat;
         }
 
         .trip-language-dropdown > summary::-webkit-details-marker { display: none; }
 
         .trip-language-dropdown__menu {
-            border-top: 1px solid rgba(46, 108, 90, 0.2);
-            padding: 10px 12px;
+            border-top: 1px solid rgba(120,180,150,0.28);
+            padding: 12px;
             display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
             gap: 8px;
-            max-height: 220px;
-            overflow: auto;
+            max-height: none;
+            overflow: visible;
+            background: rgba(16,36,29,0.96);
+            border-radius: 0 0 12px 12px;
         }
 
         .trip-language-dropdown__option {
             display: flex;
             align-items: center;
-            gap: 8px;
-            font-weight: 500;
-            color: #163d33;
+            gap: 10px;
+            min-height: 38px;
+            padding: 8px 10px;
+            border: 1px solid rgba(120,180,150,0.2);
+            border-radius: 10px;
+            background: rgba(255,255,255,0.04);
+            font-weight: 600;
+            color: #ffffff;
             opacity: 1;
         }
 
+        .trip-language-dropdown__option:hover,
+        .trip-language-dropdown__option:focus-within {
+            border-color: rgba(125, 211, 168, 0.48);
+            background: rgba(125, 211, 168, 0.1);
+        }
+
         .trip-language-dropdown__option span {
-            color: #163d33;
+            color: #ffffff;
             opacity: 1;
         }
 
