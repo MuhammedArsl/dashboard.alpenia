@@ -223,3 +223,84 @@ msgstr ""
 
 msgid "Wird nach dem Speichern erstellt"
 msgstr ""
+
+msgid "Aktualisiere hier die Reisedaten."
+msgstr ""
+
+msgid "Dashboard Navigation"
+msgstr ""
+
+msgid "Menü"
+msgstr ""
+
+msgid "Gestartet"
+msgstr ""
+
+msgid "%d Tage übrig"
+msgstr ""
+
+msgid "Seitennavigation"
+msgstr ""
+
+msgid "Reise erfolgreich aktualisiert."
+msgstr ""
+
+msgid "Bu geziye en fazla %d katılımcı daha eklenebilir. / Für diese Reise können maximal noch %d Teilnehmer hinzugefügt werden."
+msgstr ""
+
+msgid "Zahlung offen"
+msgstr ""
+
+msgid "Neu erfassen"
+msgstr ""
+
+msgid "Nicht zugewiesen"
+msgstr ""
+
+msgid "E-Mail bereits vorhanden"
+msgstr ""
+
+msgid "E-Mail bereits verwendet"
+msgstr ""
+
+msgid "Lade Flughafenliste …"
+msgstr ""
+
+msgid "Bitte zuerst Reise wählen."
+msgstr ""
+
+msgid "Diese Reise ist voll. Es sind keine freien Plätze mehr verfügbar."
+msgstr ""
+
+msgid "Freie Plätze:"
+msgstr ""
+
+msgid "Es sind nur noch %d freie Plätze verfügbar."
+msgstr ""
+
+msgid "Aus Leistungsgründen können maximal %d Teilnehmer gleichzeitig erfasst werden."
+msgstr ""
+
+msgid "İndir"
+msgstr ""
+
+msgid "Alpenia Travel"
+msgstr ""
+
+msgid "Teilnehmerdaten"
+msgstr ""
+
+msgid "Diese Felder entsprechen dem Teilnehmerformular im Dashboard und werden zusätzlich in der REST API für Automationen wie Zapier bereitgestellt."
+msgstr ""
+
+msgid "Keine Reise zugeordnet"
+msgstr ""
+
+msgid "Erledigt"
+msgstr ""
+
+msgid "Neuer Teilnehmer"
+msgstr ""
+
+msgid "Pflichtfeld"
+msgstr ""

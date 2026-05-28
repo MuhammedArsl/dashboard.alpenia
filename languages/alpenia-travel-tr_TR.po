@@ -378,3 +378,84 @@ msgstr "Katılımcı ID"
 
 msgid "Wird nach dem Speichern erstellt"
 msgstr "Kaydettikten sonra oluşturulur"
+
+msgid "Aktualisiere hier die Reisedaten."
+msgstr "Gezi bilgilerini buradan güncelleyin."
+
+msgid "Dashboard Navigation"
+msgstr "Kontrol paneli navigasyonu"
+
+msgid "Menü"
+msgstr "Menü"
+
+msgid "Gestartet"
+msgstr "Başladı"
+
+msgid "%d Tage übrig"
+msgstr "%d gün kaldı"
+
+msgid "Seitennavigation"
+msgstr "Sayfa navigasyonu"
+
+msgid "Reise erfolgreich aktualisiert."
+msgstr "Gezi başarıyla güncellendi."
+
+msgid "Bu geziye en fazla %d katılımcı daha eklenebilir. / Für diese Reise können maximal noch %d Teilnehmer hinzugefügt werden."
+msgstr "Bu geziye en fazla %d katılımcı daha eklenebilir."
+
+msgid "Zahlung offen"
+msgstr "Ödeme bekliyor"
+
+msgid "Neu erfassen"
+msgstr "Yeni kayıt oluştur"
+
+msgid "Nicht zugewiesen"
+msgstr "Atanmamış"
+
+msgid "E-Mail bereits vorhanden"
+msgstr "E-posta zaten mevcut"
+
+msgid "E-Mail bereits verwendet"
+msgstr "E-posta zaten kullanılıyor"
+
+msgid "Lade Flughafenliste …"
+msgstr "Havalimanı listesi yükleniyor …"
+
+msgid "Bitte zuerst Reise wählen."
+msgstr "Lütfen önce gezi seçin."
+
+msgid "Diese Reise ist voll. Es sind keine freien Plätze mehr verfügbar."
+msgstr "Bu gezi dolu. Artık boş kontenjan yok."
+
+msgid "Freie Plätze:"
+msgstr "Boş kontenjan:"
+
+msgid "Es sind nur noch %d freie Plätze verfügbar."
+msgstr "Yalnızca %d boş kontenjan kaldı."
+
+msgid "Aus Leistungsgründen können maximal %d Teilnehmer gleichzeitig erfasst werden."
+msgstr "Performans nedeniyle aynı anda en fazla %d katılımcı kaydedilebilir."
+
+msgid "İndir"
+msgstr "İndir"
+
+msgid "Alpenia Travel"
+msgstr "Alpenia Travel"
+
+msgid "Teilnehmerdaten"
+msgstr "Katılımcı bilgileri"
+
+msgid "Diese Felder entsprechen dem Teilnehmerformular im Dashboard und werden zusätzlich in der REST API für Automationen wie Zapier bereitgestellt."
+msgstr "Bu alanlar kontrol panelindeki katılımcı formuyla aynıdır ve Zapier gibi otomasyonlar için REST API’de ayrıca sunulur."
+
+msgid "Keine Reise zugeordnet"
+msgstr "Gezi atanmamış"
+
+msgid "Erledigt"
+msgstr "Tamamlandı"
+
+msgid "Neuer Teilnehmer"
+msgstr "Yeni katılımcı"
+
+msgid "Pflichtfeld"
+msgstr "Zorunlu alan"
