@@ -1,6 +1,9 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: alpenia-travel\n"
+"PO-Revision-Date: 2026-05-28 00:00+0000\n"
+"Last-Translator: Alpenia Team\n"
+"Language-Team: Turkish\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -378,3 +381,9 @@ msgstr "Katılımcı ID"
 
 msgid "Wird nach dem Speichern erstellt"
 msgstr "Kaydettikten sonra oluşturulur"
+
+msgid "Reiseveranstalter Land"
+msgstr "Geziyi düzenleyen ülke"
+
+msgid "Reiseveranstalter Stadt"
+msgstr "Geziyi düzenleyen şehir"
