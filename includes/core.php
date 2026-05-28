@@ -680,6 +680,7 @@ function alpenia_travel_t($text) {
         'Abflug' => 'Kalkış',
         'Land / Stadt' => 'Ülke / Şehir',
         'Reiseart' => 'Gezi türü',
+        'Reiseleitung' => 'Gezi rehberi',
         'Abflugstadt' => 'Kalkış şehri',
         'Flughafen' => 'Havalimanı',
         'Flughafen (IATA-Code)' => 'Havalimanı (IATA kodu)',
