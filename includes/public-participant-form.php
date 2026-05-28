@@ -570,11 +570,38 @@ function alpenia_public_participant_validate_date_range($start_date, $end_date, 
     return true;
 }
 
+function alpenia_public_participant_validate_choice_fields($values) {
+    $fields = alpenia_public_participant_get_form_fields();
+
+    foreach ($fields as $meta_key => $field) {
+        if (empty($field['options']) || !is_array($field['options'])) {
+            continue;
+        }
+
+        $value = $values[$meta_key] ?? '';
+        if ($value !== '' && !array_key_exists($value, $field['options'])) {
+            return new WP_Error('invalid_choice_field', alpenia_travel_t('Bitte nur Werte aus den Auswahllisten verwenden.'));
+        }
+    }
+
+    $nationality = trim((string) ($values['nationality'] ?? ''));
+    if ($nationality !== '' && !in_array($nationality, alpenia_get_all_countries(), true)) {
+        return new WP_Error('invalid_nationality', alpenia_travel_t('Bitte eine Staatsbürgerschaft aus der Liste auswählen.'));
+    }
+
+    return true;
+}
+
 function alpenia_public_participant_create($trip_id, $values) {
     foreach (alpenia_public_participant_get_required_fields() as $required_key) {
         if (empty($values[$required_key])) {
             return new WP_Error('missing_required_fields', alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.'));
         }
+    }
+
+    $choice_validation = alpenia_public_participant_validate_choice_fields($values);
+    if (is_wp_error($choice_validation)) {
+        return $choice_validation;
     }
 
     $passport_date_validation = alpenia_public_participant_validate_date_range(
@@ -727,15 +754,12 @@ function alpenia_public_participant_render_fields($values) {
             echo '</label>';
 
             if (!empty($field['options'])) {
-                echo '<select id="' . esc_attr($input_id) . '" name="' . esc_attr($meta_key) . '"' . ($required ? ' required' : '') . $extra_input_attrs . '>';
-                foreach ($field['options'] as $option_value => $option_label) {
-                    echo '<option value="' . esc_attr($option_value) . '" ' . selected((string) $value, (string) $option_value, false) . '>' . esc_html(alpenia_travel_t($option_label)) . '</option>';
-                }
-                echo '</select>';
+                alpenia_public_participant_render_select_field($input_id, $meta_key, $field['options'], $value, $required, $extra_input_attrs);
+            } elseif ($meta_key === 'nationality') {
+                alpenia_public_participant_render_select_field($input_id, $meta_key, alpenia_public_participant_get_country_options(), $value, $required, $extra_input_attrs);
             } else {
                 $input_type = $field['input_type'] ?? 'text';
-                $list = $meta_key === 'nationality' ? ' list="alpenia-public-country-list"' : '';
-                echo '<input type="' . esc_attr($input_type) . '" id="' . esc_attr($input_id) . '" name="' . esc_attr($meta_key) . '" value="' . esc_attr($value) . '"' . $list . ($required ? ' required' : '') . $extra_input_attrs . '>';
+                echo '<input type="' . esc_attr($input_type) . '" id="' . esc_attr($input_id) . '" name="' . esc_attr($meta_key) . '" value="' . esc_attr($value) . '"' . ($required ? ' required' : '') . $extra_input_attrs . '>';
             }
 
             echo '</div>';
@@ -745,11 +769,28 @@ function alpenia_public_participant_render_fields($values) {
         echo '</section>';
     }
 
-    echo '<datalist id="alpenia-public-country-list">';
+}
+
+function alpenia_public_participant_get_country_options() {
+    $options = ['' => 'Bitte wählen'];
+
     foreach (alpenia_get_all_countries() as $country_name) {
-        echo '<option value="' . esc_attr($country_name) . '">';
+        $options[$country_name] = $country_name;
     }
-    echo '</datalist>';
+
+    return $options;
+}
+
+function alpenia_public_participant_render_select_field($input_id, $name, $options, $value, $required = false, $extra_attrs = '') {
+    echo '<select id="' . esc_attr($input_id) . '" name="' . esc_attr($name) . '"' . ($required ? ' required' : '') . $extra_attrs . '>';
+
+    foreach ($options as $option_value => $option_label) {
+        $is_empty_placeholder = $required && (string) $option_value === '';
+        $placeholder_attrs = $is_empty_placeholder ? ' disabled hidden' : '';
+        echo '<option value="' . esc_attr($option_value) . '" ' . selected((string) $value, (string) $option_value, false) . $placeholder_attrs . '>' . esc_html(alpenia_travel_t($option_label)) . '</option>';
+    }
+
+    echo '</select>';
 }
 
 function alpenia_public_participant_get_residence_permit_field_keys() {
