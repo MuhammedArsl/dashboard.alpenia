@@ -52,6 +52,8 @@ function alpenia_export_trip_csv($trip_id) {
     fprintf($output, chr(0xEF).chr(0xBB).chr(0xBF));
 
     fputcsv($output, [
+        'Trip ID',
+        'Participant ID',
         'Trip',
         'Trip Type',
         'Status',
@@ -92,6 +94,8 @@ function alpenia_export_trip_csv($trip_id) {
         $open = alpenia_get_participant_payment_open($participant->ID);
 
         fputcsv($output, [
+            alpenia_get_trip_display_id($trip_id),
+            alpenia_get_participant_display_id($participant->ID),
             $trip->post_title,
             get_post_meta($trip_id, 'trip_type', true),
             get_post_meta($trip_id, 'trip_status', true),
@@ -194,6 +198,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
         </div>
 
         <div class="meta">
+            <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('trip_id')); ?></strong><br><?php echo esc_html(alpenia_get_trip_display_id($trip_id)); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('trip_type')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'trip_type', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('status')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'trip_status', true))); ?></div>
             <div class="box"><strong><?php echo esc_html(alpenia_travel_pdf_label('destination')); ?></strong><br><?php echo esc_html(alpenia_display_value(get_post_meta($trip_id, 'destination', true))); ?></div>
@@ -207,7 +212,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
         <table>
             <?php if ($is_pilgrimage_trip) : ?>
                 <colgroup>
-                    <col span="7" style="width:10.43%;">
+                    <col span="8" style="width:9.25%;">
                     <col class="visa-col">
                     <col class="visa-col">
                     <col class="visa-col">
@@ -215,6 +220,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
             <?php endif; ?>
             <thead>
                 <tr>
+                    <th><?php echo esc_html(alpenia_travel_pdf_label('participant_id')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('first_name')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('last_name')); ?></th>
                     <th><?php echo esc_html(alpenia_travel_pdf_label('birth_date')); ?></th>
@@ -227,6 +233,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                     <?php endif; ?>
                 </tr>
                 <tr>
+                    <th></th>
                     <th colspan="7"></th>
                     <?php if ($is_pilgrimage_trip) : ?>
                         <th><?php echo esc_html(alpenia_travel_pdf_label('visa_entry_country')); ?></th>
@@ -244,6 +251,7 @@ function alpenia_render_print_view($trip_id, $logo_url = '') {
                     );
                     ?>
                     <tr>
+                        <td><?php echo esc_html(alpenia_get_participant_display_id($participant->ID)); ?></td>
                         <td><?php echo esc_html(alpenia_display_value($participant_first_name)); ?></td>
                         <td><?php echo esc_html(alpenia_display_value(alpenia_get_secure_meta($participant->ID, 'last_name', true))); ?></td>
                         <td><?php echo esc_html(alpenia_format_date_display(alpenia_get_secure_meta($participant->ID, 'birth_date', true))); ?></td>

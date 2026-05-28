@@ -211,3 +211,12 @@ msgstr "%d belge eksik"
 
 msgid "%d Unterlagen fehlen"
 msgstr "%d belge eksik"
+
+msgid "Trip ID"
+msgstr ""
+
+msgid "Teilnehmer ID"
+msgstr ""
+
+msgid "Wird nach dem Speichern erstellt"
+msgstr ""

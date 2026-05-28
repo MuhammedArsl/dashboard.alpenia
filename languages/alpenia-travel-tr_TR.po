@@ -366,3 +366,12 @@ msgstr "Oturum izni geçerlilik bitiş tarihi, oturum izni geçerlilik başlang�
 
 msgid "Reisedatum bis muss am oder nach Reisedatum von liegen."
 msgstr "Gezi bitiş tarihi, seyahat başlangıç tarihine eşit veya daha sonra olmalıdır."
+
+msgid "Trip ID"
+msgstr "Gezi ID"
+
+msgid "Teilnehmer ID"
+msgstr "Katılımcı ID"
+
+msgid "Wird nach dem Speichern erstellt"
+msgstr "Kaydettikten sonra oluşturulur"
