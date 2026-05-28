@@ -1719,6 +1719,7 @@ function alpenia_dashboard_shortcode() {
                 $trip_form_id = $trip_form_is_edit ? $edit_trip_id : 0;
                 $trip_form_post = $trip_form_is_edit ? get_post($trip_form_id) : null;
                 $trip_form_values = [
+                    'display_trip_id' => $trip_form_id ? alpenia_get_trip_display_id($trip_form_id) : alpenia_travel_t('Wird nach dem Speichern erstellt'),
                     'trip_title' => $trip_form_post ? $trip_form_post->post_title : '',
                     'trip_type' => $trip_form_id ? get_post_meta($trip_form_id, 'trip_type', true) : '',
                     'trip_status' => $trip_form_id ? get_post_meta($trip_form_id, 'trip_status', true) : 'open',
@@ -1763,6 +1764,11 @@ function alpenia_dashboard_shortcode() {
                         <?php endif; ?>
 
                         <div class="form-grid">
+                            <div class="form-group">
+                                <label for="display_trip_id"><?php echo esc_html(alpenia_travel_t('Trip ID')); ?></label>
+                                <input type="text" id="display_trip_id" value="<?php echo esc_attr($trip_form_values['display_trip_id']); ?>" readonly>
+                            </div>
+
                             <div class="form-group full">
                                 <label for="trip_title"><?php echo esc_html(alpenia_travel_t('Reisetitel')); ?></label>
                                 <input type="text" id="trip_title" name="trip_title" value="<?php echo esc_attr($trip_form_values['trip_title']); ?>" placeholder="<?php echo esc_attr(alpenia_travel_t('z. B. Frankfurt – Umrah')); ?>" required>
@@ -2283,7 +2289,9 @@ function alpenia_dashboard_shortcode() {
                 }
 
                 $participant = get_post($participant_id);
+                $participant_display_id = alpenia_get_participant_display_id($participant_id);
                 $trip_id = (int) get_post_meta($participant_id, 'trip_id', true);
+                $participant_trip_display_id = $trip_id ? alpenia_get_trip_display_id($trip_id) : '';
 
                 $gender             = get_post_meta($participant_id, 'gender', true);
                 $first_name         = alpenia_get_secure_meta($participant_id, 'first_name', true);
@@ -2325,7 +2333,7 @@ function alpenia_dashboard_shortcode() {
                         <?php endif; ?>
                         <div class="dashboard-brand-text">
                             <h1><?php echo esc_html(alpenia_travel_t('Teilnehmer bearbeiten')); ?></h1>
-                            <p><?php echo esc_html($participant ? $participant->post_title : ''); ?></p>
+                            <p><?php echo esc_html($participant ? $participant->post_title : ''); ?> · <?php echo esc_html(alpenia_travel_t('Teilnehmer ID')); ?>: <?php echo esc_html($participant_display_id); ?></p>
                         </div>
                     </div>
                     <div class="actions">
@@ -2340,6 +2348,16 @@ function alpenia_dashboard_shortcode() {
                         <input type="hidden" name="participant_id" value="<?php echo esc_attr($participant_id); ?>">
 
                         <div class="form-grid">
+                            <div class="form-group">
+                                <label for="display_participant_id"><?php echo esc_html(alpenia_travel_t('Teilnehmer ID')); ?></label>
+                                <input type="text" id="display_participant_id" value="<?php echo esc_attr($participant_display_id); ?>" readonly>
+                            </div>
+
+                            <div class="form-group">
+                                <label for="display_participant_trip_id"><?php echo esc_html(alpenia_travel_t('Trip ID')); ?></label>
+                                <input type="text" id="display_participant_trip_id" value="<?php echo esc_attr($participant_trip_display_id); ?>" readonly>
+                            </div>
+
                             <div class="form-group">
                                 <label for="gender"><?php echo esc_html(alpenia_travel_t('Anrede')); ?> <span class="required-mark">*</span></label>
                                 <select id="gender" name="gender" required>
@@ -2615,6 +2633,7 @@ function alpenia_dashboard_shortcode() {
 
                 <div class="panel">
                     <div class="trip-meta-grid">
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Trip ID')); ?></strong><span><?php echo esc_html(alpenia_get_trip_display_id($view_trip_id)); ?></span></div>
                         <?php $view_trip_type = (string) get_post_meta($view_trip_id, 'trip_type', true); ?>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><span><?php echo esc_html($view_trip_type === 'umrah' ? alpenia_travel_t('Umrah') : $view_trip_type); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Status')); ?></strong><span><?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($view_trip_id, 'trip_status', true))); ?></span></div>
@@ -2710,6 +2729,7 @@ function alpenia_dashboard_shortcode() {
                             <table class="alpenia-table">
                                 <thead>
                                     <tr>
+                                        <th><?php echo esc_html(alpenia_travel_t('Teilnehmer ID')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Anrede')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Name')); ?></th>
                                         <th><?php echo esc_html(alpenia_travel_t('Dokumente')); ?></th>
@@ -2747,6 +2767,7 @@ function alpenia_dashboard_shortcode() {
                                         $payment_open = alpenia_get_participant_payment_open($participant->ID);
                                     ?>
                                         <tr>
+                                            <td><?php echo esc_html(alpenia_get_participant_display_id($participant->ID)); ?></td>
                                             <td><?php echo esc_html(alpenia_display_value(alpenia_travel_t($gender))); ?></td>
                                             <td>
                                                 <strong><?php echo esc_html(alpenia_display_value($participant_full_name)); ?></strong>
@@ -3239,6 +3260,10 @@ function alpenia_dashboard_shortcode() {
                                         </div>
 
                                         <div class="trip-info-grid">
+                                            <div class="trip-info-item">
+                                                <span><?php echo esc_html(alpenia_travel_t('Trip ID')); ?></span>
+                                                <strong><?php echo esc_html(alpenia_get_trip_display_id($trip->ID)); ?></strong>
+                                            </div>
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Ziel')); ?></span>
                                                 <strong><?php echo esc_html(alpenia_display_value(alpenia_destination_to_display_language(get_post_meta($trip->ID, 'destination', true)))); ?></strong>

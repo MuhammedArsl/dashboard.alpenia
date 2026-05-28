@@ -376,6 +376,7 @@ function alpenia_public_participant_get_trip_detail_items($trip_id) {
     }
 
     $items = [
+        ['label' => 'Trip ID', 'value' => alpenia_get_trip_display_id($trip_id)],
         ['label' => 'Reisetitel', 'value' => get_the_title($trip_id)],
         ['label' => 'Reisetyp', 'value' => $trip_type],
         ['label' => 'Reiseziel', 'value' => $destination],

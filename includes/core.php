@@ -140,6 +140,64 @@ add_action('init', function () {
 });
 
 /**
+ * Public display IDs for trips and participants.
+ */
+function alpenia_format_display_id($prefix, $post_id) {
+    $post_id = absint($post_id);
+    if ($post_id <= 0) {
+        return '';
+    }
+
+    return strtoupper((string) $prefix) . '-' . str_pad((string) $post_id, 6, '0', STR_PAD_LEFT);
+}
+
+function alpenia_get_trip_display_id($trip_id) {
+    $trip_id = absint($trip_id);
+    if ($trip_id <= 0) {
+        return '';
+    }
+
+    $display_id = trim((string) get_post_meta($trip_id, 'alpenia_trip_id', true));
+    if ($display_id === '') {
+        $display_id = alpenia_format_display_id('TRIP', $trip_id);
+        update_post_meta($trip_id, 'alpenia_trip_id', $display_id);
+    }
+
+    return $display_id;
+}
+
+function alpenia_get_participant_display_id($participant_id) {
+    $participant_id = absint($participant_id);
+    if ($participant_id <= 0) {
+        return '';
+    }
+
+    $display_id = trim((string) get_post_meta($participant_id, 'alpenia_participant_id', true));
+    if ($display_id === '') {
+        $display_id = alpenia_format_display_id('PAX', $participant_id);
+        update_post_meta($participant_id, 'alpenia_participant_id', $display_id);
+    }
+
+    return $display_id;
+}
+
+function alpenia_ensure_post_display_id($post_id, $post = null) {
+    $post_id = absint($post_id);
+    if ($post_id <= 0) {
+        return;
+    }
+
+    $post_type = $post ? $post->post_type : get_post_type($post_id);
+    if ($post_type === 'group_trip') {
+        alpenia_get_trip_display_id($post_id);
+    } elseif ($post_type === 'trip_participant') {
+        alpenia_get_participant_display_id($post_id);
+    }
+}
+add_action('save_post_group_trip', 'alpenia_ensure_post_display_id', 20, 2);
+add_action('save_post_trip_participant', 'alpenia_ensure_post_display_id', 20, 2);
+
+/**
  * Rollen / Zugriff
  */
 function alpenia_get_current_user_roles() {
@@ -689,6 +747,9 @@ function alpenia_travel_t($text) {
         'Mehrfachauswahl möglich (max. 5).' => 'Birden fazla seçim yapılabilir (en fazla 5).',
         'Bitte maximal 5 Sprachen auswählen.' => 'Lütfen en fazla 5 dil seçin.',
         'Sprachen' => 'Diller',
+        'Trip ID' => 'Gezi ID',
+        'Teilnehmer ID' => 'Katılımcı ID',
+        'Wird nach dem Speichern erstellt' => 'Kaydettikten sonra oluşturulur',
     ];
 
     if (isset($translations['tr']) && is_array($translations['tr'])) {
@@ -817,6 +878,8 @@ function alpenia_travel_pdf_label($key) {
         'departure_city' => 'Departure city',
         'airport' => 'Airport',
         'travel_dates' => 'Travel dates',
+        'trip_id' => 'Trip ID',
+        'participant_id' => 'Participant ID',
         'first_name' => 'First name',
         'last_name' => 'Last name',
         'birth_date' => 'Date of birth',
