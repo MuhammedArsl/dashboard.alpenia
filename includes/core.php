@@ -448,6 +448,8 @@ function alpenia_travel_t($text) {
         'Nur mit Link' => 'Yalnızca bağlantıyla',
         '%1$d von %2$d Teilnehmern angezeigt' => '%2$d katılımcıdan %1$d tanesi gösteriliyor',
         'Anmeldeformular' => 'Kayıt formu',
+        'Bitte nur Werte aus den Auswahllisten verwenden.' => 'Lütfen sadece seçim listelerindeki değerleri kullanın.',
+        'Bitte eine Staatsbürgerschaft aus der Liste auswählen.' => 'Lütfen listeden bir vatandaşlık seçin.',
         'Fehlende Unterlagen im Überblick' => 'Eksik belgeler genel bakışı',
         'Offene Dokumentaufgaben' => 'Eksik belgeler',
         'Nachfassen' => 'Takip',
