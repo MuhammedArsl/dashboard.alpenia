@@ -6663,6 +6663,13 @@ function alpenia_dashboard_shortcode() {
             align-items: center;
             gap: 8px;
             font-weight: 500;
+            color: #163d33;
+            opacity: 1;
+        }
+
+        .trip-language-dropdown__option span {
+            color: #163d33;
+            opacity: 1;
         }
 
         .trip-language-dropdown__option input[type="checkbox"] {
