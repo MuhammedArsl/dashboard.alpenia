@@ -317,5 +317,8 @@ msgstr ""
 msgid "Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern ist das Wohnsitzland Pflicht."
 msgstr ""
 
-msgid "Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Wohnsitzland, Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht."
+msgid "Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Wohnsitzland, Reisepass gültig von und Reisepass gültig bis ausfüllen."
+msgstr ""
+
+msgid "Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Wohnsitzland, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht."
 msgstr ""
