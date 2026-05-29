@@ -259,7 +259,7 @@ function alpenia_public_participant_message($text, $type = 'info') {
 }
 
 function alpenia_public_participant_enqueue_assets() {
-    $version = defined('WP_DEBUG') && WP_DEBUG ? time() : '5.2';
+    $version = defined('WP_DEBUG') && WP_DEBUG ? time() : '5.3';
     wp_enqueue_style(
         'alpenia-public-participant-form',
         plugin_dir_url(ALPENIA_PLUGIN_FILE) . 'assets/public-participant-form.css',
@@ -901,16 +901,7 @@ function alpenia_nationality_requires_residence_country($nationality) {
 }
 
 function alpenia_participant_requires_residence_permit($nationality, $residence_country) {
-    if (!alpenia_nationality_requires_residence_country($nationality)) {
-        return false;
-    }
-
-    $residence_country = trim((string) $residence_country);
-    if ($residence_country === '') {
-        return false;
-    }
-
-    return alpenia_is_eu_or_schengen_nationality($residence_country);
+    return alpenia_nationality_requires_residence_country($nationality);
 }
 
 function alpenia_nationality_requires_residence_permit($nationality) {
