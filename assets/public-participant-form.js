@@ -108,11 +108,27 @@
             return false;
         }
 
-        var value = normalize(nationalityField.value);
-        var requiresResidencePermit = value !== '' && countryList.indexOf(value) === -1;
+        var residenceCountryField = form.querySelector('[data-alpenia-residence-country]');
+        var residenceCountryWrapper = form.querySelector('[data-alpenia-residence-country-field]');
+        var nationality = normalize(nationalityField.value);
+        var requiresResidenceCountry = nationality !== '' && countryList.indexOf(nationality) === -1;
+        var residenceCountry = residenceCountryField ? normalize(residenceCountryField.value) : '';
+        var requiresResidencePermit = requiresResidenceCountry && residenceCountry !== '' && countryList.indexOf(residenceCountry) !== -1;
         var conditionalSections = form.querySelectorAll('[data-alpenia-residence-section]');
         var conditionalInputs = form.querySelectorAll('[data-alpenia-residence-field] input, [data-alpenia-residence-field] select');
         var uploadInput = form.querySelector('[data-alpenia-residence-upload]');
+
+        if (residenceCountryWrapper) {
+            residenceCountryWrapper.hidden = !requiresResidenceCountry;
+        }
+
+        if (residenceCountryField) {
+            residenceCountryField.disabled = !requiresResidenceCountry;
+            residenceCountryField.required = requiresResidenceCountry;
+            if (!requiresResidenceCountry) {
+                residenceCountryField.value = '';
+            }
+        }
 
         conditionalSections.forEach(function (section) {
             section.hidden = !requiresResidencePermit;
@@ -162,11 +178,17 @@
                 return;
             }
 
+            var residenceCountryField = form.querySelector('[data-alpenia-residence-country]');
             toggleResidencePermit(form, countryList);
             ['input', 'change'].forEach(function (eventName) {
                 nationalityField.addEventListener(eventName, function () {
                     toggleResidencePermit(form, countryList);
                 });
+                if (residenceCountryField) {
+                    residenceCountryField.addEventListener(eventName, function () {
+                        toggleResidencePermit(form, countryList);
+                    });
+                }
             });
         });
 
