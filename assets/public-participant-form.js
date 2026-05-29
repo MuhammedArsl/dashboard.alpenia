@@ -118,15 +118,12 @@
         var uploadInput = form.querySelector('[data-alpenia-residence-upload]');
 
         if (residenceCountryWrapper) {
-            residenceCountryWrapper.hidden = !requiresResidenceCountry;
+            residenceCountryWrapper.hidden = false;
         }
 
         if (residenceCountryField) {
-            residenceCountryField.disabled = !requiresResidenceCountry;
-            residenceCountryField.required = requiresResidenceCountry;
-            if (!requiresResidenceCountry) {
-                residenceCountryField.value = '';
-            }
+            residenceCountryField.disabled = false;
+            residenceCountryField.required = true;
         }
 
         conditionalSections.forEach(function (section) {
