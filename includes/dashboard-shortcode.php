@@ -630,7 +630,7 @@ function alpenia_dashboard_shortcode() {
                     wp_safe_redirect($redirect_url);
                     exit;
                 } elseif ($message === '') {
-                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' ' . esc_html(alpenia_travel_t('Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern ist zusätzlich das Wohnsitzland Pflicht. Nur wenn dieses Wohnsitzland in der EU/im Schengenraum liegt, sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.')) . '</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' ' . esc_html(alpenia_travel_t('Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Wohnsitzland, Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.')) . '</div>';
                 }
             }
         }
@@ -6907,13 +6907,7 @@ function alpenia_dashboard_shortcode() {
 
     <script>
     document.addEventListener('DOMContentLoaded', function () {
-        const euOrSchengenCountries = [
-            'Belgien','Bulgarien','Dänemark','Deutschland','Estland','Finnland','Frankreich',
-            'Griechenland','Irland','Italien','Kroatien','Lettland','Litauen','Luxemburg',
-            'Malta','Niederlande','Österreich','Polen','Portugal','Rumänien','Schweden',
-            'Slowakei','Slowenien','Spanien','Tschechien','Ungarn','Zypern','Island',
-            'Liechtenstein','Norwegen','Schweiz'
-        ];
+        const euOrSchengenCountries = <?php echo wp_json_encode(array_values(alpenia_get_eu_schengen_countries())); ?>;
 
         const uploadLimits = {
             passport: 5 * 1024 * 1024,
@@ -7137,7 +7131,7 @@ function alpenia_dashboard_shortcode() {
             function toggleResidenceFields() {
                 const nationality = input.value.trim();
                 const requiresResidenceCountry = nationality !== '' && !isEuOrSchengenCountry(nationality);
-                const showResidence = requiresResidenceCountry && residenceCountry && residenceCountry.value.trim() !== '' && isEuOrSchengenCountry(residenceCountry.value.trim());
+                const showResidence = requiresResidenceCountry;
 
                 residenceCountryFields.forEach(function (field) {
                     field.hidden = !requiresResidenceCountry;
@@ -7201,7 +7195,7 @@ function alpenia_dashboard_shortcode() {
             function toggleEditResidenceFields() {
                 const nationality = nationalityEdit.value.trim();
                 const requiresResidenceCountry = nationality !== '' && !isEuOrSchengenCountry(nationality);
-                const showResidence = requiresResidenceCountry && residenceCountryEdit && residenceCountryEdit.value.trim() !== '' && isEuOrSchengenCountry(residenceCountryEdit.value.trim());
+                const showResidence = requiresResidenceCountry;
 
                 editResidenceCountryFields.forEach(function (field) {
                     if (!field) return;
