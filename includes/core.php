@@ -1154,13 +1154,26 @@ function alpenia_get_all_countries($lang = null) {
     return $countries;
 }
 
+function alpenia_add_matching_turkish_country_aliases($countries) {
+    $countries = array_values(array_unique($countries));
+    $aliases = alpenia_get_country_turkish_aliases();
+
+    foreach ($countries as $country) {
+        if (isset($aliases[$country])) {
+            $countries[] = $aliases[$country];
+        }
+    }
+
+    return array_values(array_unique($countries));
+}
+
 function alpenia_get_eu_countries() {
     $countries = [
         'Belgien','Bulgarien','Dänemark','Deutschland','Estland','Finnland','Frankreich','Griechenland','Irland','Italien',
         'Kroatien','Lettland','Litauen','Luxemburg','Malta','Niederlande','Österreich','Polen','Portugal','Rumänien',
         'Schweden','Slowakei','Slowenien','Spanien','Tschechien','Ungarn','Zypern'
     ];
-    return array_values(array_unique(array_merge($countries, array_values(alpenia_get_country_turkish_aliases()))));
+    return alpenia_add_matching_turkish_country_aliases($countries);
 }
 
 function alpenia_get_schengen_countries() {
@@ -1169,11 +1182,13 @@ function alpenia_get_schengen_countries() {
         'Kroatien','Lettland','Liechtenstein','Litauen','Luxemburg','Malta','Niederlande','Norwegen','Österreich','Polen',
         'Portugal','Rumänien','Schweden','Schweiz','Slowakei','Slowenien','Spanien','Tschechien','Ungarn'
     ];
-    return array_values(array_unique(array_merge($countries, array_values(alpenia_get_country_turkish_aliases()))));
+    return alpenia_add_matching_turkish_country_aliases($countries);
 }
 function alpenia_is_eu_or_schengen_nationality($nationality) {
     $nationality = trim((string) $nationality);
     if ($nationality === '') return false;
+
+    $nationality = alpenia_country_to_display_language($nationality, 'de');
 
     return in_array($nationality, alpenia_get_eu_countries(), true)
         || in_array($nationality, alpenia_get_schengen_countries(), true);
