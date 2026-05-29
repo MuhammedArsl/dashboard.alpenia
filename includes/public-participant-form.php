@@ -478,6 +478,7 @@ function alpenia_public_participant_get_form_fields() {
         'last_name',
         'birth_date',
         'nationality',
+        'residence_country',
         'passport_no',
         'passport_valid_from_date',
         'passport_expiry_date',
@@ -507,7 +508,7 @@ function alpenia_public_participant_get_form_fields() {
         }
     }
 
-    foreach (['nationality', 'passport_no', 'passport_valid_from_date', 'passport_expiry_date'] as $key) {
+    foreach (['nationality', 'residence_country', 'passport_no', 'passport_valid_from_date', 'passport_expiry_date'] as $key) {
         if (isset($fields[$key])) {
             $fields[$key]['section'] = 'Reisepassdaten';
         }
@@ -532,7 +533,7 @@ function alpenia_public_participant_get_required_fields() {
     $residence_fields = alpenia_public_participant_get_residence_permit_field_keys();
 
     return array_values(array_filter(array_keys(alpenia_public_participant_get_form_fields()), static function ($field_key) use ($residence_fields) {
-        if ($field_key === 'second_first_name') {
+        if ($field_key === 'second_first_name' || $field_key === 'residence_country') {
             return false;
         }
 
@@ -589,6 +590,11 @@ function alpenia_public_participant_validate_choice_fields($values) {
         return new WP_Error('invalid_nationality', alpenia_travel_t('Bitte eine Staatsbürgerschaft aus der Liste auswählen.'));
     }
 
+    $residence_country = trim((string) ($values['residence_country'] ?? ''));
+    if ($residence_country !== '' && !in_array($residence_country, alpenia_get_all_countries(), true)) {
+        return new WP_Error('invalid_residence_country', alpenia_travel_t('Bitte ein Wohnsitzland aus der Liste auswählen.'));
+    }
+
     return true;
 }
 
@@ -622,7 +628,12 @@ function alpenia_public_participant_create($trip_id, $values) {
         return $residence_date_validation;
     }
 
-    $requires_residence_permit = alpenia_nationality_requires_residence_permit($values['nationality'] ?? '');
+    $requires_residence_country = alpenia_nationality_requires_residence_country($values['nationality'] ?? '');
+    if ($requires_residence_country && empty($values['residence_country'])) {
+        return new WP_Error('missing_residence_country', alpenia_travel_t('Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern ist das Wohnsitzland Pflicht.'));
+    }
+
+    $requires_residence_permit = alpenia_participant_requires_residence_permit($values['nationality'] ?? '', $values['residence_country'] ?? '');
     if ($requires_residence_permit) {
         foreach (alpenia_public_participant_get_residence_permit_field_keys() as $required_key) {
             if (empty($values[$required_key])) {
@@ -742,9 +753,15 @@ function alpenia_public_participant_render_fields($values) {
             $value = $values[$meta_key] ?? '';
             $required = in_array($meta_key, $required_fields, true);
             $is_residence_field = in_array($meta_key, $residence_fields, true);
-            $show_required_mark = $required || $is_residence_field;
+            $show_required_mark = $required || $is_residence_field || $meta_key === 'residence_country';
             $field_attrs = $is_residence_field ? ' data-alpenia-residence-field' : '';
+            if ($meta_key === 'residence_country') {
+                $field_attrs = ' data-alpenia-residence-country-field hidden';
+            }
             $extra_input_attrs = $meta_key === 'nationality' ? ' data-alpenia-nationality' : '';
+            if ($meta_key === 'residence_country') {
+                $extra_input_attrs = ' data-alpenia-residence-country';
+            }
 
             echo '<div class="alpenia-public-field"' . $field_attrs . '>';
             echo '<label for="' . esc_attr($input_id) . '">' . esc_html(alpenia_travel_t($field['label']));
@@ -755,7 +772,7 @@ function alpenia_public_participant_render_fields($values) {
 
             if (!empty($field['options'])) {
                 alpenia_public_participant_render_select_field($input_id, $meta_key, $field['options'], $value, $required, $extra_input_attrs);
-            } elseif ($meta_key === 'nationality') {
+            } elseif ($meta_key === 'nationality' || $meta_key === 'residence_country') {
                 alpenia_public_participant_render_select_field($input_id, $meta_key, alpenia_public_participant_get_country_options(), $value, $required, $extra_input_attrs);
             } else {
                 $input_type = $field['input_type'] ?? 'text';
@@ -874,13 +891,30 @@ function alpenia_get_eu_schengen_countries() {
     return array_values(array_unique(array_merge(alpenia_get_eu_countries(), alpenia_get_schengen_countries())));
 }
 
-function alpenia_nationality_requires_residence_permit($nationality) {
+function alpenia_nationality_requires_residence_country($nationality) {
     $nationality = trim((string) $nationality);
     if ($nationality === '') {
         return false;
     }
 
     return !alpenia_is_eu_or_schengen_nationality($nationality);
+}
+
+function alpenia_participant_requires_residence_permit($nationality, $residence_country) {
+    if (!alpenia_nationality_requires_residence_country($nationality)) {
+        return false;
+    }
+
+    $residence_country = trim((string) $residence_country);
+    if ($residence_country === '') {
+        return false;
+    }
+
+    return alpenia_is_eu_or_schengen_nationality($residence_country);
+}
+
+function alpenia_nationality_requires_residence_permit($nationality) {
+    return alpenia_nationality_requires_residence_country($nationality);
 }
 
 function alpenia_public_participant_get_form_page_url() {

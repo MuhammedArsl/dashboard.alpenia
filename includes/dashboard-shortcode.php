@@ -476,6 +476,7 @@ function alpenia_dashboard_shortcode() {
                     $street_address     = sanitize_text_field($_POST["street_address_$i"] ?? '');
                     $postal_city        = sanitize_text_field($_POST["postal_city_$i"] ?? '');
                     $nationality        = sanitize_text_field($_POST["nationality_$i"] ?? '');
+                    $residence_country  = sanitize_text_field($_POST["residence_country_$i"] ?? '');
                     $passport_no        = sanitize_text_field($_POST["passport_no_$i"] ?? '');
                     $phone_number       = sanitize_text_field($_POST["phone_number_$i"] ?? '');
                     $email_address      = sanitize_email($_POST["email_address_$i"] ?? '');
@@ -503,13 +504,15 @@ function alpenia_dashboard_shortcode() {
                     $passport_missing   = empty($_FILES["passport_file_$i"]['name']);
                     $photo_missing      = empty($_FILES["photo_file_$i"]['name']);
                     $visa_photo_missing = empty($_FILES["visa_photo_file_$i"]['name']);
-                    $is_eu_or_schengen_citizen = alpenia_is_eu_or_schengen_nationality($nationality);
+                    $requires_residence_country = alpenia_nationality_requires_residence_country($nationality);
+                    $requires_residence_permit = alpenia_participant_requires_residence_permit($nationality, $residence_country);
 
                     if (
                         empty($gender) ||
                         empty($first_name) ||
                         empty($last_name) ||
                         empty($nationality) ||
+                        ($requires_residence_country && empty($residence_country)) ||
                         empty($phone_number) ||
                         empty($email_address) ||
                         empty($emergency_contact_name) ||
@@ -523,7 +526,7 @@ function alpenia_dashboard_shortcode() {
                         break;
                     }
 
-                    if (!$is_eu_or_schengen_citizen) {
+                    if ($requires_residence_permit) {
                         if (empty($residence_permit_start_date) || empty($residence_permit_number) || empty($residence_permit_valid_until) || $visa_photo_missing) {
                             $all_ok = false;
                             break;
@@ -535,7 +538,7 @@ function alpenia_dashboard_shortcode() {
                         break;
                     }
 
-                    if ($check_passport !== 1 || $check_photo !== 1 || $check_payment !== 1 || (!$is_eu_or_schengen_citizen && $check_visa !== 1)) {
+                    if ($check_passport !== 1 || $check_photo !== 1 || $check_payment !== 1 || ($requires_residence_permit && $check_visa !== 1)) {
                         $all_ok = false;
                         break;
                     }
@@ -561,6 +564,7 @@ function alpenia_dashboard_shortcode() {
                     alpenia_update_secure_meta($participant_id, 'street_address', $street_address);
                     alpenia_update_secure_meta($participant_id, 'postal_city', $postal_city);
                     alpenia_update_secure_meta($participant_id, 'nationality', $nationality);
+                    alpenia_update_secure_meta($participant_id, 'residence_country', $residence_country);
                     alpenia_update_secure_meta($participant_id, 'passport_no', $passport_no);
                     alpenia_update_secure_meta($participant_id, 'phone_number', $phone_number);
                     alpenia_update_secure_meta($participant_id, 'email_address', $email_address);
@@ -626,7 +630,7 @@ function alpenia_dashboard_shortcode() {
                     wp_safe_redirect($redirect_url);
                     exit;
                 } elseif ($message === '') {
-                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' ' . esc_html(alpenia_travel_t('Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.')) . '</div>';
+                    $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte alle Pflichtfelder ausfüllen.')) . ' ' . esc_html(alpenia_travel_t('Pflicht sind Anrede, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von, Reisepass gültig bis, Reisepass, Porträtfoto und die komplette Checkliste. Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern ist zusätzlich das Wohnsitzland Pflicht. Nur wenn dieses Wohnsitzland in der EU/im Schengenraum liegt, sind zusätzlich Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht. Bei Umrah-/Hajj-Reisen sind zusätzlich Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.')) . '</div>';
                 }
             }
         }
@@ -687,6 +691,7 @@ function alpenia_dashboard_shortcode() {
             $street_address     = sanitize_text_field($_POST['street_address'] ?? '');
             $postal_city        = sanitize_text_field($_POST['postal_city'] ?? '');
             $nationality        = sanitize_text_field($_POST['nationality'] ?? '');
+            $residence_country  = sanitize_text_field($_POST['residence_country'] ?? '');
             $passport_no        = sanitize_text_field($_POST['passport_no'] ?? '');
             $phone_number       = sanitize_text_field($_POST['phone_number'] ?? '');
             $email_address      = sanitize_email($_POST['email_address'] ?? '');
@@ -708,13 +713,16 @@ function alpenia_dashboard_shortcode() {
             $check_photo        = !empty($_POST['check_photo']) ? 1 : 0;
             $check_visa         = !empty($_POST['check_visa']) ? 1 : 0;
             $check_payment      = !empty($_POST['check_payment']) ? 1 : 0;
-            $is_eu_or_schengen_citizen = alpenia_is_eu_or_schengen_nationality($nationality);
+            $requires_residence_country = alpenia_nationality_requires_residence_country($nationality);
+            $requires_residence_permit = alpenia_participant_requires_residence_permit($nationality, $residence_country);
             $trip_id_for_validation = (int) get_post_meta($participant_id, 'trip_id', true);
             $is_pilgrimage_trip = alpenia_is_pilgrimage_trip($trip_id_for_validation);
 
             if (empty($gender) || empty($first_name) || empty($last_name) || empty($nationality) || empty($passport_valid_from) || empty($passport_expiry)) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bitte Herr/Frau, Vorname, Nachname, Staatsbürgerschaft, Reisepass gültig von und Reisepass gültig bis ausfüllen.')) . '</div>';
-            } elseif (!$is_eu_or_schengen_citizen && (empty($residence_permit_start_date) || empty($residence_permit_number) || empty($residence_permit_valid_until))) {
+            } elseif ($requires_residence_country && empty($residence_country)) {
+                $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern ist das Wohnsitzland Pflicht.')) . '</div>';
+            } elseif ($requires_residence_permit && (empty($residence_permit_start_date) || empty($residence_permit_number) || empty($residence_permit_valid_until))) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bei Nicht-EU-/Nicht-Schengen-Staatsbürgern sind Aufenthaltstitel Nummer, Aufenthaltstitel gültig von und Aufenthaltstitel gültig bis Pflicht.')) . '</div>';
             } elseif ($is_pilgrimage_trip && (empty($visa_entry_country) || empty($visa_number) || empty($visa_expiry_date))) {
                 $message = '<div class="alpenia-message">' . esc_html(alpenia_travel_t('Bei Umrah-/Hajj-Reisen sind Vize-Einreiseland, Vize Nummer und Vize gültig bis Pflicht.')) . '</div>';
@@ -732,6 +740,7 @@ function alpenia_dashboard_shortcode() {
                 alpenia_update_secure_meta($participant_id, 'street_address', $street_address);
                 alpenia_update_secure_meta($participant_id, 'postal_city', $postal_city);
                 alpenia_update_secure_meta($participant_id, 'nationality', $nationality);
+                alpenia_update_secure_meta($participant_id, 'residence_country', $residence_country);
                 alpenia_update_secure_meta($participant_id, 'passport_no', $passport_no);
                 alpenia_update_secure_meta($participant_id, 'phone_number', $phone_number);
                 alpenia_update_secure_meta($participant_id, 'email_address', $email_address);
@@ -2135,6 +2144,16 @@ function alpenia_dashboard_shortcode() {
                                         </select>
                                     </div>
 
+                                    <div class="form-group residence-country-field residence-country-field-<?php echo $i; ?>" hidden>
+                                        <label for="residence_country_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Wohnsitzland')); ?> <span class="required-mark">*</span></label>
+                                        <select id="residence_country_<?php echo $i; ?>" name="residence_country_<?php echo $i; ?>">
+                                            <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
+                                            <?php foreach ($all_countries_list as $country_name) : ?>
+                                                <option value="<?php echo esc_attr($country_name); ?>"><?php echo esc_html($country_name); ?></option>
+                                            <?php endforeach; ?>
+                                        </select>
+                                    </div>
+
                                     <div class="form-group">
                                         <label for="passport_no_<?php echo $i; ?>"><?php echo esc_html(alpenia_travel_t('Reisepassnummer')); ?></label>
                                         <input type="text" id="passport_no_<?php echo $i; ?>" name="passport_no_<?php echo $i; ?>">
@@ -2301,6 +2320,7 @@ function alpenia_dashboard_shortcode() {
                 $street_address     = alpenia_get_secure_meta($participant_id, 'street_address', true);
                 $postal_city        = alpenia_get_secure_meta($participant_id, 'postal_city', true);
                 $nationality        = alpenia_get_secure_meta($participant_id, 'nationality', true);
+                $residence_country  = alpenia_get_secure_meta($participant_id, 'residence_country', true);
                 $passport_no        = alpenia_get_secure_meta($participant_id, 'passport_no', true);
                 $phone_number       = alpenia_get_secure_meta($participant_id, 'phone_number', true);
                 $email_address      = alpenia_get_secure_meta($participant_id, 'email_address', true);
@@ -2431,6 +2451,16 @@ function alpenia_dashboard_shortcode() {
                                     <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
                                     <?php foreach (alpenia_get_all_countries() as $country_name) : ?>
                                         <option value="<?php echo esc_attr($country_name); ?>" <?php selected($nationality, $country_name); ?>><?php echo esc_html($country_name); ?></option>
+                                    <?php endforeach; ?>
+                                </select>
+                            </div>
+
+                            <div class="form-group edit-residence-country-field" hidden>
+                                <label for="residence_country"><?php echo esc_html(alpenia_travel_t('Wohnsitzland')); ?> <span class="required-mark">*</span></label>
+                                <select id="residence_country" name="residence_country">
+                                    <option value=""><?php echo esc_html(alpenia_travel_t("Bitte wählen")); ?></option>
+                                    <?php foreach (alpenia_get_all_countries() as $country_name) : ?>
+                                        <option value="<?php echo esc_attr($country_name); ?>" <?php selected($residence_country, $country_name); ?>><?php echo esc_html($country_name); ?></option>
                                     <?php endforeach; ?>
                                 </select>
                             </div>
@@ -7089,8 +7119,10 @@ function alpenia_dashboard_shortcode() {
         const formPilgrimageFlag = document.querySelector('.alpenia-form[data-pilgrimage-trip]');
         const isPilgrimageTrip = formPilgrimageFlag && formPilgrimageFlag.dataset.pilgrimageTrip === '1';
 
-        document.querySelectorAll('input[id^="nationality_"]').forEach(function (input) {
+        document.querySelectorAll('select[id^="nationality_"]').forEach(function (input) {
             const index = input.id.replace('nationality_', '');
+            const residenceCountryFields = document.querySelectorAll('.residence-country-field-' + index);
+            const residenceCountry = document.getElementById('residence_country_' + index);
             const residenceFields = document.querySelectorAll('.residence-field-' + index);
             const residenceStart = document.getElementById('residence_permit_start_date_' + index);
             const residenceNumber = document.getElementById('residence_permit_number_' + index);
@@ -7104,7 +7136,21 @@ function alpenia_dashboard_shortcode() {
 
             function toggleResidenceFields() {
                 const nationality = input.value.trim();
-                const showResidence = nationality !== '' && !isEuOrSchengenCountry(nationality);
+                const requiresResidenceCountry = nationality !== '' && !isEuOrSchengenCountry(nationality);
+                const showResidence = requiresResidenceCountry && residenceCountry && residenceCountry.value.trim() !== '' && isEuOrSchengenCountry(residenceCountry.value.trim());
+
+                residenceCountryFields.forEach(function (field) {
+                    field.hidden = !requiresResidenceCountry;
+                    field.style.display = requiresResidenceCountry ? '' : 'none';
+                });
+
+                if (residenceCountry) {
+                    residenceCountry.required = requiresResidenceCountry;
+                    residenceCountry.disabled = !requiresResidenceCountry;
+                    if (!requiresResidenceCountry) {
+                        residenceCountry.value = '';
+                    }
+                }
 
                 residenceFields.forEach(function (field) {
                     field.style.display = showResidence ? '' : 'none';
@@ -7129,6 +7175,10 @@ function alpenia_dashboard_shortcode() {
 
             input.addEventListener('input', toggleResidenceFields);
             input.addEventListener('change', toggleResidenceFields);
+            if (residenceCountry) {
+                residenceCountry.addEventListener('input', toggleResidenceFields);
+                residenceCountry.addEventListener('change', toggleResidenceFields);
+            }
             toggleResidenceFields();
             togglePilgrimageVisaFields();
         });
@@ -7136,6 +7186,8 @@ function alpenia_dashboard_shortcode() {
         const nationalityEdit = document.getElementById('nationality');
 
         if (nationalityEdit) {
+            const editResidenceCountryFields = Array.from(document.querySelectorAll('.edit-residence-country-field'));
+            const residenceCountryEdit = document.getElementById('residence_country');
             const editResidenceFields = Array.from(document.querySelectorAll('.edit-residence-field'));
             const editVisaFields = Array.from(document.querySelectorAll('.edit-visa-field'));
             const residenceStartEdit = document.getElementById('residence_permit_start_date');
@@ -7148,7 +7200,22 @@ function alpenia_dashboard_shortcode() {
 
             function toggleEditResidenceFields() {
                 const nationality = nationalityEdit.value.trim();
-                const showResidence = nationality !== '' && !isEuOrSchengenCountry(nationality);
+                const requiresResidenceCountry = nationality !== '' && !isEuOrSchengenCountry(nationality);
+                const showResidence = requiresResidenceCountry && residenceCountryEdit && residenceCountryEdit.value.trim() !== '' && isEuOrSchengenCountry(residenceCountryEdit.value.trim());
+
+                editResidenceCountryFields.forEach(function (field) {
+                    if (!field) return;
+                    field.hidden = !requiresResidenceCountry;
+                    field.style.display = requiresResidenceCountry ? '' : 'none';
+                });
+
+                if (residenceCountryEdit) {
+                    residenceCountryEdit.required = requiresResidenceCountry;
+                    residenceCountryEdit.disabled = !requiresResidenceCountry;
+                    if (!requiresResidenceCountry) {
+                        residenceCountryEdit.value = '';
+                    }
+                }
 
                 editResidenceFields.forEach(function (field) {
                     if (field) field.style.display = showResidence ? '' : 'none';
@@ -7172,6 +7239,10 @@ function alpenia_dashboard_shortcode() {
 
             nationalityEdit.addEventListener('input', toggleEditResidenceFields);
             nationalityEdit.addEventListener('change', toggleEditResidenceFields);
+            if (residenceCountryEdit) {
+                residenceCountryEdit.addEventListener('input', toggleEditResidenceFields);
+                residenceCountryEdit.addEventListener('change', toggleEditResidenceFields);
+            }
             toggleEditResidenceFields();
             toggleEditPilgrimageVisaFields();
         }

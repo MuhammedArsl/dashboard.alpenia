@@ -62,6 +62,13 @@ function alpenia_participant_field_definitions() {
             'secure' => true,
             'section' => 'Reisedokumente',
         ],
+        'residence_country' => [
+            'label' => 'Wohnsitzland',
+            'type' => 'string',
+            'sanitize' => 'text',
+            'secure' => true,
+            'section' => 'Reisedokumente',
+        ],
         'passport_no' => [
             'label' => 'Reisepassnummer',
             'type' => 'string',

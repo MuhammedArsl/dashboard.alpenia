@@ -44,6 +44,7 @@ function alpenia_sensitive_meta_fields() {
         'last_name',
         'birth_date',
         'nationality',
+        'residence_country',
         'passport_no',
         'passport_valid_from_date',
         'passport_expiry_date',
