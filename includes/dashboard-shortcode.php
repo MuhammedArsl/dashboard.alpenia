@@ -2661,7 +2661,7 @@ function alpenia_dashboard_shortcode() {
                     <div class="trip-meta-grid">
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Trip ID')); ?></strong><span><?php echo esc_html(alpenia_get_trip_display_id($view_trip_id)); ?></span></div>
                         <?php $view_trip_type = (string) get_post_meta($view_trip_id, 'trip_type', true); ?>
-                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><span><?php echo esc_html($view_trip_type === 'umrah' ? alpenia_travel_t('Umrah') : $view_trip_type); ?></span></div>
+                        <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reisetyp')); ?></strong><span><?php echo esc_html(alpenia_travel_translate_label($view_trip_type)); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Status')); ?></strong><span><?php echo wp_kses_post(alpenia_trip_status_badge(get_post_meta($view_trip_id, 'trip_status', true))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Ziel')); ?></strong><span><?php echo esc_html(alpenia_display_value(alpenia_destination_to_display_language(get_post_meta($view_trip_id, 'destination', true)))); ?></span></div>
                         <div class="trip-meta-box"><strong><?php echo esc_html(alpenia_travel_t('Reiseveranstalter Land')); ?></strong><span><?php echo esc_html(alpenia_display_value(alpenia_country_to_display_language(get_post_meta($view_trip_id, 'country', true)))); ?></span></div>
@@ -3301,7 +3301,7 @@ function alpenia_dashboard_shortcode() {
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Reiseart')); ?></span>
                                                 <?php $trip_type_value = (string) get_post_meta($trip->ID, 'trip_type', true); ?>
-                                                <strong><?php echo esc_html($trip_type_value === 'umrah' ? alpenia_travel_t('Umrah') : alpenia_display_value($trip_type_value)); ?></strong>
+                                                <strong><?php echo esc_html(alpenia_travel_translate_label(alpenia_display_value($trip_type_value))); ?></strong>
                                             </div>
                                             <div class="trip-info-item">
                                                 <span><?php echo esc_html(alpenia_travel_t('Freie Plätze')); ?></span>
